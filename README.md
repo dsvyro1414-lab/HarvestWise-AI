@@ -64,6 +64,10 @@ npm run build
 - `server/gemmaStructured.ts` contains the structured Gemma integration for farm interviews and scenarios.
 - `assets/concepts` contains the generated UI concept used as the visual reference.
 
+## Session Context
+
+Read `CONTEXT.md` first when continuing this project in a new Codex session.
+
 ## AI Boundary
 
 Gemma is intentionally not used for financial math.
