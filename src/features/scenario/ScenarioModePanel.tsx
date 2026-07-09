@@ -30,8 +30,8 @@ export function ScenarioModePanel({
       <div className="section-title">
         <FlaskConical size={20} />
         <div>
-          <h2>Scenario Mode</h2>
-          <p>Ask a what-if question. Gemma maps it to parameter changes.</p>
+          <h2>Run scenario</h2>
+          <p>Ask what changes profit or risk.</p>
         </div>
       </div>
 

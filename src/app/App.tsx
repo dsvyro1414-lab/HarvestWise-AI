@@ -1,9 +1,6 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { BarChart3, MessageSquareText, ShoppingCart, Sprout } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
-import { Tabs } from "@/components/ui/Tabs";
 import { AdvisorPanel } from "@/features/advisor/AdvisorPanel";
-import { AdvisorWorkspace } from "@/features/advisor/AdvisorWorkspace";
 import { CropComparisonTable } from "@/features/crop-comparison/CropComparisonTable";
 import { FarmInputPanel } from "@/features/farm-plan/FarmInputPanel";
 import { ProfitSnapshot } from "@/features/farm-plan/ProfitSnapshot";
@@ -23,18 +20,8 @@ import { requestAdvisorNotes } from "@/services/adviceApi";
 import { requestFarmInterviewExtraction, requestScenarioParsing } from "@/services/copilotApi";
 import { ScenarioModePanel } from "@/features/scenario/ScenarioModePanel";
 
-type WorkspaceTab = "farm-plan" | "compare-crops" | "market-decision" | "advisor-notes";
-
-const tabs = [
-  { label: "Farm Plan", value: "farm-plan", icon: <Sprout size={16} /> },
-  { label: "Compare Crops", value: "compare-crops", icon: <BarChart3 size={16} /> },
-  { label: "Market Decision", value: "market-decision", icon: <ShoppingCart size={16} /> },
-  { label: "Advisor Notes", value: "advisor-notes", icon: <MessageSquareText size={16} /> },
-] satisfies Array<{ label: string; value: WorkspaceTab; icon: ReactNode }>;
-
 export function App() {
   const [input, setInput] = useState<FarmPlanInput>(() => createDefaultFarmInput("maize"));
-  const [activeTab, setActiveTab] = useState<WorkspaceTab>("farm-plan");
   const [selectedDecisionId, setSelectedDecisionId] = useState<DecisionId>("sell-harvest");
   const [remoteAdvice, setRemoteAdvice] = useState<AdvisorPayload | null>(null);
   const [question, setQuestion] = useState("");
@@ -142,37 +129,9 @@ export function App() {
     return nextInput;
   }
 
-  function renderActiveTab() {
-    if (activeTab === "compare-crops") {
-      return <CropComparisonTable activeCropId={input.cropId} comparisons={comparisons} />;
-    }
-
-    if (activeTab === "market-decision") {
-      return (
-        <MarketDecisionCards
-          decisions={marketDecisions}
-          selectedId={selectedDecisionId}
-          onSelect={setSelectedDecisionId}
-        />
-      );
-    }
-
-    if (activeTab === "advisor-notes") {
-      return <AdvisorWorkspace advice={advice} />;
-    }
-
-    return (
-      <>
-        <ProfitSnapshot input={input} plan={plan} />
-        <CropComparisonTable activeCropId={input.cropId} comparisons={comparisons.slice(0, 4)} />
-        <MarketDecisionCards decisions={marketDecisions} selectedId={selectedDecisionId} onSelect={setSelectedDecisionId} />
-      </>
-    );
-  }
-
   return (
     <AppShell>
-      <main className="app-grid">
+      <main className="analysis-layout">
         <FarmInputPanel
           input={input}
           interviewResult={interviewResult}
@@ -183,8 +142,8 @@ export function App() {
           onInterviewTextChange={setInterviewText}
         />
 
-        <section className="main-content" aria-label="HarvestWise AI workspace">
-          <Tabs items={tabs} value={activeTab} onChange={setActiveTab} />
+        <section className="analysis-board" id="analysis-board" aria-label="HarvestWise AI analysis board">
+          <ProfitSnapshot input={input} plan={plan} />
           <ScenarioModePanel
             isLoading={isRunningScenario}
             lastScenario={lastScenario}
@@ -192,17 +151,20 @@ export function App() {
             onQuestionChange={setScenarioQuestion}
             onRunScenario={() => void handleRunScenario()}
           />
-          {renderActiveTab()}
+          <CropComparisonTable activeCropId={input.cropId} comparisons={comparisons.slice(0, 4)} />
         </section>
 
-        <AdvisorPanel
-          advice={advice}
-          isLoading={isLoadingAdvice}
-          question={question}
-          onAskGemma={() => void handleAskGemma("explain")}
-          onGenerateWhatsApp={() => void handleAskGemma("whatsapp")}
-          onQuestionChange={setQuestion}
-        />
+        <section className="action-rail" aria-label="Decision and advisor rail">
+          <MarketDecisionCards decisions={marketDecisions} selectedId={selectedDecisionId} onSelect={setSelectedDecisionId} />
+          <AdvisorPanel
+            advice={advice}
+            isLoading={isLoadingAdvice}
+            question={question}
+            onAskGemma={() => void handleAskGemma("explain")}
+            onGenerateWhatsApp={() => void handleAskGemma("whatsapp")}
+            onQuestionChange={setQuestion}
+          />
+        </section>
       </main>
     </AppShell>
   );

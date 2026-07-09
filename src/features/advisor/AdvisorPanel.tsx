@@ -20,38 +20,24 @@ export function AdvisorPanel({
   onGenerateWhatsApp,
 }: AdvisorPanelProps) {
   return (
-    <aside className="advisor-panel" aria-label="Advisor notes">
+    <aside className="side-panel advisor-panel" id="advisor-notes" aria-label="Advisor notes">
       <div className="advisor-panel__heading">
         <div className="section-title">
           <Sparkles size={21} />
           <div>
-            <h2>Advisor Notes (Gemma)</h2>
+            <h2>Advisor</h2>
             <p>{advice.provider === "gemma" ? "Live AI explanation" : "Local fallback ready"}</p>
           </div>
         </div>
       </div>
 
-      <div className="ai-notice">
-        Gemma explains the financial plan. Calculations stay deterministic in the app.
-      </div>
-
       <div className="advisor-copy">
-        <h3>Summary</h3>
-        <p>{advice.summary}</p>
-
-        <h3>Key Insights</h3>
+        <p className="advisor-copy__summary">{advice.summary}</p>
         <ul>
-          {advice.insights.map((insight) => (
+          {advice.insights.slice(0, 2).map((insight) => (
             <li key={insight}>{insight}</li>
           ))}
         </ul>
-
-        <h3>Recommendations</h3>
-        <ol>
-          {advice.recommendations.map((recommendation) => (
-            <li key={recommendation}>{recommendation}</li>
-          ))}
-        </ol>
       </div>
 
       <div className="advisor-actions">
@@ -72,15 +58,15 @@ export function AdvisorPanel({
         <Button fullWidth icon={<MessageSquareText size={17} />} variant="secondary" onClick={onAskGemma}>
           {isLoading ? "Asking Gemma..." : "Ask Gemma to explain"}
         </Button>
-        <Button fullWidth icon={<MessageSquareText size={17} />} onClick={onGenerateWhatsApp}>
-          Generate WhatsApp advice
-        </Button>
       </div>
 
-      <div className="whatsapp-preview">
-        <span>WhatsApp draft</span>
+      <details className="whatsapp-preview">
+        <summary>WhatsApp draft</summary>
         <p>{advice.whatsappMessage}</p>
-      </div>
+        <button className="mini-link-button" type="button" onClick={onGenerateWhatsApp}>
+          Refresh draft
+        </button>
+      </details>
     </aside>
   );
 }

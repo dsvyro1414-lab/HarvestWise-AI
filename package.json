@@ -4,10 +4,10 @@
   "description": "Gemma-powered farm profit planner for smallholder farmers.",
   "scripts": {
     "dev": "concurrently -k \"npm:dev:api\" \"npm:dev:web\"",
-    "dev:web": "vite --host 0.0.0.0",
-    "dev:api": "tsx watch server/index.ts",
+    "dev:web": "vite --host 127.0.0.1",
+    "dev:api": "node --env-file-if-exists=.env --import tsx server/index.ts",
     "build": "tsc --noEmit && vite build",
-    "preview": "vite preview --host 0.0.0.0",
+    "preview": "vite preview --host 127.0.0.1",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },

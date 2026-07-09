@@ -10,17 +10,25 @@ interface MarketDecisionCardsProps {
 }
 
 export function MarketDecisionCards({ decisions, selectedId, onSelect }: MarketDecisionCardsProps) {
+  const selectedDecision = decisions.find((decision) => decision.id === selectedId) ?? decisions[0];
+
   return (
-    <section className="content-panel">
+    <section className="side-panel decision-panel" aria-label="Market decision">
       <div className="section-title">
         <ShoppingCart size={20} />
         <div>
-          <h2>Market Decision</h2>
-          <p>Sell now, store, or wait for a better price</p>
+          <h2>Best move</h2>
+          <p>Sell, store, or wait</p>
         </div>
       </div>
 
-      <div className="decision-grid">
+      <div className="decision-panel__summary">
+        <span>{selectedDecision.label}</span>
+        <strong>{formatCurrency(selectedDecision.expectedProfit)}</strong>
+        <p>{selectedDecision.recommendation}</p>
+      </div>
+
+      <div className="decision-list">
         {decisions.map((decision) => (
           <button
             className={`decision-card ${decision.id === selectedId ? "decision-card--active" : ""}`}
@@ -32,21 +40,12 @@ export function MarketDecisionCards({ decisions, selectedId, onSelect }: MarketD
               <strong>{decision.label}</strong>
               {decision.id === selectedId ? <CheckCircle2 size={18} /> : <span className="decision-card__radio" />}
             </span>
-            <span>
-              <small>Est. price</small>
-              {formatCurrency(decision.estimatedPrice)}
-            </span>
-            <span>
-              <small>Est. profit</small>
-              {formatCurrency(decision.expectedProfit)}
-            </span>
-            <span>
-              <small>Harvest after loss</small>
-              {formatNumber(decision.harvestAfterLoss, 1)}
-            </span>
+            <strong className="decision-card__profit">{formatCurrency(decision.expectedProfit)}</strong>
             <span className="decision-card__footer">
               <RiskBadge level={decision.riskLevel} />
-              <em>{decision.recommendation}</em>
+              <em>
+                {formatCurrency(decision.estimatedPrice, true)} · {formatNumber(decision.harvestAfterLoss, 1)} after loss
+              </em>
             </span>
           </button>
         ))}

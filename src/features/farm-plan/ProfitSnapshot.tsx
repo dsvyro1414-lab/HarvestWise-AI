@@ -11,22 +11,40 @@ interface ProfitSnapshotProps {
 }
 
 export function ProfitSnapshot({ input, plan }: ProfitSnapshotProps) {
+  const cashStatus =
+    plan.budgetGap > 0
+      ? `${formatCurrency(plan.budgetGap)} gap`
+      : `${formatCurrency(input.availableBudget - plan.totalSeasonCost)} buffer`;
+  const priceRoom = input.marketPricePerUnit - plan.breakEvenPrice;
+  const priceRoomPercent = priceRoom / Math.max(input.marketPricePerUnit, 1);
+  const riskDriver =
+    plan.budgetGap > 0
+      ? `Budget is short by ${formatCurrency(plan.budgetGap)}, so the season needs cheaper inputs or a smaller plot.`
+      : priceRoom <= 0
+        ? `Current price is below break-even. Profit needs a price above ${formatCurrency(plan.breakEvenPrice)} per ${plan.crop.unit}.`
+        : `Profit turns negative below ${formatCurrency(plan.breakEvenPrice)} per ${plan.crop.unit}. Current price has ${formatPercent(
+            priceRoomPercent,
+          )} room.`;
+
   return (
-    <section className="content-panel content-panel--snapshot">
-      <div className="section-title-row">
+    <section className="content-panel content-panel--snapshot" aria-label="Profit analysis">
+      <div className="snapshot-header">
         <div className="section-title">
           <BarChart3 size={20} />
           <div>
-            <h2>Profit Snapshot ({plan.crop.name})</h2>
+            <h2>Profit by market price</h2>
             <p>
               {formatNumber(input.landSizeAcres, 1)} acres · {formatNumber(plan.expectedHarvest)}{" "}
-              {plan.crop.unitPlural}
+              {plan.crop.unitPlural} · {plan.crop.name}
             </p>
           </div>
         </div>
-        <button className="link-button" type="button">
-          View full breakdown <ArrowUpRight size={15} />
-        </button>
+        <div className="snapshot-header__meta">
+          <span>Market estimate · updated today</span>
+          <button className="link-button" type="button">
+            Breakdown <ArrowUpRight size={15} />
+          </button>
+        </div>
       </div>
 
       <div className="metric-grid">
@@ -39,11 +57,32 @@ export function ProfitSnapshot({ input, plan }: ProfitSnapshotProps) {
         <MetricCard
           helper={`Per ${plan.crop.unit}`}
           label="Break-even Price"
-          tone="blue"
+          tone="neutral"
           value={formatCurrency(plan.breakEvenPrice)}
         />
-        <MetricCard helper="Price + budget pressure" label="Risk Level" tone="amber" value={<RiskBadge level={plan.riskLevel} />} />
-        <MetricCard helper={`ROI ${formatPercent(plan.roi)}`} label="Best Action" tone="green" value={plan.bestAction} />
+        <MetricCard helper="Return on cost" label="ROI" tone="green" value={formatPercent(plan.roi, 1)} />
+        <MetricCard helper="Budget after costs" label="Cash Status" tone={plan.budgetGap > 0 ? "amber" : "green"} value={cashStatus} />
+        <MetricCard helper="Price + budget pressure" label="Risk" tone="amber" value={<RiskBadge level={plan.riskLevel} />} />
+      </div>
+
+      <div className="chart-panel">
+        <PriceSensitivityChart
+          breakEvenPrice={plan.breakEvenPrice}
+          currentPrice={input.marketPricePerUnit}
+          currentProfit={plan.expectedProfit}
+          points={plan.sensitivity}
+        />
+      </div>
+
+      <div className="insight-strip">
+        <div>
+          <span>Risk driver</span>
+          <strong>{riskDriver}</strong>
+        </div>
+        <div>
+          <span>Season note</span>
+          <strong>{plan.bestAction}</strong>
+        </div>
       </div>
 
       <div className="snapshot-details">
@@ -64,8 +103,6 @@ export function ProfitSnapshot({ input, plan }: ProfitSnapshotProps) {
           <strong>{formatPercent(plan.profitMargin)}</strong>
         </div>
       </div>
-
-      <PriceSensitivityChart breakEvenPrice={plan.breakEvenPrice} points={plan.sensitivity} />
     </section>
   );
 }

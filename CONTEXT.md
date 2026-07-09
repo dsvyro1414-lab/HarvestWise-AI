@@ -164,6 +164,7 @@ For product direction:
 
 - `explain.md`
 - `docs/submission-brief.md`
+- `docs/demo-polish-journal.md`
 - `README.md`
 
 For implementation:
@@ -185,11 +186,12 @@ For visuals:
 
 Most valuable next work:
 
-1. Polish the demo flow for judges: make interview -> form update -> scenario -> advisor note feel obvious.
-2. Add a tiny sample-plan loader so judges can start without typing.
-3. Improve the README with screenshots and a judging-focused demo script.
-4. Add deployment instructions or deploy to Vercel/Render if the user asks.
-5. If a real Gemma key is available, verify live model responses end to end.
+1. Work through `docs/demo-polish-journal.md`, starting with visible Gemma status and empty demo actions.
+2. Polish the demo flow for judges: make interview -> form update -> scenario -> advisor note feel obvious.
+3. Add a tiny sample-plan loader so judges can start without typing.
+4. Improve the README with screenshots and a judging-focused demo script.
+5. Add deployment instructions or deploy to Vercel/Render if the user asks.
+6. If a real Gemma key is available, verify live model responses end to end.
 
 ## Style Notes
 

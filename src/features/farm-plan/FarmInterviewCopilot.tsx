@@ -22,8 +22,8 @@ export function FarmInterviewCopilot({
     <section className="copilot-box" aria-label="Farm interview copilot">
       <div className="copilot-box__heading">
         <div>
-          <h3>Farm interview copilot</h3>
-          <p>Describe the season. Gemma fills the form.</p>
+          <h3>Interview import</h3>
+          <p>Paste a farmer note and fill assumptions.</p>
         </div>
       </div>
 

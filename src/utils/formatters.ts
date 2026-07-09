@@ -22,9 +22,10 @@ export function formatNumber(value: number, digits = 0): string {
   }).format(value);
 }
 
-export function formatPercent(value: number): string {
+export function formatPercent(value: number, digits = 0): string {
   return new Intl.NumberFormat("en-NG", {
     style: "percent",
-    maximumFractionDigits: 0,
+    maximumFractionDigits: digits,
+    minimumFractionDigits: digits,
   }).format(value);
 }

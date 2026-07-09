@@ -4,16 +4,24 @@ import { formatCurrency } from "@/utils/formatters";
 interface PriceSensitivityChartProps {
   points: PriceSensitivityPoint[];
   breakEvenPrice: number;
+  currentPrice?: number;
+  currentProfit?: number;
 }
 
-export function PriceSensitivityChart({ points, breakEvenPrice }: PriceSensitivityChartProps) {
+export function PriceSensitivityChart({
+  points,
+  breakEvenPrice,
+  currentPrice,
+  currentProfit,
+}: PriceSensitivityChartProps) {
   const width = 720;
-  const height = 196;
-  const padding = { left: 54, right: 22, top: 14, bottom: 34 };
-  const xMin = Math.min(...points.map((point) => point.price), breakEvenPrice);
-  const xMax = Math.max(...points.map((point) => point.price), breakEvenPrice);
-  const yMin = Math.min(...points.map((point) => point.profit), 0);
-  const yMax = Math.max(...points.map((point) => point.profit), 0);
+  const height = 260;
+  const padding = { left: 58, right: 26, top: 18, bottom: 38 };
+  const hasCurrentMarker = Number.isFinite(currentPrice) && Number.isFinite(currentProfit);
+  const xMin = 0;
+  const xMax = Math.max(...points.map((point) => point.price), breakEvenPrice, currentPrice ?? 0) * 1.04;
+  const yMin = Math.min(...points.map((point) => point.profit), currentProfit ?? 0, 0);
+  const yMax = Math.max(...points.map((point) => point.profit), currentProfit ?? 0, 0);
   const xRange = Math.max(1, xMax - xMin);
   const yRange = Math.max(1, yMax - yMin);
   const innerWidth = width - padding.left - padding.right;
@@ -24,6 +32,10 @@ export function PriceSensitivityChart({ points, breakEvenPrice }: PriceSensitivi
   const linePath = points.map((point, index) => `${index === 0 ? "M" : "L"} ${toX(point.price)} ${toY(point.profit)}`).join(" ");
   const breakEvenX = toX(breakEvenPrice);
   const zeroY = toY(0);
+  const currentX = hasCurrentMarker ? toX(currentPrice ?? 0) : 0;
+  const currentY = hasCurrentMarker ? toY(currentProfit ?? 0) : 0;
+  const tooltipX = currentX > width - 190 ? currentX - 174 : currentX + 14;
+  const tooltipY = Math.max(padding.top + 4, currentY - 54);
 
   return (
     <div className="chart" aria-label="Profit over market price range">
@@ -36,6 +48,12 @@ export function PriceSensitivityChart({ points, breakEvenPrice }: PriceSensitivi
           <i className="legend-line legend-line--break-even" />
           Break-even
         </span>
+        {hasCurrentMarker ? (
+          <span>
+            <i className="legend-dot" />
+            Current price
+          </span>
+        ) : null}
       </div>
 
       <svg className="chart__svg" viewBox={`0 0 ${width} ${height}`} role="img">
@@ -52,6 +70,21 @@ export function PriceSensitivityChart({ points, breakEvenPrice }: PriceSensitivi
         {points.map((point) => (
           <circle className="chart__point" cx={toX(point.price)} cy={toY(point.profit)} key={point.price} r="4" />
         ))}
+        {hasCurrentMarker ? (
+          <>
+            <line className="chart__current-guide" x1={currentX} x2={currentX} y1={padding.top} y2={height - padding.bottom} />
+            <circle className="chart__current-point" cx={currentX} cy={currentY} r="6" />
+            <g className="chart__tooltip" transform={`translate(${tooltipX} ${tooltipY})`}>
+              <rect height="44" rx="7" width="160" />
+              <text x="10" y="18">
+                Current {formatCurrency(currentPrice ?? 0, true)}
+              </text>
+              <text className="chart__tooltip-profit" x="10" y="34">
+                Profit {formatCurrency(currentProfit ?? 0, true)}
+              </text>
+            </g>
+          </>
+        ) : null}
         <text className="chart__label chart__label--x" x={width / 2} y={height - 8}>
           Market price
         </text>
