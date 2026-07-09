@@ -10,7 +10,7 @@ export const cropCatalog: Record<CropId, CropDefinition> = {
     volatility: 0.18,
     storageLossRatePerMonth: 0.012,
     storageSuitability: 0.82,
-    color: "#0f7a45",
+    color: "#4C6B3F",
     defaults: {
       seedCostPerAcre: 22000,
       fertilizerCostPerAcre: 65000,
@@ -29,7 +29,7 @@ export const cropCatalog: Record<CropId, CropDefinition> = {
     volatility: 0.12,
     storageLossRatePerMonth: 0.04,
     storageSuitability: 0.38,
-    color: "#a66c1b",
+    color: "#A1B978",
     defaults: {
       seedCostPerAcre: 30000,
       fertilizerCostPerAcre: 28000,
@@ -48,7 +48,7 @@ export const cropCatalog: Record<CropId, CropDefinition> = {
     volatility: 0.16,
     storageLossRatePerMonth: 0.01,
     storageSuitability: 0.8,
-    color: "#267f99",
+    color: "#1C2B1F",
     defaults: {
       seedCostPerAcre: 26000,
       fertilizerCostPerAcre: 74000,
@@ -67,7 +67,7 @@ export const cropCatalog: Record<CropId, CropDefinition> = {
     volatility: 0.34,
     storageLossRatePerMonth: 0.18,
     storageSuitability: 0.18,
-    color: "#c2413d",
+    color: "#111417",
     defaults: {
       seedCostPerAcre: 38000,
       fertilizerCostPerAcre: 82000,
@@ -86,7 +86,7 @@ export const cropCatalog: Record<CropId, CropDefinition> = {
     volatility: 0.2,
     storageLossRatePerMonth: 0.009,
     storageSuitability: 0.88,
-    color: "#7f4f24",
+    color: "#F4F6F2",
     defaults: {
       seedCostPerAcre: 28000,
       fertilizerCostPerAcre: 32000,
