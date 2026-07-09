@@ -38,6 +38,17 @@ The product does not ask Gemma to perform exact arithmetic. The app handles calc
 4. The advisor checks whether the farmer should sell at harvest or store.
 5. Gemma explains the result and generates a message the advisor can send to the farmer.
 
+## Current Demo Surface
+
+The current polished build presents the whole judge flow in one dashboard:
+
+- left rail: farm assumptions and optional interview import;
+- center board: profit metrics, market-price sensitivity chart, scenario mode, and crop comparison;
+- right rail: best market move and advisor notes;
+- topbar: HarvestWise AI brand, section links, location, and season context.
+
+The final brand uses the HarvestWise AI leaf mark, the tagline `Smarter yields. Better future.`, and the reference palette: deep green, muted green, sage, cream, and near-black.
+
 ## Deeper Gemma Integration
 
 HarvestWise AI uses Gemma in three practical ways:

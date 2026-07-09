@@ -14,6 +14,18 @@ Core question:
 
 > Can this farm season make money before the farmer spends money?
 
+## Current Snapshot
+
+The latest polished version is on `main` and pushed to GitHub.
+
+Current `main` head:
+
+```bash
+18b8395 Refine brand logo and palette
+```
+
+This includes the simplified dashboard UI, final HarvestWise AI logo/palette, Vercel API entrypoints, and updated demo documentation.
+
 ## Product Idea
 
 HarvestWise AI helps a farmer or advisor enter a farm season plan and see whether it is financially sensible.
@@ -63,19 +75,24 @@ Main implementation files:
 - `server/gemmaStructured.ts` - structured Gemma calls for interview and scenario extraction.
 - `server/localParsers.ts` - offline fallback parsers for demo resilience.
 - `server/index.ts` - Express API routes.
+- `api/advice.ts`, `api/interview.ts`, `api/scenario.ts`, `api/health.ts` - Vercel-compatible API entrypoints.
 
 ## Implemented Features
 
 The current app includes:
 
-- farm input dashboard;
+- simplified topbar dashboard layout;
+- farm assumptions panel;
 - profit snapshot with deterministic finance metrics;
+- price sensitivity chart with current price marker;
 - crop comparison table;
 - market decision cards;
 - advisor notes panel;
 - farm interview copilot;
 - scenario mode;
 - Gemma API integration with local fallbacks;
+- Vercel serverless API entrypoints;
+- final HarvestWise AI logo, favicon, and brand palette;
 - Vitest domain tests;
 - generated dashboard concept image.
 
@@ -105,10 +122,13 @@ Current local branch:
 main
 ```
 
-Initial pushed commit:
+Important pushed commits:
 
 ```bash
 d484096 Initial HarvestWise AI implementation
+1c92584 Add session context handoff
+4ee9c53 Improve and simplify UI
+18b8395 Refine brand logo and palette
 ```
 
 The repository was created as `HarvestWise-AI` because GitHub slugs do not support spaces. Product name in the app/docs is **HarvestWise AI**.
@@ -143,10 +163,16 @@ Without a key, the demo still works through deterministic local fallbacks.
 
 ## Validation Already Done
 
-These checks passed before the initial GitHub push:
+These checks passed during development:
 
 ```bash
 npm test
+npm run build
+```
+
+Latest validation after the final UI/logo polish:
+
+```bash
 npm run build
 ```
 
@@ -154,6 +180,7 @@ Manual browser checks were also done for:
 
 - desktop layout;
 - mobile layout;
+- final logo and palette render;
 - interview extraction fallback;
 - scenario: fertilizer +20%;
 - scenario: store for 2 months.
@@ -180,18 +207,20 @@ For implementation:
 For visuals:
 
 - `src/styles/global.css`
+- `src/components/layout/AppShell.tsx`
+- `public/favicon.svg`
 - `assets/concepts/harvestwise-dashboard-concept.png`
 
 ## Suggested Next Steps
 
 Most valuable next work:
 
-1. Work through `docs/demo-polish-journal.md`, starting with visible Gemma status and empty demo actions.
-2. Polish the demo flow for judges: make interview -> form update -> scenario -> advisor note feel obvious.
-3. Add a tiny sample-plan loader so judges can start without typing.
-4. Improve the README with screenshots and a judging-focused demo script.
-5. Add deployment instructions or deploy to Vercel/Render if the user asks.
-6. If a real Gemma key is available, verify live model responses end to end.
+1. Make live Gemma status more obvious after successful model calls.
+2. Add a tiny sample-plan loader so judges can start without typing.
+3. Add a friendly API root/help response for people who open the backend URL directly.
+4. Add screenshots or a short demo GIF to the README.
+5. If a real Gemma key is available, verify live model responses end to end.
+6. Deploy or verify the Vercel deployment if the user asks.
 
 ## Style Notes
 

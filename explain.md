@@ -72,23 +72,44 @@ Instead of giving a generic answer, HarvestWise AI gives a practical recommendat
 
 HarvestWise AI should look like a real working product, not just a chatbot.
 
-The demo has four main screens:
+The current polished demo uses one focused dashboard instead of separate pages. Judges see the full workflow at once:
 
-1. Farm Plan
+1. Farm Assumptions
    - The user enters crop, land, costs, expected harvest, and market price.
-   - The app shows expected profit, break-even price, risk, and recommendation.
 
-2. Compare Crops
-   - The user compares two crops, such as maize vs cassava.
-   - The app shows which crop is cheaper to start, which is more profitable, and which is safer.
+2. Profit Analysis
+   - The app shows expected profit, break-even price, ROI, cash status, risk, and a market-price sensitivity chart.
 
-3. Market Decision
-   - The user compares selling now, storing the crop, or transporting it to another market.
+3. Scenario Mode
+   - The advisor asks what-if questions such as fertilizer cost rising or storage time changing.
+   - Gemma maps the question into structured changes, and deterministic code recalculates the result.
+
+4. Crop And Market Comparison
+   - The user compares crop options such as maize, cassava, rice, tomato, and beans.
+   - The user compares selling now, storing short-term, or storing longer.
    - The app shows which option gives the best net return.
 
-4. Advisor Notes
+5. Advisor Notes
    - Gemma generates a simple explanation for the farmer.
    - It also creates a short WhatsApp-style message that a cooperative or extension officer can send.
+
+## Current Visual Direction
+
+The app now follows the HarvestWise AI reference brand:
+
+- clean three-leaf logo mark;
+- `HarvestWise AI` wordmark treatment in the topbar;
+- tagline: `Smarter yields. Better future.`;
+- palette: deep green, muted green, sage, cream, and near-black;
+- compact dashboard layout with assumptions on the left, analysis in the middle, and decisions/advice on the right.
+
+## Recommended Live Demo Path
+
+1. Open the dashboard with the default maize plan.
+2. Show the deterministic profit snapshot and explain that Gemma does not calculate the financial outputs.
+3. Ask a scenario such as `what if fertilizer cost rises by 20%?`.
+4. Show how the plan recalculates and how the best market move changes if needed.
+5. Ask Gemma for an explanation or refresh the WhatsApp draft for a farmer-facing message.
 
 ## Where Gemma Fits
 
