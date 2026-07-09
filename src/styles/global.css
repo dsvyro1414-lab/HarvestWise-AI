@@ -303,6 +303,73 @@ button:active {
   white-space: nowrap;
 }
 
+.sample-plan-switcher {
+  display: grid;
+  gap: 7px;
+  margin-bottom: 10px;
+}
+
+.sample-plan-button {
+  display: grid;
+  gap: 3px;
+  min-height: 54px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 9px 10px;
+  background: var(--surface);
+  color: var(--text);
+  text-align: left;
+}
+
+.sample-plan-button--active {
+  border-color: rgba(var(--green-rgb), 0.48);
+  background: var(--green-soft);
+  box-shadow: inset 0 0 0 1px rgba(var(--green-rgb), 0.08);
+}
+
+.sample-plan-button strong {
+  color: var(--green-strong);
+  font-size: 12px;
+  line-height: 1.1;
+}
+
+.sample-plan-button span {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.28;
+}
+
+.market-context {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 12px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 9px;
+  background: var(--surface-soft);
+}
+
+.market-context div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.market-context span {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.market-context strong {
+  color: var(--text);
+  font-size: 11px;
+  line-height: 1.25;
+  text-align: right;
+}
+
 .input-panel__fields {
   display: grid;
   gap: 9px;
@@ -515,9 +582,18 @@ button:active {
 .snapshot-header__meta {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 12px;
+  justify-content: flex-end;
   color: var(--muted);
   font-size: 12px;
+}
+
+.snapshot-header__meta span {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 5px 9px;
+  background: var(--surface-soft);
   white-space: nowrap;
 }
 
@@ -1005,7 +1081,7 @@ button:active {
 }
 
 .question-box > span,
-.whatsapp-preview summary {
+.farmer-message-preview summary {
   color: var(--green-strong);
   font-size: 12px;
   font-weight: 800;
@@ -1039,18 +1115,18 @@ button:active {
   color: var(--surface);
 }
 
-.whatsapp-preview {
+.farmer-message-preview {
   display: grid;
   gap: 8px;
   border-top: 1px solid var(--border);
   padding-top: 10px;
 }
 
-.whatsapp-preview summary {
+.farmer-message-preview summary {
   cursor: pointer;
 }
 
-.whatsapp-preview p {
+.farmer-message-preview p {
   margin: 0;
   color: var(--text);
   font-size: 12px;
@@ -1111,6 +1187,8 @@ button:active {
 
   .topbar__meta {
     justify-self: stretch;
+    flex-wrap: wrap;
+    overflow: visible;
   }
 
   .analysis-layout {
@@ -1127,15 +1205,15 @@ button:active {
     overflow: visible;
   }
 
-  .analysis-board {
+  .input-panel {
     order: 1;
   }
 
-  .action-rail {
+  .analysis-board {
     order: 2;
   }
 
-  .input-panel {
+  .action-rail {
     order: 3;
   }
 

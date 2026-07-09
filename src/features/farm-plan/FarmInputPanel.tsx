@@ -1,27 +1,42 @@
 import { RotateCcw } from "lucide-react";
-import { applyCropDefaults, cropOptions, createDefaultFarmInput } from "@/domain/crops";
-import type { CropId, FarmInterviewResult, FarmPlanInput } from "@/domain/types";
+import { applyCropDefaults, cropOptions } from "@/domain/crops";
+import type {
+  CropId,
+  FarmInterviewResult,
+  FarmPlanInput,
+  MarketContext,
+  SamplePlan,
+  SamplePlanId,
+} from "@/domain/types";
 import { NumberField } from "@/components/ui/NumberField";
 import { FarmInterviewCopilot } from "./FarmInterviewCopilot";
 
 interface FarmInputPanelProps {
   input: FarmPlanInput;
+  activeSamplePlanId: SamplePlanId | null;
   interviewText: string;
   interviewResult: FarmInterviewResult | null;
   isExtractingInterview: boolean;
+  marketContext: MarketContext;
+  samplePlans: SamplePlan[];
   onChange: (input: FarmPlanInput) => void;
   onInterviewTextChange: (text: string) => void;
   onExtractInterview: () => void;
+  onSelectSamplePlan: (planId: SamplePlanId) => void;
 }
 
 export function FarmInputPanel({
   input,
+  activeSamplePlanId,
   interviewText,
   interviewResult,
   isExtractingInterview,
+  marketContext,
+  samplePlans,
   onChange,
   onInterviewTextChange,
   onExtractInterview,
+  onSelectSamplePlan,
 }: FarmInputPanelProps) {
   const selectedCrop = cropOptions.find((crop) => crop.id === input.cropId) ?? cropOptions[0];
 
@@ -43,10 +58,39 @@ export function FarmInputPanel({
           <h2>Assumptions</h2>
           <p>What this result is based on</p>
         </div>
-        <button className="reset-button" type="button" onClick={() => onChange(createDefaultFarmInput(input.cropId))}>
+        <button className="reset-button" type="button" onClick={() => onSelectSamplePlan("balanced")}>
           <RotateCcw size={15} />
           Reset
         </button>
+      </div>
+
+      <div className="sample-plan-switcher" aria-label="Sample plans">
+        {samplePlans.map((plan) => (
+          <button
+            className={`sample-plan-button ${plan.id === activeSamplePlanId ? "sample-plan-button--active" : ""}`}
+            key={plan.id}
+            type="button"
+            onClick={() => onSelectSamplePlan(plan.id)}
+          >
+            <strong>{plan.name}</strong>
+            <span>{plan.summary}</span>
+          </button>
+        ))}
+      </div>
+
+      <div className="market-context" aria-label="Market context">
+        <div>
+          <span>Region</span>
+          <strong>{marketContext.region}</strong>
+        </div>
+        <div>
+          <span>Source</span>
+          <strong>{marketContext.sourceLabel}</strong>
+        </div>
+        <div>
+          <span>Confidence</span>
+          <strong>{marketContext.confidence} · {marketContext.updatedDate}</strong>
+        </div>
       </div>
 
       <div className="input-panel__fields">
@@ -73,29 +117,29 @@ export function FarmInputPanel({
         />
         <NumberField
           label="Available budget"
-          step={5000}
-          unit="NGN"
+          step={1000}
+          unit="USD"
           value={input.availableBudget}
           onChange={(value) => updateNumber("availableBudget", value)}
         />
         <NumberField
           label="Seed"
-          step={1000}
-          unit="NGN/acre"
+          step={5}
+          unit="USD/acre"
           value={input.seedCostPerAcre}
           onChange={(value) => updateNumber("seedCostPerAcre", value)}
         />
         <NumberField
           label="Fertilizer"
-          step={1000}
-          unit="NGN/acre"
+          step={5}
+          unit="USD/acre"
           value={input.fertilizerCostPerAcre}
           onChange={(value) => updateNumber("fertilizerCostPerAcre", value)}
         />
         <NumberField
-          label="Labor"
-          step={1000}
-          unit="NGN/acre"
+          label="Labor & ops"
+          step={10}
+          unit="USD/acre"
           value={input.laborCostPerAcre}
           onChange={(value) => updateNumber("laborCostPerAcre", value)}
         />
@@ -108,15 +152,15 @@ export function FarmInputPanel({
         />
         <NumberField
           label="Market price"
-          step={500}
-          unit={`NGN/${selectedCrop.unit}`}
+          step={0.05}
+          unit={`USD/${selectedCrop.unit}`}
           value={input.marketPricePerUnit}
           onChange={(value) => updateNumber("marketPricePerUnit", value)}
         />
         <NumberField
           label="Transport"
-          step={1000}
-          unit="NGN"
+          step={100}
+          unit="USD"
           value={input.transportCost}
           onChange={(value) => updateNumber("transportCost", value)}
         />
@@ -141,7 +185,7 @@ export function FarmInputPanel({
         />
       </details>
 
-      <p className="input-panel__timestamp">Live calculation · edited today</p>
+      <p className="input-panel__timestamp">Live USD calculation · {marketContext.updatedDate}</p>
     </section>
   );
 }

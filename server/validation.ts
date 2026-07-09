@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const farmPlanInputSchema = z.object({
-  cropId: z.enum(["maize", "cassava", "rice", "tomato", "beans"]),
+  cropId: z.enum(["corn", "soybeans", "wheat", "tomato", "dryBeans"]),
   landSizeAcres: z.number().min(0),
   availableBudget: z.number().min(0),
   seedCostPerAcre: z.number().min(0),
@@ -17,7 +17,7 @@ export const farmPlanInputSchema = z.object({
 
 export const adviceRequestSchema = z.object({
   input: farmPlanInputSchema,
-  mode: z.enum(["explain", "whatsapp"]).default("explain"),
+  mode: z.enum(["explain", "farmerMessage"]).default("explain"),
   question: z.string().trim().max(500).optional(),
 });
 

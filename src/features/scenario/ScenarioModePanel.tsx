@@ -37,7 +37,7 @@ export function ScenarioModePanel({
 
       <div className="scenario-panel__input">
         <input
-          placeholder="What if fertilizer cost rises by 20%?"
+          placeholder="What if corn price drops by 15%?"
           value={question}
           onChange={(event) => onQuestionChange(event.target.value)}
         />

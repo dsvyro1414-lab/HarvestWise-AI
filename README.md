@@ -22,11 +22,12 @@ Latest pushed main commit:
 
 - Builds a farm season budget from crop, land, input cost, harvest, and market price assumptions.
 - Calculates expected profit, total cost, break-even price, ROI, budget gap, and risk level.
-- Compares crop options such as maize, cassava, rice, tomato, and beans.
+- Compares crop options such as corn, soybeans, wheat, tomato, and dry beans.
 - Compares market decisions: sell at harvest, store short-term, or store longer.
-- Generates advisor notes and WhatsApp-ready farmer guidance through a server-side Gemma endpoint.
+- Generates advisor notes and a farmer-ready message through a server-side Gemma endpoint.
 - Extracts a farm plan from natural language through the farm interview copilot.
 - Converts what-if questions into scenario parameter changes, then recalculates with deterministic code.
+- Offers one-click Balanced, Risky, and Loss-making sample plans for the Iowa, United States demo.
 - Falls back to local advice if no API key is configured, so the demo remains usable.
 - Presents the core judge flow in a single dashboard: assumptions, profit chart, scenario mode, market decision, and advisor guidance.
 
@@ -52,11 +53,11 @@ Open the Vite URL printed in the terminal, usually `http://localhost:5173`.
 
 Recommended 60-90 second judge flow:
 
-1. Start on the dashboard and show the maize assumptions on the left.
+1. Start on the dashboard and show the Balanced Iowa corn assumptions on the left.
 2. Point to the deterministic profit snapshot: expected profit, break-even price, ROI, cash status, and risk.
-3. Use Scenario Mode with a question such as `what if fertilizer cost rises by 20%?`.
-4. Show the market decision rail and the recommended best move.
-5. Open the advisor panel and ask Gemma to explain the result or generate the WhatsApp draft.
+3. Switch between Balanced, Risky, and Loss-making sample plans to show realistic upside, risk, and loss cases.
+4. Use Scenario Mode with a question such as `what if corn price drops by 15%?`.
+5. Open the advisor panel and ask Gemma to explain the result or generate the Farmer message.
 
 ## Optional Gemma Setup
 

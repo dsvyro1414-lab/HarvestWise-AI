@@ -2,7 +2,7 @@ import type { AdvisorPayload, FarmPlanInput } from "@/domain/types";
 
 interface AdviceRequest {
   input: FarmPlanInput;
-  mode: "explain" | "whatsapp";
+  mode: "explain" | "farmerMessage";
   question?: string;
 }
 

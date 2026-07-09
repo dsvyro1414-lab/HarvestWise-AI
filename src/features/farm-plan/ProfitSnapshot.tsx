@@ -1,6 +1,7 @@
 import { ArrowUpRight, BarChart3 } from "lucide-react";
 import { MetricCard } from "@/components/ui/MetricCard";
 import { RiskBadge } from "@/components/ui/RiskBadge";
+import { marketContext } from "@/domain/samplePlans";
 import type { FarmPlanInput, FarmPlanResult } from "@/domain/types";
 import { formatCurrency, formatNumber, formatPercent } from "@/utils/formatters";
 import { PriceSensitivityChart } from "./PriceSensitivityChart";
@@ -40,7 +41,8 @@ export function ProfitSnapshot({ input, plan }: ProfitSnapshotProps) {
           </div>
         </div>
         <div className="snapshot-header__meta">
-          <span>Market estimate · updated today</span>
+          <span>{marketContext.sourceLabel}</span>
+          <span>{marketContext.confidence} confidence · {marketContext.updatedDate}</span>
           <button className="link-button" type="button">
             Breakdown <ArrowUpRight size={15} />
           </button>

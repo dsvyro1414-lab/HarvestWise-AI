@@ -4,7 +4,7 @@ import { buildCropComparison, buildMarketDecisions, calculateFarmPlan } from "./
 
 describe("farm finance model", () => {
   it("calculates a positive baseline plan with a finite break-even price", () => {
-    const plan = calculateFarmPlan(createDefaultFarmInput("maize"));
+    const plan = calculateFarmPlan(createDefaultFarmInput("corn"));
 
     expect(plan.expectedProfit).toBeGreaterThan(0);
     expect(plan.breakEvenPrice).toBeGreaterThan(0);
@@ -14,7 +14,7 @@ describe("farm finance model", () => {
   it("marks an unprofitable season as high risk or revision-worthy", () => {
     const input = {
       ...createDefaultFarmInput("tomato"),
-      marketPricePerUnit: 600,
+      marketPricePerUnit: 1.25,
     };
     const plan = calculateFarmPlan(input);
 
@@ -23,7 +23,7 @@ describe("farm finance model", () => {
   });
 
   it("builds crop and market options for the dashboard", () => {
-    const input = createDefaultFarmInput("maize");
+    const input = createDefaultFarmInput("corn");
 
     expect(buildCropComparison(input).length).toBeGreaterThan(3);
     expect(buildMarketDecisions(input)).toHaveLength(3);

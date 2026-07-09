@@ -6,27 +6,30 @@ import { FarmInputPanel } from "@/features/farm-plan/FarmInputPanel";
 import { ProfitSnapshot } from "@/features/farm-plan/ProfitSnapshot";
 import { MarketDecisionCards } from "@/features/market-decision/MarketDecisionCards";
 import { buildFallbackAdvice } from "@/domain/advice";
-import { applyCropDefaults, createDefaultFarmInput } from "@/domain/crops";
+import { applyCropDefaults } from "@/domain/crops";
 import { buildCropComparison, buildMarketDecisions, calculateFarmPlan, getBestMarketDecision } from "@/domain/finance";
 import { applyFarmPlanPatch, describeOperations, formatFieldLabel } from "@/domain/patches";
+import { getSamplePlan, marketContext, samplePlans } from "@/domain/samplePlans";
 import type {
   AdvisorPayload,
   DecisionId,
   FarmInterviewResult,
   FarmPlanInput,
   FarmPlanPatch,
+  SamplePlanId,
 } from "@/domain/types";
 import { requestAdvisorNotes } from "@/services/adviceApi";
 import { requestFarmInterviewExtraction, requestScenarioParsing } from "@/services/copilotApi";
 import { ScenarioModePanel } from "@/features/scenario/ScenarioModePanel";
 
 export function App() {
-  const [input, setInput] = useState<FarmPlanInput>(() => createDefaultFarmInput("maize"));
+  const [input, setInput] = useState<FarmPlanInput>(() => getSamplePlan("balanced").input);
+  const [activeSamplePlanId, setActiveSamplePlanId] = useState<SamplePlanId | null>("balanced");
   const [selectedDecisionId, setSelectedDecisionId] = useState<DecisionId>("sell-harvest");
   const [remoteAdvice, setRemoteAdvice] = useState<AdvisorPayload | null>(null);
   const [question, setQuestion] = useState("");
   const [interviewText, setInterviewText] = useState(
-    "I want to plant maize on 2 acres. I have ₦320k. Seed is ₦22k per acre, fertilizer ₦65k per acre, labor ₦45k per acre. I expect 26 bags per acre and can sell at ₦18,500 per bag.",
+    "I want to plant corn on 160 acres in Iowa. I have $145k. Seed is $125 per acre, fertilizer $210 per acre, labor and operations $470 per acre. I expect 210 bushels per acre and can sell at $4.55 per bushel.",
   );
   const [interviewResult, setInterviewResult] = useState<FarmInterviewResult | null>(null);
   const [scenarioQuestion, setScenarioQuestion] = useState("");
@@ -56,7 +59,22 @@ export function App() {
     setRemoteAdvice(null);
   }, [bestMarketDecision.id, input]);
 
-  async function handleAskGemma(mode: "explain" | "whatsapp" = "explain") {
+  function handleInputChange(nextInput: FarmPlanInput) {
+    setInput(nextInput);
+    setActiveSamplePlanId(null);
+  }
+
+  function handleSelectSamplePlan(planId: SamplePlanId) {
+    const plan = getSamplePlan(planId);
+
+    setInput(plan.input);
+    setActiveSamplePlanId(plan.id);
+    setRemoteAdvice(null);
+    setInterviewResult(null);
+    setLastScenario(null);
+  }
+
+  async function handleAskGemma(mode: "explain" | "farmerMessage" = "explain") {
     setIsLoadingAdvice(true);
     try {
       const response = await requestAdvisorNotes({
@@ -125,6 +143,7 @@ export function App() {
     const nextInput = applyFarmPlanPatch(base, patch);
 
     setInput(nextInput);
+    setActiveSamplePlanId(null);
     setRemoteAdvice(null);
     return nextInput;
   }
@@ -133,13 +152,17 @@ export function App() {
     <AppShell>
       <main className="analysis-layout">
         <FarmInputPanel
+          activeSamplePlanId={activeSamplePlanId}
           input={input}
           interviewResult={interviewResult}
           interviewText={interviewText}
           isExtractingInterview={isExtractingInterview}
-          onChange={setInput}
+          marketContext={marketContext}
+          samplePlans={samplePlans}
+          onChange={handleInputChange}
           onExtractInterview={() => void handleExtractInterview()}
           onInterviewTextChange={setInterviewText}
+          onSelectSamplePlan={handleSelectSamplePlan}
         />
 
         <section className="analysis-board" id="analysis-board" aria-label="HarvestWise AI analysis board">
@@ -161,7 +184,7 @@ export function App() {
             isLoading={isLoadingAdvice}
             question={question}
             onAskGemma={() => void handleAskGemma("explain")}
-            onGenerateWhatsApp={() => void handleAskGemma("whatsapp")}
+            onGenerateFarmerMessage={() => void handleAskGemma("farmerMessage")}
             onQuestionChange={setQuestion}
           />
         </section>

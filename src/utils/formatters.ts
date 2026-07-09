@@ -1,12 +1,12 @@
-const currencyFormatter = new Intl.NumberFormat("en-NG", {
+const currencyFormatter = new Intl.NumberFormat("en-US", {
   style: "currency",
-  currency: "NGN",
+  currency: "USD",
   maximumFractionDigits: 0,
 });
 
-const compactCurrencyFormatter = new Intl.NumberFormat("en-NG", {
+const compactCurrencyFormatter = new Intl.NumberFormat("en-US", {
   style: "currency",
-  currency: "NGN",
+  currency: "USD",
   notation: "compact",
   maximumFractionDigits: 1,
 });
@@ -16,14 +16,14 @@ export function formatCurrency(value: number, compact = false): string {
 }
 
 export function formatNumber(value: number, digits = 0): string {
-  return new Intl.NumberFormat("en-NG", {
+  return new Intl.NumberFormat("en-US", {
     maximumFractionDigits: digits,
     minimumFractionDigits: digits,
   }).format(value);
 }
 
 export function formatPercent(value: number, digits = 0): string {
-  return new Intl.NumberFormat("en-NG", {
+  return new Intl.NumberFormat("en-US", {
     style: "percent",
     maximumFractionDigits: digits,
     minimumFractionDigits: digits,

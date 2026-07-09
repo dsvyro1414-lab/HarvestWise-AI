@@ -49,7 +49,7 @@ export function buildFallbackAdvice(args: {
         plan.crop.unit
       }, the season stops being profitable.`,
     ],
-    whatsappMessage: `HarvestWise AI update: ${plan.crop.name} on ${formatNumber(
+    farmerMessage: `HarvestWise AI update: ${plan.crop.name} on ${formatNumber(
       input.landSizeAcres,
       1,
     )} acres can make about ${formatCurrency(plan.expectedProfit)}. Break-even is ${formatCurrency(

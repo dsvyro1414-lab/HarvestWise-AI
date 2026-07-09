@@ -18,7 +18,7 @@ HarvestWise AI turns simple farm assumptions into a clear season plan:
 - crop comparison;
 - market decision;
 - risk explanation;
-- WhatsApp-ready farmer advice.
+- farmer-ready message.
 
 ## Why Gemma
 
@@ -27,15 +27,15 @@ The product does not ask Gemma to perform exact arithmetic. The app handles calc
 - explaining financial results in simple language;
 - turning numbers into practical farmer guidance;
 - answering advisor questions;
-- generating short WhatsApp messages;
+- generating short farmer messages;
 - helping cooperative workers communicate risk clearly.
 
 ## Demo Story
 
-1. A cooperative advisor enters a maize season plan for a farmer.
+1. A cooperative advisor opens the Balanced Iowa corn plan.
 2. HarvestWise AI instantly shows profit, break-even price, risk, and best action.
-3. The advisor compares maize with cassava, rice, tomato, and beans.
-4. The advisor checks whether the farmer should sell at harvest or store.
+3. The advisor switches to the Risky and Loss-making plans to show how the recommendation changes.
+4. The advisor compares corn with soybeans, wheat, tomato, and dry beans.
 5. Gemma explains the result and generates a message the advisor can send to the farmer.
 
 ## Current Demo Surface
@@ -47,7 +47,7 @@ The current polished build presents the whole judge flow in one dashboard:
 - right rail: best market move and advisor notes;
 - topbar: HarvestWise AI brand, section links, location, and season context.
 
-The final brand uses the HarvestWise AI leaf mark, the tagline `Smarter yields. Better future.`, and the reference palette: deep green, muted green, sage, cream, and near-black.
+The current brand uses the HarvestWise AI leaf mark, the tagline `US farm planning decisions.`, and the reference palette: deep green, muted green, sage, cream, and near-black.
 
 ## Deeper Gemma Integration
 
@@ -59,19 +59,19 @@ HarvestWise AI uses Gemma in three practical ways:
    - The app updates the form and recalculates the plan.
 
 2. Scenario mode
-   - The advisor asks what-if questions such as "what if fertilizer cost rises by 20%?"
+   - The advisor asks what-if questions such as "what if corn price drops by 15%?"
    - Gemma converts the question into structured parameter operations.
    - The deterministic finance engine applies the operations and recalculates profit, break-even, risk, and market decisions.
 
 3. Advisor explanation
    - Gemma explains the calculated plan in farmer-friendly language.
-   - It generates concise WhatsApp advice for field use.
+   - It generates concise farmer-facing advice for field use.
 
 Gemma never calculates the financial outputs. It only extracts, structures, and explains.
 
 ## Why It Can Scale
 
-HarvestWise AI starts with a few crops and Nigeria-oriented assumptions, but the architecture can expand to:
+HarvestWise AI starts with Iowa-oriented assumptions in USD, but the architecture can expand to:
 
 - more crops;
 - regional cost profiles;

@@ -28,7 +28,7 @@ export function FarmInterviewCopilot({
       </div>
 
       <textarea
-        placeholder="Example: I want to plant maize on 2 acres. I have ₦320k, seed is ₦22k/acre, fertilizer ₦65k/acre, labor ₦45k/acre. I expect 26 bags per acre and can sell at ₦18,500 per bag."
+        placeholder="Example: I want to plant corn on 160 acres in Iowa. I have $145k, seed is $125/acre, fertilizer $210/acre, labor and operations $470/acre. I expect 210 bushels per acre and can sell at $4.55 per bushel."
         value={text}
         onChange={(event) => onTextChange(event.target.value)}
       />

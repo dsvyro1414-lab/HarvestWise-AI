@@ -32,7 +32,7 @@ const fieldLabels: Record<FarmPlanField, string> = {
   availableBudget: "Available budget",
   seedCostPerAcre: "Seed cost",
   fertilizerCostPerAcre: "Fertilizer cost",
-  laborCostPerAcre: "Labor cost",
+  laborCostPerAcre: "Labor & ops cost",
   expectedHarvestPerAcre: "Expected harvest",
   marketPricePerUnit: "Market price",
   transportCost: "Transport cost",

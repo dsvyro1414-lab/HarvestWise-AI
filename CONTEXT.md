@@ -90,6 +90,8 @@ The current app includes:
 - advisor notes panel;
 - farm interview copilot;
 - scenario mode;
+- one-click Balanced, Risky, and Loss-making sample plans;
+- Iowa, United States market context in USD;
 - Gemma API integration with local fallbacks;
 - Vercel serverless API entrypoints;
 - final HarvestWise AI logo, favicon, and brand palette;
@@ -99,7 +101,7 @@ The current app includes:
 Natural-language interview examples should update the form:
 
 ```text
-I want to plant maize on 2 acres. My budget is 250000 naira. Seed is 35000, fertilizer is 80000, labor is 60000, transport is 20000. I expect 3200 kg and the market price is 180 per kg.
+I want to plant corn on 160 acres in Iowa. My budget is $145k. Seed is $125 per acre, fertilizer is $210 per acre, labor and operations are $470 per acre. I expect 210 bushels per acre and the market price is $4.55 per bushel.
 ```
 
 Scenario examples should change parameters and recalculate through the domain layer:
@@ -107,7 +109,7 @@ Scenario examples should change parameters and recalculate through the domain la
 ```text
 what if fertilizer cost rises by 20%?
 what if I store for 2 months?
-what if market price drops by 15%?
+what if corn price drops by 15%?
 ```
 
 ## Repository Status
@@ -184,6 +186,7 @@ Manual browser checks were also done for:
 - interview extraction fallback;
 - scenario: fertilizer +20%;
 - scenario: store for 2 months.
+- sample plans: Balanced, Risky, Loss-making.
 
 ## Key Files To Read Next
 
@@ -216,11 +219,10 @@ For visuals:
 Most valuable next work:
 
 1. Make live Gemma status more obvious after successful model calls.
-2. Add a tiny sample-plan loader so judges can start without typing.
+2. Add screenshots or a short demo GIF to the README.
 3. Add a friendly API root/help response for people who open the backend URL directly.
-4. Add screenshots or a short demo GIF to the README.
-5. If a real Gemma key is available, verify live model responses end to end.
-6. Deploy or verify the Vercel deployment if the user asks.
+4. If a real Gemma key is available, verify live model responses end to end.
+5. Deploy or verify the Vercel deployment if the user asks.
 
 ## Style Notes
 

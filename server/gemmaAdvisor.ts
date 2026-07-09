@@ -6,7 +6,7 @@ import { formatCurrency, formatNumber, formatPercent } from "../src/utils/format
 
 interface BuildAdvisorArgs {
   input: FarmPlanInput;
-  mode: "explain" | "whatsapp";
+  mode: "explain" | "farmerMessage";
   question?: string;
 }
 
@@ -51,7 +51,7 @@ export async function buildAdvisorNotes({ input, mode, question }: BuildAdvisorA
 function buildPrompt(args: {
   fallback: AdvisorPayload;
   input: FarmPlanInput;
-  mode: "explain" | "whatsapp";
+  mode: "explain" | "farmerMessage";
   question?: string;
 }): string {
   const { fallback, input, mode, question } = args;
@@ -62,15 +62,15 @@ function buildPrompt(args: {
   return JSON.stringify(
     {
       task:
-        mode === "whatsapp"
-          ? "Generate a concise advisor explanation and WhatsApp message for the farmer."
+        mode === "farmerMessage"
+          ? "Generate a concise advisor explanation and farmer-facing message."
           : "Explain the farm profit plan in simple language for a farmer and cooperative advisor.",
       userQuestion: question,
       requiredJsonShape: {
         summary: "string",
         insights: ["string", "string", "string"],
         recommendations: ["string", "string", "string"],
-        whatsappMessage: "string",
+        farmerMessage: "string",
       },
       rules: [
         "Use only the provided numbers.",
@@ -117,7 +117,7 @@ function parseAdvisorJson(rawText: string): Partial<AdvisorPayload> {
   const result: Partial<AdvisorPayload> = {};
 
   if (typeof parsed.summary === "string") result.summary = parsed.summary;
-  if (typeof parsed.whatsappMessage === "string") result.whatsappMessage = parsed.whatsappMessage;
+  if (typeof parsed.farmerMessage === "string") result.farmerMessage = parsed.farmerMessage;
 
   const insights = cleanList(parsed.insights);
   if (insights) result.insights = insights;

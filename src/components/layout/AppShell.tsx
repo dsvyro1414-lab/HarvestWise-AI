@@ -4,6 +4,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import type { ReactNode } from "react";
+import { marketContext } from "@/domain/samplePlans";
 
 interface AppShellProps {
   children: ReactNode;
@@ -22,7 +23,7 @@ export function AppShell({ children }: AppShellProps) {
               <span>HarvestWise</span>
               <span className="topbar__ai"> AI</span>
             </h1>
-            <p>Smarter yields. Better future.</p>
+            <p>US farm planning decisions.</p>
           </div>
         </div>
 
@@ -41,15 +42,15 @@ export function AppShell({ children }: AppShellProps) {
         <div className="topbar__meta">
           <span className="meta-pill">
             <TrendingUp size={14} />
-            Live plan
+            Live USD plan
           </span>
           <span className="meta-pill">
             <MapPin size={14} />
-            Oyo, Nigeria
+            {marketContext.region}
           </span>
           <span className="meta-pill">
             <CalendarDays size={14} />
-            Season 2026 A
+            2026 season
           </span>
           <button className="avatar-button" type="button" aria-label="Advisor profile">
             HW

@@ -97,7 +97,7 @@ function buildInterviewPrompt(text: string): string {
   return JSON.stringify(
     {
       task: "Extract a farm plan patch from the farmer's natural-language plan.",
-      allowedCropIds: ["maize", "cassava", "rice", "tomato", "beans"],
+      allowedCropIds: ["corn", "soybeans", "wheat", "tomato", "dryBeans"],
       allowedPatchFields: [
         "cropId",
         "landSizeAcres",
@@ -113,9 +113,9 @@ function buildInterviewPrompt(text: string): string {
         "expectedMonthlyPriceGrowth",
       ],
       units: {
-        money: "NGN numbers only",
+        money: "USD numbers only",
         landSizeAcres: "acres",
-        expectedHarvestPerAcre: "crop units per acre",
+        expectedHarvestPerAcre: "bushels per acre",
         expectedMonthlyPriceGrowth: "decimal, so 5% is 0.05",
       },
       rules: [
@@ -126,10 +126,10 @@ function buildInterviewPrompt(text: string): string {
       ],
       outputExample: {
         patch: {
-          cropId: "maize",
-          landSizeAcres: 2,
-          availableBudget: 320000,
-          fertilizerCostPerAcre: 65000,
+          cropId: "corn",
+          landSizeAcres: 160,
+          availableBudget: 145000,
+          fertilizerCostPerAcre: 210,
         },
       },
       farmerText: text,

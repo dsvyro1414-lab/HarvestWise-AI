@@ -16,17 +16,17 @@ import type {
 } from "../src/domain/types";
 
 const cropAliases: Array<[CropId, RegExp]> = [
-  ["maize", /\b(maize|corn)\b/i],
-  ["cassava", /\bcassava\b/i],
-  ["rice", /\brice\b/i],
+  ["corn", /\bcorn\b/i],
+  ["soybeans", /\b(soybean|soybeans|soy)\b/i],
+  ["wheat", /\bwheat\b/i],
   ["tomato", /\b(tomato|tomatoes)\b/i],
-  ["beans", /\b(bean|beans)\b/i],
+  ["dryBeans", /\b(dry bean|dry beans|bean|beans)\b/i],
 ];
 
 const fieldAliases: Array<[NumericFarmPlanField, RegExp]> = [
   ["fertilizerCostPerAcre", /\b(fertilizer|fertiliser|manure)\b/i],
   ["seedCostPerAcre", /\b(seed|seeds)\b/i],
-  ["laborCostPerAcre", /\b(labor|labour|worker|workers)\b/i],
+  ["laborCostPerAcre", /\b(labor|labour|operations|operating|worker|workers)\b/i],
   ["marketPricePerUnit", /\b(market price|selling price|sell price|price)\b/i],
   ["availableBudget", /\b(budget|available money|cash|capital)\b/i],
   ["expectedHarvestPerAcre", /\b(harvest|yield|produce)\b/i],
@@ -55,7 +55,7 @@ export function extractInterviewLocally(text: string): FarmInterviewResult {
   patch.availableBudget = matchMoneyAfter(normalized, /\b(budget|capital|cash|available money|i have)\b/i);
   patch.seedCostPerAcre = matchMoneyAfter(normalized, /\b(seed|seeds)\b/i);
   patch.fertilizerCostPerAcre = matchMoneyAfter(normalized, /\b(fertilizer|fertiliser|manure)\b/i);
-  patch.laborCostPerAcre = matchMoneyAfter(normalized, /\b(labor|labour|workers?)\b/i);
+  patch.laborCostPerAcre = matchMoneyAfter(normalized, /\b(labor|labour|operations|operating|workers?)\b/i);
   patch.marketPricePerUnit = matchMoneyAfter(
     normalized,
     /\b(market price|selling price|sell price|price|sell at|selling at)\b/i,
@@ -117,9 +117,9 @@ export function parseScenarioLocally(question: string, currentInput: FarmPlanInp
 
 function extractOperation(text: string): { operation: ScenarioOperationKind; value: number } | null {
   const percent = matchNumber(text, /(\d+(?:\.\d+)?)\s*%/i);
-  const toValue = matchNumber(text, /\b(?:to|at|becomes?|become)\s*(?:₦|NGN|N)?\s*([\d,.]+[kKmM]?)/i);
-  const money = matchNumber(text, /(?:₦|NGN|N)\s*([\d,.]+[kKmM]?)/i);
-  const plainValue = matchNumber(text, /\bby\s*(?:₦|NGN|N)?\s*([\d,.]+[kKmM]?)/i);
+  const toValue = matchNumber(text, /\b(?:to|at|becomes?|become)\s*(?:\$|USD)?\s*([\d,.]+[kKmM]?)/i);
+  const money = matchNumber(text, /(?:\$|USD)\s*([\d,.]+[kKmM]?)/i);
+  const plainValue = matchNumber(text, /\bby\s*(?:\$|USD)?\s*([\d,.]+[kKmM]?)/i);
   const isDown = /\b(drop|drops|fall|falls|decrease|decreases|reduce|reduces|lower|down)\b/i.test(text);
   const isUp = /\b(rise|rises|increase|increases|higher|up|goes up|grow|grows)\b/i.test(text);
 
@@ -146,15 +146,15 @@ function matchMoneyAfter(text: string, label: RegExp): number | undefined {
   const match = label.exec(text);
   if (!match) return undefined;
   const tail = text.slice(match.index, match.index + 96);
-  const value = matchNumber(tail, /(?:₦|NGN|N)?\s*([\d,.]+[kKmM]?)/i);
+  const value = matchNumber(tail, /(?:\$|USD)?\s*([\d,.]+[kKmM]?)/i);
   return value?.value;
 }
 
 function matchHarvest(text: string, landSize?: number): number | undefined {
-  const perAcre = matchNumber(text, /\b(?:expect|expected|harvest|yield|produce)\D{0,30}(\d+(?:\.\d+)?)\s*(bags?|tons?|crates?)\s*(?:per|\/)\s*acre\b/i);
+  const perAcre = matchNumber(text, /\b(?:expect|expected|harvest|yield|produce)\D{0,30}(\d+(?:\.\d+)?)\s*(bushels?|bu|bags?|tons?|crates?)\s*(?:per|\/)\s*acre\b/i);
   if (perAcre) return perAcre.value;
 
-  const total = matchNumber(text, /\b(?:expect|expected|harvest|yield|produce)\D{0,30}(\d+(?:\.\d+)?)\s*(bags?|tons?|crates?)\b/i);
+  const total = matchNumber(text, /\b(?:expect|expected|harvest|yield|produce)\D{0,30}(\d+(?:\.\d+)?)\s*(bushels?|bu|bags?|tons?|crates?)\b/i);
   if (total && landSize && landSize > 0) return total.value / landSize;
   return total?.value;
 }

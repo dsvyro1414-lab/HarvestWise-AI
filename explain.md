@@ -55,18 +55,19 @@ Then Gemma explains the result in simple language, so the farmer can actually un
 
 ## Example
 
-A farmer has 2 acres of land and is deciding between maize and cassava.
+A farmer has 160 acres in Iowa and is deciding between corn, soybeans, and wheat.
 
 HarvestWise AI can show:
 
-- maize may bring money faster but has higher input-cost risk;
-- cassava may be safer but takes longer to return cash;
+- corn may have a modest positive margin when yields and prices stay near baseline;
+- soybeans may become risky when the budget is tight and prices soften;
+- wheat can become loss-making when market price falls below break-even;
 - the farmer needs a market price above a certain amount to avoid losing money;
 - if fertilizer prices rise or market prices fall, the profit can disappear.
 
 Instead of giving a generic answer, HarvestWise AI gives a practical recommendation:
 
-> Plant maize only if input costs stay below this amount. If the market price drops by 15%, cassava becomes the safer option.
+> Plant corn only if input costs stay below this amount. If corn price drops by 15%, switch to a more defensive plan or reduce acreage.
 
 ## What Judges Will See
 
@@ -85,13 +86,13 @@ The current polished demo uses one focused dashboard instead of separate pages. 
    - Gemma maps the question into structured changes, and deterministic code recalculates the result.
 
 4. Crop And Market Comparison
-   - The user compares crop options such as maize, cassava, rice, tomato, and beans.
+   - The user compares crop options such as corn, soybeans, wheat, tomato, and dry beans.
    - The user compares selling now, storing short-term, or storing longer.
    - The app shows which option gives the best net return.
 
 5. Advisor Notes
    - Gemma generates a simple explanation for the farmer.
-   - It also creates a short WhatsApp-style message that a cooperative or extension officer can send.
+   - It also creates a short farmer message that a cooperative or extension officer can send.
 
 ## Current Visual Direction
 
@@ -99,17 +100,17 @@ The app now follows the HarvestWise AI reference brand:
 
 - clean three-leaf logo mark;
 - `HarvestWise AI` wordmark treatment in the topbar;
-- tagline: `Smarter yields. Better future.`;
+- tagline: `US farm planning decisions.`;
 - palette: deep green, muted green, sage, cream, and near-black;
 - compact dashboard layout with assumptions on the left, analysis in the middle, and decisions/advice on the right.
 
 ## Recommended Live Demo Path
 
-1. Open the dashboard with the default maize plan.
+1. Open the dashboard with the default Balanced Iowa corn plan.
 2. Show the deterministic profit snapshot and explain that Gemma does not calculate the financial outputs.
-3. Ask a scenario such as `what if fertilizer cost rises by 20%?`.
-4. Show how the plan recalculates and how the best market move changes if needed.
-5. Ask Gemma for an explanation or refresh the WhatsApp draft for a farmer-facing message.
+3. Switch between Balanced, Risky, and Loss-making plans.
+4. Ask a scenario such as `what if corn price drops by 15%?`.
+5. Ask Gemma for an explanation or refresh the Farmer message.
 
 ## Where Gemma Fits
 

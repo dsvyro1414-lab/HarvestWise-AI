@@ -8,7 +8,7 @@ interface AdvisorPanelProps {
   question: string;
   onQuestionChange: (question: string) => void;
   onAskGemma: () => void;
-  onGenerateWhatsApp: () => void;
+  onGenerateFarmerMessage: () => void;
 }
 
 export function AdvisorPanel({
@@ -17,7 +17,7 @@ export function AdvisorPanel({
   question,
   onQuestionChange,
   onAskGemma,
-  onGenerateWhatsApp,
+  onGenerateFarmerMessage,
 }: AdvisorPanelProps) {
   return (
     <aside className="side-panel advisor-panel" id="advisor-notes" aria-label="Advisor notes">
@@ -60,11 +60,11 @@ export function AdvisorPanel({
         </Button>
       </div>
 
-      <details className="whatsapp-preview">
-        <summary>WhatsApp draft</summary>
-        <p>{advice.whatsappMessage}</p>
-        <button className="mini-link-button" type="button" onClick={onGenerateWhatsApp}>
-          Refresh draft
+      <details className="farmer-message-preview">
+        <summary>Farmer message</summary>
+        <p>{advice.farmerMessage}</p>
+        <button className="mini-link-button" type="button" onClick={onGenerateFarmerMessage}>
+          Refresh message
         </button>
       </details>
     </aside>

@@ -1,6 +1,8 @@
-export type CurrencyCode = "NGN";
+export type CurrencyCode = "USD";
 
-export type CropId = "maize" | "cassava" | "rice" | "tomato" | "beans";
+export type CropId = "corn" | "soybeans" | "wheat" | "tomato" | "dryBeans";
+
+export type SamplePlanId = "balanced" | "risky" | "lossMaking";
 
 export type RiskLevel = "low" | "medium" | "high";
 
@@ -57,6 +59,20 @@ export interface CropDefinition {
   storageSuitability: number;
   color: string;
   defaults: CropDefaults;
+}
+
+export interface MarketContext {
+  region: string;
+  sourceLabel: string;
+  confidence: "High" | "Medium" | "Low";
+  updatedDate: string;
+}
+
+export interface SamplePlan {
+  id: SamplePlanId;
+  name: string;
+  summary: string;
+  input: FarmPlanInput;
 }
 
 export interface FarmPlanInput {
@@ -122,7 +138,7 @@ export interface AdvisorPayload {
   summary: string;
   insights: string[];
   recommendations: string[];
-  whatsappMessage: string;
+  farmerMessage: string;
   provider: "gemma" | "local-fallback";
 }
 

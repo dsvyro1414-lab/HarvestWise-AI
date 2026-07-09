@@ -33,7 +33,7 @@ export function AdvisorWorkspace({ advice }: AdvisorWorkspaceProps) {
             HarvestWise AI combines the farmer's season assumptions with deterministic cost, revenue, and risk
             calculations. Gemma converts those results into practical advice that can be reviewed by an advisor.
           </p>
-          <p>{advice.whatsappMessage}</p>
+          <p>{advice.farmerMessage}</p>
         </article>
       </div>
     </section>
