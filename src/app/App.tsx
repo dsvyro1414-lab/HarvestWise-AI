@@ -3,6 +3,7 @@ import { AppShell } from "@/components/layout/AppShell";
 import { AdvisorPanel } from "@/features/advisor/AdvisorPanel";
 import { CropComparisonTable } from "@/features/crop-comparison/CropComparisonTable";
 import { FarmInputPanel } from "@/features/farm-plan/FarmInputPanel";
+import { FarmerActionCard } from "@/features/farm-plan/FarmerActionCard";
 import { ProfitSnapshot } from "@/features/farm-plan/ProfitSnapshot";
 import { MarketDecisionCards } from "@/features/market-decision/MarketDecisionCards";
 import { buildFallbackAdvice } from "@/domain/advice";
@@ -143,21 +144,39 @@ export function App() {
         />
 
         <section className="analysis-board" id="analysis-board" aria-label="HarvestWise AI analysis board">
+          <FarmerActionCard key={`${plan.action.id}-${Math.round(plan.expectedProfit)}`} action={plan.action} />
           <ProfitSnapshot input={input} plan={plan} />
-          <ScenarioModePanel
-            isLoading={isRunningScenario}
-            lastScenario={lastScenario}
-            question={scenarioQuestion}
-            onQuestionChange={setScenarioQuestion}
-            onRunScenario={() => void handleRunScenario()}
-          />
-          <CropComparisonTable activeCropId={input.cropId} comparisons={comparisons.slice(0, 4)} />
+
+          <details className="analysis-disclosure">
+            <summary>Test a change to this plan</summary>
+            <ScenarioModePanel
+              isLoading={isRunningScenario}
+              lastScenario={lastScenario}
+              question={scenarioQuestion}
+              onQuestionChange={setScenarioQuestion}
+              onRunScenario={() => void handleRunScenario()}
+            />
+          </details>
+
+          <details className="analysis-disclosure">
+            <summary>Compare other crops</summary>
+            <CropComparisonTable activeCropId={input.cropId} comparisons={comparisons.slice(0, 4)} />
+          </details>
+
+          <details className="analysis-disclosure">
+            <summary>Explore harvest market options</summary>
+            <MarketDecisionCards
+              decisions={marketDecisions}
+              selectedId={selectedDecisionId}
+              onSelect={setSelectedDecisionId}
+            />
+          </details>
         </section>
 
         <section className="action-rail" aria-label="Decision and advisor rail">
-          <MarketDecisionCards decisions={marketDecisions} selectedId={selectedDecisionId} onSelect={setSelectedDecisionId} />
           <AdvisorPanel
             advice={advice}
+            hasExplanation={remoteAdvice !== null}
             isLoading={isLoadingAdvice}
             question={question}
             onAskGemma={() => void handleAskGemma("explain")}

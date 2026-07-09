@@ -6,6 +6,15 @@ export type RiskLevel = "low" | "medium" | "high";
 
 export type DecisionId = "sell-harvest" | "store-short" | "store-long";
 
+export type FarmerActionId =
+  | "plant-plan"
+  | "reduce-acreage"
+  | "secure-buyer"
+  | "do-not-plant"
+  | "store-if-price";
+
+export type FarmerActionStage = "before-planting" | "after-harvest";
+
 export type FarmPlanField =
   | "cropId"
   | "landSizeAcres"
@@ -79,6 +88,14 @@ export interface PriceSensitivityPoint {
   profit: number;
 }
 
+export interface FarmerAction {
+  id: FarmerActionId;
+  title: string;
+  stage: FarmerActionStage;
+  reasons: string[];
+  priceThreshold?: number;
+}
+
 export interface FarmPlanResult {
   crop: CropDefinition;
   totalSeasonCost: number;
@@ -92,7 +109,7 @@ export interface FarmPlanResult {
   budgetGap: number;
   riskLevel: RiskLevel;
   riskScore: number;
-  bestAction: string;
+  action: FarmerAction;
   sensitivity: PriceSensitivityPoint[];
 }
 
@@ -121,7 +138,6 @@ export interface MarketDecision {
 export interface AdvisorPayload {
   summary: string;
   insights: string[];
-  recommendations: string[];
   whatsappMessage: string;
   provider: "gemma" | "local-fallback";
 }

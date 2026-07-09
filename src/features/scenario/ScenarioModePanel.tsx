@@ -30,8 +30,8 @@ export function ScenarioModePanel({
       <div className="section-title">
         <FlaskConical size={20} />
         <div>
-          <h2>Run scenario</h2>
-          <p>Ask what changes profit or risk.</p>
+          <h2>Test a change</h2>
+          <p>Gemma reads the question; HarvestWise recalculates.</p>
         </div>
       </div>
 
@@ -52,7 +52,7 @@ export function ScenarioModePanel({
 
       {lastScenario ? (
         <div className="scenario-panel__result">
-          <span>{lastScenario.provider === "gemma" ? "Gemma operations" : "Fallback operations"}</span>
+          <span>{lastScenario.provider === "gemma" ? "Gemma interpreted the change" : "Local interpreter"}</span>
           <strong>
             {formatCurrency(lastScenario.beforeProfit)} → {formatCurrency(lastScenario.afterProfit)}
           </strong>

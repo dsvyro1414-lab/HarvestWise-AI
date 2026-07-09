@@ -17,8 +17,8 @@ export function MarketDecisionCards({ decisions, selectedId, onSelect }: MarketD
       <div className="section-title">
         <ShoppingCart size={20} />
         <div>
-          <h2>Best move</h2>
-          <p>Sell, store, or wait</p>
+          <h2>Harvest market options</h2>
+          <p>Use after the crop is harvested</p>
         </div>
       </div>
 

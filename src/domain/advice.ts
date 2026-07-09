@@ -40,20 +40,11 @@ export function buildFallbackAdvice(args: {
           )}.`
         : "Compare another crop before committing the full season budget.",
     ],
-    recommendations: [
-      plan.bestAction,
-      `${bestMarketDecision.label} is currently the strongest market option, with estimated profit of ${formatCurrency(
-        bestMarketDecision.expectedProfit,
-      )}.`,
-      `Monitor price weekly. If price falls below ${formatCurrency(plan.breakEvenPrice)} per ${
-        plan.crop.unit
-      }, the season stops being profitable.`,
-    ],
     whatsappMessage: `HarvestWise AI update: ${plan.crop.name} on ${formatNumber(
       input.landSizeAcres,
       1,
     )} acres can make about ${formatCurrency(plan.expectedProfit)}. Break-even is ${formatCurrency(
       plan.breakEvenPrice,
-    )}/${plan.crop.unit}. Suggested action: ${plan.bestAction}.`,
+    )}/${plan.crop.unit}. Recommended next action: ${plan.action.title}.`,
   };
 }

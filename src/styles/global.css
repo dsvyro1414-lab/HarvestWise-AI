@@ -1235,3 +1235,274 @@ button:active {
     text-align: left;
   }
 }
+
+/* The primary journey is: assumptions → a deterministic next action → optional detail. */
+.topbar {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.topbar__context {
+  display: flex;
+  align-items: center;
+  justify-self: end;
+  gap: 15px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.topbar__context span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.topbar__context svg {
+  color: var(--green);
+}
+
+.farmer-action {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 14px;
+  border: 1px solid rgba(var(--green-rgb), 0.34);
+  border-radius: 12px;
+  padding: 18px;
+  background: linear-gradient(135deg, rgba(var(--sage-rgb), 0.3), rgba(255, 255, 255, 0.96) 58%);
+  box-shadow: 0 14px 34px rgba(var(--green-rgb), 0.1);
+  animation: farmer-action-enter 240ms ease-out;
+}
+
+.farmer-action--do-not-plant,
+.farmer-action--reduce-acreage,
+.farmer-action--secure-buyer {
+  background: linear-gradient(135deg, rgba(var(--deep-rgb), 0.09), rgba(255, 255, 255, 0.96) 58%);
+}
+
+.farmer-action__icon {
+  display: grid;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  place-items: center;
+  background: var(--green);
+  color: var(--surface);
+}
+
+.farmer-action--do-not-plant .farmer-action__icon,
+.farmer-action--reduce-acreage .farmer-action__icon,
+.farmer-action--secure-buyer .farmer-action__icon {
+  background: var(--green-strong);
+}
+
+.farmer-action__content {
+  min-width: 0;
+}
+
+.farmer-action__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--green);
+  font-size: 11px;
+  font-weight: 820;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.farmer-action__meta em {
+  border: 1px solid rgba(var(--green-rgb), 0.24);
+  border-radius: 999px;
+  padding: 4px 7px;
+  color: var(--green-strong);
+  font-size: 10px;
+  font-style: normal;
+  letter-spacing: 0;
+  text-transform: none;
+  white-space: nowrap;
+}
+
+.farmer-action h2 {
+  margin: 8px 0 9px;
+  color: var(--green-strong);
+  font-size: clamp(22px, 2.4vw, 30px);
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+}
+
+.farmer-action ul {
+  display: grid;
+  gap: 5px;
+  margin: 0;
+  padding: 0;
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.42;
+  list-style: none;
+}
+
+.farmer-action li {
+  position: relative;
+  padding-left: 15px;
+}
+
+.farmer-action li::before {
+  position: absolute;
+  left: 0;
+  color: var(--green);
+  content: "•";
+  font-weight: 900;
+}
+
+.farmer-action__trust {
+  grid-column: 2;
+  margin: 1px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.metric-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.metric-card:last-child {
+  border-right: 0;
+}
+
+.insight-strip {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.snapshot-disclosure,
+.analysis-disclosure,
+.assumption-disclosure {
+  border-top: 1px solid var(--border);
+  padding-top: 11px;
+}
+
+.snapshot-disclosure {
+  margin-top: 12px;
+}
+
+.snapshot-disclosure summary,
+.analysis-disclosure summary,
+.assumption-disclosure summary {
+  cursor: pointer;
+  color: var(--green-strong);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.snapshot-disclosure[open] summary,
+.analysis-disclosure[open] summary,
+.assumption-disclosure[open] summary {
+  margin-bottom: 12px;
+}
+
+.analysis-disclosure {
+  border: 1px solid rgba(var(--green-rgb), 0.18);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.58);
+}
+
+.analysis-disclosure[open] {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.analysis-disclosure .scenario-panel,
+.analysis-disclosure .side-panel {
+  margin-top: 0;
+  box-shadow: none;
+}
+
+.assumption-disclosure {
+  margin-top: 12px;
+}
+
+.input-panel__fields--advanced {
+  margin-top: 11px;
+}
+
+.assumption-disclosure__note {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.advisor-intro {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+@keyframes farmer-action-enter {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .farmer-action {
+    animation: none;
+  }
+}
+
+@media (max-width: 860px) {
+  .topbar {
+    grid-template-columns: 1fr;
+  }
+
+  .topbar__context {
+    justify-self: start;
+    gap: 12px;
+  }
+
+  .farmer-action {
+    grid-template-columns: auto minmax(0, 1fr);
+    padding: 15px;
+  }
+
+  .farmer-action__trust {
+    grid-column: 1 / -1;
+  }
+
+  .metric-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .metric-card:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 520px) {
+  .farmer-action {
+    grid-template-columns: 1fr;
+    gap: 11px;
+  }
+
+  .farmer-action__icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .farmer-action__trust {
+    grid-column: 1;
+  }
+
+  .topbar__context {
+    flex-wrap: wrap;
+  }
+}

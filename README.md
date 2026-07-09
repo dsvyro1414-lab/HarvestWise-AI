@@ -4,7 +4,7 @@ HarvestWise AI is a Gemma-powered farm profit planner for smallholder farmers an
 
 The app helps answer a practical question before a farmer spends money:
 
-> Can this farm season make money?
+> What should I do next?
 
 It keeps financial calculations deterministic in TypeScript, then uses Gemma to explain the plan in simple, farmer-friendly language.
 
@@ -22,13 +22,14 @@ Latest pushed main commit:
 
 - Builds a farm season budget from crop, land, input cost, harvest, and market price assumptions.
 - Calculates expected profit, total cost, break-even price, ROI, budget gap, and risk level.
+- Shows one deterministic **Recommended next action** with two concrete reasons: plant, reduce acreage, secure a buyer, wait, or store only above a calculated price.
 - Compares crop options such as maize, cassava, rice, tomato, and beans.
 - Compares market decisions: sell at harvest, store short-term, or store longer.
 - Generates advisor notes and WhatsApp-ready farmer guidance through a server-side Gemma endpoint.
 - Extracts a farm plan from natural language through the farm interview copilot.
 - Converts what-if questions into scenario parameter changes, then recalculates with deterministic code.
 - Falls back to local advice if no API key is configured, so the demo remains usable.
-- Presents the core judge flow in a single dashboard: assumptions, profit chart, scenario mode, market decision, and advisor guidance.
+- Keeps the farmer journey focused: core assumptions, one recommended action, and a compact plan snapshot. Scenario testing, crop comparison, price sensitivity, and market options are available on demand.
 
 ## Tech Stack
 
@@ -52,11 +53,11 @@ Open the Vite URL printed in the terminal, usually `http://localhost:5173`.
 
 Recommended 60-90 second judge flow:
 
-1. Start on the dashboard and show the maize assumptions on the left.
-2. Point to the deterministic profit snapshot: expected profit, break-even price, ROI, cash status, and risk.
-3. Use Scenario Mode with a question such as `what if fertilizer cost rises by 20%?`.
-4. Show the market decision rail and the recommended best move.
-5. Open the advisor panel and ask Gemma to explain the result or generate the WhatsApp draft.
+1. Start on the dashboard and point to **Recommended next action** and its two calculated reasons.
+2. Change the market price or available budget to show the action update deterministically.
+3. Open **Test a change to this plan** and ask `what if fertilizer cost rises by 20%?`.
+4. Open price, crop, or market details only if the judge wants to investigate the calculation.
+5. Open **Gemma explains the plan** to demonstrate that AI explains or structures input, while HarvestWise keeps the decision deterministic.
 
 ## Optional Gemma Setup
 
@@ -64,7 +65,7 @@ Create `.env` from `.env.example` and set:
 
 ```bash
 GEMINI_API_KEY=your_key_here
-GEMMA_MODEL=gemma-3-27b-it
+GEMMA_MODEL=gemma-4-26b-a4b-it
 ```
 
 Without a key, HarvestWise AI uses a local deterministic explanation fallback.
@@ -100,4 +101,5 @@ Gemma is intentionally not used for financial math.
 - Gemma extracts fields from natural language.
 - Gemma maps scenario questions to parameter operations.
 - Gemma explains deterministic results.
+- Gemma cannot calculate, replace, or reword the recommended action.
 - `src/domain` applies patches, runs what-if operations, and calculates all finance outputs.

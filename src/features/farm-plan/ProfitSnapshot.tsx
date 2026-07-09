@@ -1,4 +1,4 @@
-import { ArrowUpRight, BarChart3 } from "lucide-react";
+import { BarChart3 } from "lucide-react";
 import { MetricCard } from "@/components/ui/MetricCard";
 import { RiskBadge } from "@/components/ui/RiskBadge";
 import type { FarmPlanInput, FarmPlanResult } from "@/domain/types";
@@ -27,24 +27,19 @@ export function ProfitSnapshot({ input, plan }: ProfitSnapshotProps) {
           )} room.`;
 
   return (
-    <section className="content-panel content-panel--snapshot" aria-label="Profit analysis">
+    <section className="content-panel content-panel--snapshot" aria-label="Plan snapshot">
       <div className="snapshot-header">
         <div className="section-title">
           <BarChart3 size={20} />
           <div>
-            <h2>Profit by market price</h2>
+          <h2>Plan snapshot</h2>
             <p>
               {formatNumber(input.landSizeAcres, 1)} acres · {formatNumber(plan.expectedHarvest)}{" "}
               {plan.crop.unitPlural} · {plan.crop.name}
             </p>
           </div>
         </div>
-        <div className="snapshot-header__meta">
-          <span>Market estimate · updated today</span>
-          <button className="link-button" type="button">
-            Breakdown <ArrowUpRight size={15} />
-          </button>
-        </div>
+        <span className="snapshot-header__meta">Live calculation</span>
       </div>
 
       <div className="metric-grid">
@@ -60,18 +55,7 @@ export function ProfitSnapshot({ input, plan }: ProfitSnapshotProps) {
           tone="neutral"
           value={formatCurrency(plan.breakEvenPrice)}
         />
-        <MetricCard helper="Return on cost" label="ROI" tone="green" value={formatPercent(plan.roi, 1)} />
-        <MetricCard helper="Budget after costs" label="Cash Status" tone={plan.budgetGap > 0 ? "amber" : "green"} value={cashStatus} />
-        <MetricCard helper="Price + budget pressure" label="Risk" tone="amber" value={<RiskBadge level={plan.riskLevel} />} />
-      </div>
-
-      <div className="chart-panel">
-        <PriceSensitivityChart
-          breakEvenPrice={plan.breakEvenPrice}
-          currentPrice={input.marketPricePerUnit}
-          currentProfit={plan.expectedProfit}
-          points={plan.sensitivity}
-        />
+        <MetricCard helper="Budget after costs" label="Cash status" tone={plan.budgetGap > 0 ? "amber" : "green"} value={cashStatus} />
       </div>
 
       <div className="insight-strip">
@@ -79,30 +63,38 @@ export function ProfitSnapshot({ input, plan }: ProfitSnapshotProps) {
           <span>Risk driver</span>
           <strong>{riskDriver}</strong>
         </div>
-        <div>
-          <span>Season note</span>
-          <strong>{plan.bestAction}</strong>
-        </div>
       </div>
 
-      <div className="snapshot-details">
-        <div>
-          <span>Total cost</span>
-          <strong>{formatCurrency(plan.totalSeasonCost)}</strong>
+      <details className="snapshot-disclosure">
+        <summary>Show price and cost details</summary>
+        <div className="chart-panel">
+          <PriceSensitivityChart
+            breakEvenPrice={plan.breakEvenPrice}
+            currentPrice={input.marketPricePerUnit}
+            currentProfit={plan.expectedProfit}
+            points={plan.sensitivity}
+          />
         </div>
-        <div>
-          <span>Gross revenue</span>
-          <strong>{formatCurrency(plan.grossRevenue)}</strong>
+
+        <div className="snapshot-details">
+          <div>
+            <span>Total cost</span>
+            <strong>{formatCurrency(plan.totalSeasonCost)}</strong>
+          </div>
+          <div>
+            <span>Gross revenue</span>
+            <strong>{formatCurrency(plan.grossRevenue)}</strong>
+          </div>
+          <div>
+            <span>Profit margin</span>
+            <strong>{formatPercent(plan.profitMargin)}</strong>
+          </div>
+          <div>
+            <span>Risk</span>
+            <strong><RiskBadge level={plan.riskLevel} /></strong>
+          </div>
         </div>
-        <div>
-          <span>Budget gap</span>
-          <strong>{formatCurrency(plan.budgetGap)}</strong>
-        </div>
-        <div>
-          <span>Profit margin</span>
-          <strong>{formatPercent(plan.profitMargin)}</strong>
-        </div>
-      </div>
+      </details>
     </section>
   );
 }

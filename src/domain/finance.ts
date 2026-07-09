@@ -1,4 +1,5 @@
 import { cropCatalog, cropOptions } from "./crops";
+import { buildFarmerAction } from "./farmerAction";
 import type {
   CropComparison,
   CropDefinition,
@@ -40,9 +41,7 @@ export function calculateFarmPlan(
   });
   const riskLevel = riskLevelFromScore(riskScore);
   const sensitivity = buildPriceSensitivity(input, totalSeasonCost, harvest);
-  const bestAction = chooseBestAction(riskLevel, expectedProfit, budgetGap, crop);
-
-  return {
+  const plan = {
     crop,
     totalSeasonCost,
     inputCost,
@@ -55,8 +54,12 @@ export function calculateFarmPlan(
     budgetGap,
     riskLevel,
     riskScore,
-    bestAction,
     sensitivity,
+  };
+
+  return {
+    ...plan,
+    action: buildFarmerAction(input, plan),
   };
 }
 
@@ -88,7 +91,7 @@ export function buildCropComparison(input: FarmPlanInput): CropComparison[] {
         totalSeasonCost: plan.totalSeasonCost,
         cashReturnMonths: crop.cycleMonths + comparisonInput.storageMonths,
         riskLevel: plan.riskLevel,
-        recommendation: plan.bestAction,
+        recommendation: plan.action.title,
       };
     })
     .sort((left, right) => {
@@ -210,19 +213,6 @@ function riskLevelFromScore(score: number): RiskLevel {
   if (score >= 62) return "high";
   if (score >= 36) return "medium";
   return "low";
-}
-
-function chooseBestAction(
-  riskLevel: RiskLevel,
-  expectedProfit: number,
-  budgetGap: number,
-  crop: CropDefinition,
-): string {
-  if (expectedProfit <= 0) return "Revise costs before planting";
-  if (budgetGap > 0) return "Reduce input cost or farm size";
-  if (riskLevel === "high") return "Secure buyer before planting";
-  if (crop.storageSuitability > 0.72) return "Sell part, store part";
-  return "Sell at harvest";
 }
 
 function riskPenalty(level: RiskLevel): number {

@@ -1,4 +1,4 @@
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, Type } from "@google/genai";
 import { buildFallbackAdvice } from "../src/domain/advice";
 import { buildCropComparison, buildMarketDecisions, calculateFarmPlan } from "../src/domain/finance";
 import type { AdvisorPayload, FarmPlanInput } from "../src/domain/types";
@@ -10,7 +10,17 @@ interface BuildAdvisorArgs {
   question?: string;
 }
 
-const modelName = process.env.GEMMA_MODEL ?? "gemma-3-27b-it";
+const modelName = process.env.GEMMA_MODEL ?? "gemma-4-26b-a4b-it";
+
+const advisorResponseSchema = {
+  type: Type.OBJECT,
+  properties: {
+    summary: { type: Type.STRING },
+    insights: { type: Type.ARRAY, items: { type: Type.STRING } },
+    whatsappMessage: { type: Type.STRING },
+  },
+  required: ["summary", "insights", "whatsappMessage"],
+};
 
 export async function buildAdvisorNotes({ input, mode, question }: BuildAdvisorArgs): Promise<AdvisorPayload> {
   const plan = calculateFarmPlan(input);
@@ -31,8 +41,9 @@ export async function buildAdvisorNotes({ input, mode, question }: BuildAdvisorA
       config: {
         temperature: 0.35,
         responseMimeType: "application/json",
+        responseSchema: advisorResponseSchema,
         systemInstruction:
-          "You are HarvestWise AI, an agriculture finance advisor for smallholder farmers. Explain deterministic calculations clearly. Do not invent new numbers. Do not recommend borrowing. Keep advice practical, cautious, and farmer-friendly.",
+          "You are the explanation layer of HarvestWise AI for smallholder farmers. Explain only the supplied deterministic plan and decision in practical, cautious language. Never calculate, replace, or add a recommendation. Do not invent numbers or recommend borrowing.",
       },
     });
     const parsed = parseAdvisorJson(response.text ?? "");
@@ -63,13 +74,12 @@ function buildPrompt(args: {
     {
       task:
         mode === "whatsapp"
-          ? "Generate a concise advisor explanation and WhatsApp message for the farmer."
-          : "Explain the farm profit plan in simple language for a farmer and cooperative advisor.",
+          ? "Generate a concise WhatsApp explanation of the deterministic plan and its already-made decision."
+          : "Explain the deterministic farm plan and its already-made decision in simple language for a farmer and cooperative advisor.",
       userQuestion: question,
       requiredJsonShape: {
         summary: "string",
-        insights: ["string", "string", "string"],
-        recommendations: ["string", "string", "string"],
+        insights: ["string", "string"],
         whatsappMessage: "string",
       },
       rules: [
@@ -78,6 +88,7 @@ function buildPrompt(args: {
         "Do not tell the farmer to take a loan.",
         "Keep the language simple and actionable.",
         "Mention risk if profit depends strongly on market price.",
+        "Do not create, replace, or reword the recommended next action. Explain the deterministic decision exactly as supplied.",
       ],
       deterministicPlan: {
         crop: plan.crop.name,
@@ -88,9 +99,9 @@ function buildPrompt(args: {
         breakEvenPrice: `${formatCurrency(plan.breakEvenPrice)} per ${plan.crop.unit}`,
         riskLevel: plan.riskLevel,
         roi: formatPercent(plan.roi),
-        bestAction: plan.bestAction,
         budgetGap: formatCurrency(plan.budgetGap),
       },
+      deterministicDecision: plan.action,
       cropComparison: comparisons.map((item) => ({
         crop: item.crop.name,
         expectedProfit: formatCurrency(item.expectedProfit),
@@ -121,9 +132,6 @@ function parseAdvisorJson(rawText: string): Partial<AdvisorPayload> {
 
   const insights = cleanList(parsed.insights);
   if (insights) result.insights = insights;
-
-  const recommendations = cleanList(parsed.recommendations);
-  if (recommendations) result.recommendations = recommendations;
 
   return result;
 }

@@ -4,6 +4,7 @@ import type { AdvisorPayload } from "@/domain/types";
 
 interface AdvisorPanelProps {
   advice: AdvisorPayload;
+  hasExplanation: boolean;
   isLoading: boolean;
   question: string;
   onQuestionChange: (question: string) => void;
@@ -13,6 +14,7 @@ interface AdvisorPanelProps {
 
 export function AdvisorPanel({
   advice,
+  hasExplanation,
   isLoading,
   question,
   onQuestionChange,
@@ -25,27 +27,31 @@ export function AdvisorPanel({
         <div className="section-title">
           <Sparkles size={21} />
           <div>
-            <h2>Advisor</h2>
-            <p>{advice.provider === "gemma" ? "Live AI explanation" : "Local fallback ready"}</p>
+            <h2>Gemma explains the plan</h2>
+            <p>{advice.provider === "gemma" ? "Gemma explanation · deterministic decision" : "Optional explanation · deterministic decision"}</p>
           </div>
         </div>
       </div>
 
-      <div className="advisor-copy">
-        <p className="advisor-copy__summary">{advice.summary}</p>
-        <ul>
-          {advice.insights.slice(0, 2).map((insight) => (
-            <li key={insight}>{insight}</li>
-          ))}
-        </ul>
-      </div>
+      {hasExplanation ? (
+        <div className="advisor-copy">
+          <p className="advisor-copy__summary">{advice.summary}</p>
+          <ul>
+            {advice.insights.slice(0, 2).map((insight) => (
+              <li key={insight}>{insight}</li>
+            ))}
+          </ul>
+        </div>
+      ) : (
+        <p className="advisor-intro">Gemma can turn a farm note into inputs or explain a result. It does not calculate profit or choose the recommendation.</p>
+      )}
 
       <div className="advisor-actions">
         <label className="question-box">
-          <span>Ask Gemma</span>
+          <span>Ask about this calculation</span>
           <div>
             <input
-              placeholder="Ask a question about this plan..."
+              placeholder="Why is this plan high risk?"
               value={question}
               onChange={(event) => onQuestionChange(event.target.value)}
             />
@@ -56,7 +62,7 @@ export function AdvisorPanel({
         </label>
 
         <Button fullWidth icon={<MessageSquareText size={17} />} variant="secondary" onClick={onAskGemma}>
-          {isLoading ? "Asking Gemma..." : "Ask Gemma to explain"}
+          {isLoading ? "Getting explanation..." : "Explain with Gemma"}
         </Button>
       </div>
 

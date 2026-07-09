@@ -79,6 +79,25 @@ export function FarmInputPanel({
           onChange={(value) => updateNumber("availableBudget", value)}
         />
         <NumberField
+          label="Expected harvest"
+          step={1}
+          unit={`${selectedCrop.unitPlural}/acre`}
+          value={input.expectedHarvestPerAcre}
+          onChange={(value) => updateNumber("expectedHarvestPerAcre", value)}
+        />
+        <NumberField
+          label="Market price"
+          step={500}
+          unit={`NGN/${selectedCrop.unit}`}
+          value={input.marketPricePerUnit}
+          onChange={(value) => updateNumber("marketPricePerUnit", value)}
+        />
+      </div>
+
+      <details className="assumption-disclosure">
+        <summary>Costs and market assumptions</summary>
+        <div className="input-panel__fields input-panel__fields--advanced">
+        <NumberField
           label="Seed"
           step={1000}
           unit="NGN/acre"
@@ -100,20 +119,6 @@ export function FarmInputPanel({
           onChange={(value) => updateNumber("laborCostPerAcre", value)}
         />
         <NumberField
-          label="Harvest"
-          step={1}
-          unit={`${selectedCrop.unitPlural}/acre`}
-          value={input.expectedHarvestPerAcre}
-          onChange={(value) => updateNumber("expectedHarvestPerAcre", value)}
-        />
-        <NumberField
-          label="Market price"
-          step={500}
-          unit={`NGN/${selectedCrop.unit}`}
-          value={input.marketPricePerUnit}
-          onChange={(value) => updateNumber("marketPricePerUnit", value)}
-        />
-        <NumberField
           label="Transport"
           step={1000}
           unit="NGN"
@@ -128,10 +133,12 @@ export function FarmInputPanel({
           value={input.storageMonths}
           onChange={(value) => updateNumber("storageMonths", value)}
         />
-      </div>
+        </div>
+        <p className="assumption-disclosure__note">Costs are applied to the plan immediately. Storage changes the recommended action to the harvest stage.</p>
+      </details>
 
       <details className="copilot-disclosure">
-        <summary>Import from interview</summary>
+        <summary>Import a farm note with Gemma</summary>
         <FarmInterviewCopilot
           isLoading={isExtractingInterview}
           result={interviewResult}

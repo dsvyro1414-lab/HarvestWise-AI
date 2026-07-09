@@ -1,4 +1,4 @@
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, Type } from "@google/genai";
 import { applyScenarioOperations, getMissingCoreFields, getPatchFields } from "../src/domain/patches";
 import type {
   FarmInterviewResult,
@@ -11,7 +11,52 @@ import type {
 } from "../src/domain/types";
 import { extractInterviewLocally, normalizeCropId, parseScenarioLocally } from "./localParsers";
 
-const modelName = process.env.GEMMA_MODEL ?? "gemma-3-27b-it";
+const modelName = process.env.GEMMA_MODEL ?? "gemma-4-26b-a4b-it";
+
+const farmPatchProperties = {
+  cropId: { type: Type.STRING },
+  landSizeAcres: { type: Type.NUMBER },
+  availableBudget: { type: Type.NUMBER },
+  seedCostPerAcre: { type: Type.NUMBER },
+  fertilizerCostPerAcre: { type: Type.NUMBER },
+  laborCostPerAcre: { type: Type.NUMBER },
+  expectedHarvestPerAcre: { type: Type.NUMBER },
+  marketPricePerUnit: { type: Type.NUMBER },
+  transportCost: { type: Type.NUMBER },
+  storageMonths: { type: Type.NUMBER },
+  storageCostPerMonth: { type: Type.NUMBER },
+  expectedMonthlyPriceGrowth: { type: Type.NUMBER },
+};
+
+const interviewResponseSchema = {
+  type: Type.OBJECT,
+  properties: {
+    patch: {
+      type: Type.OBJECT,
+      properties: farmPatchProperties,
+    },
+  },
+  required: ["patch"],
+};
+
+const scenarioResponseSchema = {
+  type: Type.OBJECT,
+  properties: {
+    operations: {
+      type: Type.ARRAY,
+      items: {
+        type: Type.OBJECT,
+        properties: {
+          field: { type: Type.STRING },
+          operation: { type: Type.STRING },
+          value: { type: Type.NUMBER },
+        },
+        required: ["field", "operation", "value"],
+      },
+    },
+  },
+  required: ["operations"],
+};
 
 export async function extractFarmInterview(args: {
   text: string;
@@ -30,6 +75,7 @@ export async function extractFarmInterview(args: {
       config: {
         temperature: 0.1,
         responseMimeType: "application/json",
+        responseSchema: interviewResponseSchema,
         systemInstruction:
           "Extract farm planning parameters from natural language. Do not calculate profit, risk, ROI, or break-even. Return only fields explicitly stated or strongly implied by the text.",
       },
@@ -70,6 +116,7 @@ export async function parseScenarioQuestion(args: {
       config: {
         temperature: 0.1,
         responseMimeType: "application/json",
+        responseSchema: scenarioResponseSchema,
         systemInstruction:
           "Convert what-if questions into parameter operations. Do not calculate profit, risk, ROI, revenue, or break-even. The app will apply operations and recalculate.",
       },

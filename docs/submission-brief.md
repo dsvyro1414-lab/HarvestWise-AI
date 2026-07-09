@@ -12,6 +12,7 @@ Smallholder farmers often make planting and selling decisions without a clear fi
 
 HarvestWise AI turns simple farm assumptions into a clear season plan:
 
+- one recommended next action with 2–3 calculated reasons;
 - expected profit;
 - break-even price;
 - total season cost;
@@ -22,32 +23,33 @@ HarvestWise AI turns simple farm assumptions into a clear season plan:
 
 ## Why Gemma
 
-The product does not ask Gemma to perform exact arithmetic. The app handles calculations with deterministic code. Gemma is used where language models are strongest:
+The product does not ask Gemma to perform exact arithmetic or choose an action. The app handles calculations and the recommended next step with deterministic code. Gemma is used where language models are strongest:
 
 - explaining financial results in simple language;
-- turning numbers into practical farmer guidance;
+- translating a farm note into structured assumptions;
+- translating a what-if question into safe parameter operations;
 - answering advisor questions;
-- generating short WhatsApp messages;
-- helping cooperative workers communicate risk clearly.
+- generating a short WhatsApp explanation;
+- helping cooperative workers communicate the already-calculated risk and action clearly.
 
 ## Demo Story
 
 1. A cooperative advisor enters a maize season plan for a farmer.
-2. HarvestWise AI instantly shows profit, break-even price, risk, and best action.
-3. The advisor compares maize with cassava, rice, tomato, and beans.
-4. The advisor checks whether the farmer should sell at harvest or store.
-5. Gemma explains the result and generates a message the advisor can send to the farmer.
+2. HarvestWise AI instantly shows one recommended next action, its calculated reasons, and a compact profit snapshot.
+3. The advisor changes price or budget to prove that the action updates deterministically.
+4. The advisor opens crop, price, and harvest-market details only when deeper analysis is needed.
+5. Gemma explains the result or turns a natural-language question into structured inputs; it cannot choose the action.
 
 ## Current Demo Surface
 
-The current polished build presents the whole judge flow in one dashboard:
+The current polished build presents the judge flow in one focused workspace:
 
-- left rail: farm assumptions and optional interview import;
-- center board: profit metrics, market-price sensitivity chart, scenario mode, and crop comparison;
-- right rail: best market move and advisor notes;
-- topbar: HarvestWise AI brand, section links, location, and season context.
+- left rail: the five core assumptions, with costs and interview import available on demand;
+- center board: the recommended next action first, then a compact profit snapshot;
+- expandable details: scenario testing, crop comparison, price sensitivity, and harvest-market options;
+- right rail: an optional Gemma explanation panel that states its deterministic boundary.
 
-The final brand uses the HarvestWise AI leaf mark, the tagline `Smarter yields. Better future.`, and the reference palette: deep green, muted green, sage, cream, and near-black.
+The final brand uses the HarvestWise AI leaf mark, the tagline `Plan the season. Know the next step.`, and the reference palette: deep green, muted green, sage, cream, and near-black.
 
 ## Deeper Gemma Integration
 
@@ -64,10 +66,10 @@ HarvestWise AI uses Gemma in three practical ways:
    - The deterministic finance engine applies the operations and recalculates profit, break-even, risk, and market decisions.
 
 3. Advisor explanation
-   - Gemma explains the calculated plan in farmer-friendly language.
-   - It generates concise WhatsApp advice for field use.
+   - Gemma explains the deterministic plan and action in farmer-friendly language.
+   - It generates a concise WhatsApp explanation for field use.
 
-Gemma never calculates the financial outputs. It only extracts, structures, and explains.
+Gemma returns schema-constrained JSON for extraction, scenarios, and explanation. It never calculates financial outputs or chooses, replaces, or rewords the recommended action.
 
 ## Why It Can Scale
 
