@@ -132,57 +132,98 @@ export function App() {
 
   return (
     <AppShell>
-      <main className="analysis-layout">
-        <FarmInputPanel
-          input={input}
-          interviewResult={interviewResult}
-          interviewText={interviewText}
-          isExtractingInterview={isExtractingInterview}
-          onChange={setInput}
-          onExtractInterview={() => void handleExtractInterview()}
-          onInterviewTextChange={setInterviewText}
-        />
+      <main className="guided-layout">
+        <header className="journey-intro">
+          <span className="journey-intro__eyebrow">Farm profit planner</span>
+          <h2>Plan your farm season with confidence</h2>
+          <p>Enter the essentials once, review the numbers, then ask Gemma to explain the result.</p>
+        </header>
 
-        <section className="analysis-board" id="analysis-board" aria-label="HarvestWise AI analysis board">
-          <FarmerActionCard key={`${plan.action.id}-${Math.round(plan.expectedProfit)}`} action={plan.action} />
-          <ProfitSnapshot input={input} plan={plan} />
-
-          <details className="analysis-disclosure">
-            <summary>Test a change to this plan</summary>
-            <ScenarioModePanel
-              isLoading={isRunningScenario}
-              lastScenario={lastScenario}
-              question={scenarioQuestion}
-              onQuestionChange={setScenarioQuestion}
-              onRunScenario={() => void handleRunScenario()}
+        <section className="journey-section" id="farm-plan" aria-labelledby="farm-plan-title">
+          <div className="journey-step" aria-hidden="true">1</div>
+          <div className="journey-section__body">
+            <div className="journey-section__heading">
+              <div>
+                <span>Plan</span>
+                <h2 id="farm-plan-title">Tell us about your farm</h2>
+              </div>
+              <p>Five inputs are enough to calculate the first plan.</p>
+            </div>
+            <FarmInputPanel
+              input={input}
+              interviewResult={interviewResult}
+              interviewText={interviewText}
+              isExtractingInterview={isExtractingInterview}
+              onChange={setInput}
+              onExtractInterview={() => void handleExtractInterview()}
+              onInterviewTextChange={setInterviewText}
             />
-          </details>
-
-          <details className="analysis-disclosure">
-            <summary>Compare other crops</summary>
-            <CropComparisonTable activeCropId={input.cropId} comparisons={comparisons.slice(0, 4)} />
-          </details>
-
-          <details className="analysis-disclosure">
-            <summary>Explore harvest market options</summary>
-            <MarketDecisionCards
-              decisions={marketDecisions}
-              selectedId={selectedDecisionId}
-              onSelect={setSelectedDecisionId}
-            />
-          </details>
+          </div>
         </section>
 
-        <section className="action-rail" aria-label="Decision and advisor rail">
-          <AdvisorPanel
-            advice={advice}
-            hasExplanation={remoteAdvice !== null}
-            isLoading={isLoadingAdvice}
-            question={question}
-            onAskGemma={() => void handleAskGemma("explain")}
-            onGenerateWhatsApp={() => void handleAskGemma("whatsapp")}
-            onQuestionChange={setQuestion}
-          />
+        <section className="journey-section" id="plan-results" aria-labelledby="plan-results-title">
+          <div className="journey-step" aria-hidden="true">2</div>
+          <div className="journey-section__body results-stack">
+            <div className="journey-section__heading">
+              <div>
+                <span>Results</span>
+                <h2 id="plan-results-title">Your plan at a glance</h2>
+              </div>
+              <p>Every number and recommendation is calculated locally.</p>
+            </div>
+
+            <FarmerActionCard key={`${plan.action.id}-${Math.round(plan.expectedProfit)}`} action={plan.action} />
+            <ProfitSnapshot input={input} plan={plan} />
+
+            <div className="analysis-disclosure-grid">
+              <details className="analysis-disclosure">
+                <summary>Test a change to this plan</summary>
+                <ScenarioModePanel
+                  isLoading={isRunningScenario}
+                  lastScenario={lastScenario}
+                  question={scenarioQuestion}
+                  onQuestionChange={setScenarioQuestion}
+                  onRunScenario={() => void handleRunScenario()}
+                />
+              </details>
+
+              <details className="analysis-disclosure">
+                <summary>Compare other crops</summary>
+                <CropComparisonTable activeCropId={input.cropId} comparisons={comparisons.slice(0, 4)} />
+              </details>
+
+              <details className="analysis-disclosure">
+                <summary>Explore harvest market options</summary>
+                <MarketDecisionCards
+                  decisions={marketDecisions}
+                  selectedId={selectedDecisionId}
+                  onSelect={setSelectedDecisionId}
+                />
+              </details>
+            </div>
+          </div>
+        </section>
+
+        <section className="journey-section journey-section--gemma" id="ask-gemma" aria-labelledby="ask-gemma-title">
+          <div className="journey-step" aria-hidden="true">3</div>
+          <div className="journey-section__body">
+            <div className="journey-section__heading">
+              <div>
+                <span>Gemma</span>
+                <h2 id="ask-gemma-title">Ask about this plan</h2>
+              </div>
+              <p>Gemma explains. HarvestWise calculates.</p>
+            </div>
+            <AdvisorPanel
+              advice={advice}
+              hasExplanation={remoteAdvice !== null}
+              isLoading={isLoadingAdvice}
+              question={question}
+              onAskGemma={() => void handleAskGemma("explain")}
+              onGenerateWhatsApp={() => void handleAskGemma("whatsapp")}
+              onQuestionChange={setQuestion}
+            />
+          </div>
         </section>
       </main>
     </AppShell>

@@ -1,5 +1,20 @@
 # Next Step: Prove the Gemma Flow
 
+## Guided Page Progress — 2026-07-10
+
+The first-page journey has now been redesigned locally around the sequence requested for the demo:
+
+1. fill in the five essential farm inputs;
+2. read the deterministic recommendation and calculations;
+3. inspect the price-sensitivity chart without opening another panel;
+4. ask Gemma about the same plan at the end of the page.
+
+The new layout removes the three-column dashboard, adds a compact `Plan → Results → Ask Gemma` navigator, keeps deeper crop/scenario/market analysis behind disclosures, and includes a responsive 390 px layout. Three approved visual references are saved in `assets/concepts/`.
+
+Local validation passed with 11 tests, TypeScript, the production build, desktop browser inspection, and a 390 px mobile smoke check with no horizontal overflow or console errors.
+
+After this branch is reviewed, the immediate delivery step is merge + preview/production verification. The next product foundation remains the approved US-readable baseline with realistic sample plans.
+
 ## Recommendation
 
 The next highest-value task is to make one live Gemma interaction unmistakable in the hackathon demo and record evidence of it. The action engine and simplified UI are complete; the remaining judge question is whether Gemma is genuinely useful and safely integrated.

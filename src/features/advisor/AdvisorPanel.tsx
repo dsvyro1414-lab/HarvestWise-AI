@@ -12,6 +12,12 @@ interface AdvisorPanelProps {
   onGenerateWhatsApp: () => void;
 }
 
+const questionSuggestions = [
+  "What if prices drop 20%?",
+  "Which cost should I reduce first?",
+  "Should I store or sell now?",
+];
+
 export function AdvisorPanel({
   advice,
   hasExplanation,
@@ -33,33 +39,53 @@ export function AdvisorPanel({
         </div>
       </div>
 
-      {hasExplanation ? (
-        <div className="advisor-copy">
-          <p className="advisor-copy__summary">{advice.summary}</p>
-          <ul>
-            {advice.insights.slice(0, 2).map((insight) => (
-              <li key={insight}>{insight}</li>
-            ))}
-          </ul>
+      <div className="advisor-thread" aria-live="polite">
+        <div className="advisor-message advisor-message--gemma">
+          <Sparkles size={16} aria-hidden="true" />
+          {hasExplanation ? (
+            <div className="advisor-copy">
+              <p className="advisor-copy__summary">{advice.summary}</p>
+              <ul>
+                {advice.insights.slice(0, 2).map((insight) => (
+                  <li key={insight}>{insight}</li>
+                ))}
+              </ul>
+            </div>
+          ) : (
+            <p className="advisor-intro">I can explain this plan, test an assumption, or turn the result into a farmer-friendly message.</p>
+          )}
         </div>
-      ) : (
-        <p className="advisor-intro">Gemma can turn a farm note into inputs or explain a result. It does not calculate profit or choose the recommendation.</p>
-      )}
+      </div>
+
+      <div className="advisor-suggestions" aria-label="Suggested questions">
+        {questionSuggestions.map((suggestion) => (
+          <button key={suggestion} type="button" onClick={() => onQuestionChange(suggestion)}>
+            {suggestion}
+          </button>
+        ))}
+      </div>
 
       <div className="advisor-actions">
-        <label className="question-box">
-          <span>Ask about this calculation</span>
+        <form
+          className="question-box"
+          onSubmit={(event) => {
+            event.preventDefault();
+            onAskGemma();
+          }}
+        >
+          <label htmlFor="gemma-question">Ask about this calculation</label>
           <div>
             <input
-              placeholder="Why is this plan high risk?"
+              id="gemma-question"
+              placeholder="Ask about this plan…"
               value={question}
               onChange={(event) => onQuestionChange(event.target.value)}
             />
-            <button aria-label="Send question" type="button" onClick={onAskGemma}>
+            <button aria-label="Send question" type="submit">
               <Send size={16} />
             </button>
           </div>
-        </label>
+        </form>
 
         <Button fullWidth icon={<MessageSquareText size={17} />} variant="secondary" onClick={onAskGemma}>
           {isLoading ? "Getting explanation..." : "Explain with Gemma"}

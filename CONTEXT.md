@@ -24,13 +24,13 @@ The Vercel project is linked as `dsvyro1414-labs-projects/harvestwise-ai`. Produ
 
 Production currently includes uncommitted local reliability fixes, so GitHub `main` remains behind the deployed build until these changes are committed and pushed.
 
-The current UI has one deliberate primary path:
+The current branch introduces one deliberate, vertically guided primary path:
 
 1. Enter five core assumptions: crop, land, budget, expected harvest, and market price.
 2. Read the deterministic **Recommended next action** and its two reasons.
-3. Inspect profit, break-even price, and cash status.
-4. Open scenario, crop, price, or market details only when needed.
-5. Ask Gemma to structure a farm note or explain the already-calculated result.
+3. Inspect profit, break-even price, cash status, and the visible price-sensitivity chart.
+4. Open scenario, crop, cost, or market details only when needed.
+5. Ask Gemma about the already-calculated result as the final page step.
 
 ## Deterministic Action Layer
 
@@ -99,17 +99,11 @@ Browser smoke checks also passed on desktop and a 390 px mobile viewport:
 
 ## Most Logical Next Step
 
-Run and record one **live Gemma proof flow** for judges. Do not add another large product feature first.
+Review, merge, and deploy the guided one-page UI, then verify the same `Plan → Results → Ask Gemma` sequence in production on desktop and mobile.
 
-Definition of done:
+After that delivery check, begin the approved product-foundation phase: convert the demo to a US-readable baseline and replace the unusually optimistic default with realistic sample plans. Treat that as a full units, currency, defaults, market-context, and copy change rather than a cosmetic label edit.
 
-1. Configure `GEMINI_API_KEY` in the deployed demo.
-2. Use a known farm note to show `Gemma extracted` and the updated deterministic action.
-3. Run one what-if question and show `Gemma interpreted the change` plus the recalculated profit/action.
-4. Request an explanation and show `Gemma explanation · deterministic decision`.
-5. Capture this as a short GIF/video or 3–4 README screenshots.
-
-See `docs/next-step.md` for the exact demo script and acceptance criteria.
+See `docs/next-step.md` for the latest progress and acceptance evidence.
 
 ## Working Style
 

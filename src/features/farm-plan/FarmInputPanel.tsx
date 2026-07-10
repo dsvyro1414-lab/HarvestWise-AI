@@ -1,4 +1,4 @@
-import { RotateCcw } from "lucide-react";
+import { ArrowDown, RotateCcw } from "lucide-react";
 import { applyCropDefaults, cropOptions, createDefaultFarmInput } from "@/domain/crops";
 import type { CropId, FarmInterviewResult, FarmPlanInput } from "@/domain/types";
 import { NumberField } from "@/components/ui/NumberField";
@@ -40,8 +40,8 @@ export function FarmInputPanel({
     <section className="input-panel" id="farm-inputs" aria-label="Farm inputs">
       <div className="panel-heading">
         <div>
-          <h2>Assumptions</h2>
-          <p>What this result is based on</p>
+          <h2>Farm details</h2>
+          <p>Results update instantly as you type.</p>
         </div>
         <button className="reset-button" type="button" onClick={() => onChange(createDefaultFarmInput(input.cropId))}>
           <RotateCcw size={15} />
@@ -147,6 +147,11 @@ export function FarmInputPanel({
           onTextChange={onInterviewTextChange}
         />
       </details>
+
+      <a className="button button--primary button--full input-panel__cta" href="#plan-results">
+        View my plan
+        <ArrowDown size={16} />
+      </a>
 
       <p className="input-panel__timestamp">Live calculation · edited today</p>
     </section>

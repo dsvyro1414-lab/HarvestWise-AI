@@ -65,17 +65,17 @@ export function ProfitSnapshot({ input, plan }: ProfitSnapshotProps) {
         </div>
       </div>
 
-      <details className="snapshot-disclosure">
-        <summary>Show price and cost details</summary>
-        <div className="chart-panel">
-          <PriceSensitivityChart
-            breakEvenPrice={plan.breakEvenPrice}
-            currentPrice={input.marketPricePerUnit}
-            currentProfit={plan.expectedProfit}
-            points={plan.sensitivity}
-          />
-        </div>
+      <div className="chart-panel">
+        <PriceSensitivityChart
+          breakEvenPrice={plan.breakEvenPrice}
+          currentPrice={input.marketPricePerUnit}
+          currentProfit={plan.expectedProfit}
+          points={plan.sensitivity}
+        />
+      </div>
 
+      <details className="snapshot-disclosure">
+        <summary>Show cost and risk details</summary>
         <div className="snapshot-details">
           <div>
             <span>Total cost</span>
