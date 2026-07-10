@@ -1,5 +1,5 @@
-import type { FarmPlanInput, FarmPlanResult, FarmerAction } from "./types";
-import { formatCurrency, formatPercent } from "../utils/formatters";
+import type { FarmPlanInput, FarmPlanResult, FarmerAction } from "./types.js";
+import { formatCurrency, formatPercent } from "../utils/formatters.js";
 
 type ActionContext = Pick<
   FarmPlanResult,

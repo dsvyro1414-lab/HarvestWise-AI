@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { createDefaultFarmInput } from "./crops";
-import { applyFarmPlanPatch, applyScenarioOperations } from "./patches";
+import { createDefaultFarmInput } from "./crops.js";
+import { applyFarmPlanPatch, applyScenarioOperations } from "./patches.js";
 
 describe("farm plan patches", () => {
   it("applies extracted interview fields without changing unspecified values", () => {

@@ -1,5 +1,5 @@
-import { parseScenarioQuestion } from "../server/gemmaStructured";
-import { scenarioRequestSchema } from "../server/validation";
+import { parseScenarioQuestion } from "../server/gemmaStructured.js";
+import { scenarioRequestSchema } from "../server/validation.js";
 
 export default {
   async fetch(request: Request) {

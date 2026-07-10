@@ -1,12 +1,12 @@
-import { getBestMarketDecision } from "./finance";
+import { getBestMarketDecision } from "./finance.js";
 import type {
   AdvisorPayload,
   CropComparison,
   FarmPlanInput,
   FarmPlanResult,
   MarketDecision,
-} from "./types";
-import { formatCurrency, formatNumber, formatPercent } from "../utils/formatters";
+} from "./types.js";
+import { formatCurrency, formatNumber, formatPercent } from "../utils/formatters.js";
 
 export function buildFallbackAdvice(args: {
   input: FarmPlanInput;

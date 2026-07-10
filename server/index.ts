@@ -1,7 +1,7 @@
 import express from "express";
-import { buildAdvisorNotes } from "./gemmaAdvisor";
-import { extractFarmInterview, parseScenarioQuestion } from "./gemmaStructured";
-import { adviceRequestSchema, farmInterviewRequestSchema, scenarioRequestSchema } from "./validation";
+import { buildAdvisorNotes } from "./gemmaAdvisor.js";
+import { extractFarmInterview, parseScenarioQuestion } from "./gemmaStructured.js";
+import { adviceRequestSchema, farmInterviewRequestSchema, scenarioRequestSchema } from "./validation.js";
 
 const app = express();
 const port = Number(process.env.PORT ?? 8787);

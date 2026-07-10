@@ -1,11 +1,11 @@
-import { cropCatalog } from "./crops";
+import { cropCatalog } from "./crops.js";
 import type {
   FarmPlanField,
   FarmPlanInput,
   FarmPlanPatch,
   NumericFarmPlanField,
   ScenarioOperation,
-} from "./types";
+} from "./types.js";
 
 export const farmPlanFields: FarmPlanField[] = [
   "cropId",

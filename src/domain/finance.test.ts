@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { createDefaultFarmInput } from "./crops";
-import { buildCropComparison, buildMarketDecisions, calculateFarmPlan } from "./finance";
-import { getStoragePriceThreshold } from "./farmerAction";
+import { createDefaultFarmInput } from "./crops.js";
+import { buildCropComparison, buildMarketDecisions, calculateFarmPlan } from "./finance.js";
+import { getStoragePriceThreshold } from "./farmerAction.js";
 
 describe("farm finance model", () => {
   it("calculates a positive baseline plan with a finite break-even price", () => {

@@ -1,9 +1,9 @@
-import { cropCatalog } from "../src/domain/crops";
+import { cropCatalog } from "../src/domain/crops.js";
 import {
   applyScenarioOperations,
   getMissingCoreFields,
   getPatchFields,
-} from "../src/domain/patches";
+} from "../src/domain/patches.js";
 import type {
   CropId,
   FarmInterviewResult,
@@ -13,7 +13,7 @@ import type {
   ScenarioOperation,
   ScenarioOperationKind,
   ScenarioParseResult,
-} from "../src/domain/types";
+} from "../src/domain/types.js";
 
 const cropAliases: Array<[CropId, RegExp]> = [
   ["maize", /\b(maize|corn)\b/i],

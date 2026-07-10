@@ -10,13 +10,15 @@ It keeps financial calculations deterministic in TypeScript, then uses Gemma to 
 
 ## Current Status
 
-The polished dashboard, HarvestWise AI logo, color palette, Vercel API routes, and simplified demo layout are now merged into `main`.
+The deterministic farmer-action layer, simplified judge flow, Gemma output schemas, and updated demo documentation are now merged into `main`.
 
 Latest pushed main commit:
 
 ```bash
-18b8395 Refine brand logo and palette
+71ce104 Add deterministic farmer actions
 ```
+
+Production demo: [harvestwise-ai.vercel.app](https://harvestwise-ai.vercel.app)
 
 ## What It Does
 
@@ -25,7 +27,7 @@ Latest pushed main commit:
 - Shows one deterministic **Recommended next action** with two concrete reasons: plant, reduce acreage, secure a buyer, wait, or store only above a calculated price.
 - Compares crop options such as maize, cassava, rice, tomato, and beans.
 - Compares market decisions: sell at harvest, store short-term, or store longer.
-- Generates advisor notes and WhatsApp-ready farmer guidance through a server-side Gemma endpoint.
+- Generates a plain-language explanation and WhatsApp draft through a server-side Gemma endpoint.
 - Extracts a farm plan from natural language through the farm interview copilot.
 - Converts what-if questions into scenario parameter changes, then recalculates with deterministic code.
 - Falls back to local advice if no API key is configured, so the demo remains usable.
@@ -58,6 +60,16 @@ Recommended 60-90 second judge flow:
 3. Open **Test a change to this plan** and ask `what if fertilizer cost rises by 20%?`.
 4. Open price, crop, or market details only if the judge wants to investigate the calculation.
 5. Open **Gemma explains the plan** to demonstrate that AI explains or structures input, while HarvestWise keeps the decision deterministic.
+
+### Live Gemma Evidence
+
+The production flow visibly separates model work from deterministic finance:
+
+![Gemma interprets a fertilizer scenario and HarvestWise recalculates profit](docs/screenshots/gemma-scenario-proof.jpg)
+
+Judge narration:
+
+> Gemma turns farmer language into structured inputs and scenario operations. HarvestWise then recalculates every financial number and selects the recommended action in deterministic TypeScript.
 
 ## Optional Gemma Setup
 

@@ -1,4 +1,4 @@
-import type { CropDefinition, CropId, FarmPlanInput } from "./types";
+import type { CropDefinition, CropId, FarmPlanInput } from "./types.js";
 
 export const cropCatalog: Record<CropId, CropDefinition> = {
   maize: {

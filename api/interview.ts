@@ -1,5 +1,5 @@
-import { extractFarmInterview } from "../server/gemmaStructured";
-import { farmInterviewRequestSchema } from "../server/validation";
+import { extractFarmInterview } from "../server/gemmaStructured.js";
+import { farmInterviewRequestSchema } from "../server/validation.js";
 
 export default {
   async fetch(request: Request) {

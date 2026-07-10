@@ -1,25 +1,30 @@
 # Demo Polish Journal
 
-Last reviewed: 2026-07-09
+Last reviewed: 2026-07-10
 
 Use this journal to track demo-readiness issues before submitting HarvestWise AI.
 
 ## Completed In Current Main
 
-- Simplified the app from sidebar + tabs into a focused dashboard with topbar navigation.
+- Simplified the app from sidebar + tabs into a focused workspace with a minimal topbar.
 - Removed several dead-looking controls from the primary surface, including the old settings/logout sidebar actions and the always-visible update button.
 - Made the first viewport denser: assumptions, profit chart, market decision, and advisor notes now appear together on desktop.
 - Refined the HarvestWise AI logo, favicon, tagline, and brand palette based on the reference image.
 - Added Vercel-compatible API entrypoints in `api` for health, advice, interview extraction, and scenario parsing.
 - Strengthened the price sensitivity chart with a current price marker and tooltip.
 - Added a README judge demo path.
+- Added a typed deterministic `buildFarmerAction` layer with reasons and a storage-price threshold.
+- Put **Recommended next action** first in the UI; moved scenarios, crop comparison, price details, and market options behind disclosure controls.
+- Reduced the assumptions panel to five core fields, with cost and storage inputs available on demand.
+- Reframed Gemma as an extractor/interpreter/explainer and added schema-constrained JSON responses.
+- Updated the default hosted Gemma model to `gemma-4-26b-a4b-it`.
 
 ## High Priority
 
-1. Make live Gemma status obvious.
-   - Status: still open.
-   - Current observation: the advisor panel can show `Local fallback ready` when no API key is configured, which may make judges think the AI integration is not active.
-   - Desired outcome: after successful Gemma calls, the UI should clearly show `Gemma extracted`, `Gemma operations`, or `Live AI explanation`.
+1. Prove live Gemma behavior.
+   - Status: open; this is the next recommended task.
+   - Current observation: the UI now accurately explains the AI boundary and labels successful providers, but no live key-backed demo recording has been captured.
+   - Desired outcome: show a successful extraction, scenario interpretation, and explanation with a valid key; capture evidence for judges.
    - Areas to inspect: `src/features/farm-plan/FarmInterviewCopilot.tsx`, `src/features/scenario/ScenarioModePanel.tsx`, `src/features/advisor/AdvisorPanel.tsx`, `server/gemmaStructured.ts`, `server/gemmaAdvisor.ts`.
 
 2. Avoid confusion between frontend and backend URLs.
@@ -29,17 +34,14 @@ Use this journal to track demo-readiness issues before submitting HarvestWise AI
    - Areas to inspect: `server/index.ts`, `api/health.ts`.
 
 3. Remove or implement empty demo actions.
-   - Status: mostly addressed.
-   - Current observation: old sidebar actions are gone. The `Breakdown` link still looks like a future action and should either work, scroll to details, or be hidden for the final demo.
-   - Desired outcome: wire remaining future-looking actions to real views, hide them for the hackathon demo, or mark them as disabled/coming soon.
+   - Status: completed.
+   - Current observation: the unused `Breakdown` link was removed; optional analysis is now provided through native disclosure controls.
    - Areas to inspect: `src/features/farm-plan/ProfitSnapshot.tsx`, `src/features/crop-comparison/CropComparisonTable.tsx`, `src/components/layout/AppShell.tsx`.
 
 4. Clarify the primary demo flow.
-   - Status: improved, still open.
-   - Current observation: README now has a judge demo path, but the app itself still relies on the default sample assumptions and manual scenario entry.
-   - Desired outcome: a clear flow from sample plan or interview extraction, to deterministic recalculation, to scenario mode, to advisor notes.
-   - Candidate feature: `Load sample plan` or `Demo plan` button.
-   - Areas to inspect: `src/app/App.tsx`, `src/features/farm-plan/FarmInputPanel.tsx`.
+   - Status: completed for the local path; live Gemma evidence remains open.
+   - Current observation: the default plan leads directly to Recommended next action, then compact metrics, with deeper analysis hidden until requested.
+   - Desired outcome: use the live Gemma proof flow in `docs/next-step.md` for the final recording.
 
 ## Medium Priority
 
@@ -83,4 +85,4 @@ Use this journal to track demo-readiness issues before submitting HarvestWise AI
 
 ## Current Assessment
 
-The app now looks like a polished product dashboard rather than a placeholder. The next round should focus on demo trust: prove live Gemma behavior when a key is available, make remaining future-looking actions intentional, and add a fast sample-plan path for judges.
+The app now prioritizes a farmer decision rather than a collection of calculations. The next round should focus on demo trust: prove live Gemma behavior with a key, capture evidence, and keep fallback labels honest.

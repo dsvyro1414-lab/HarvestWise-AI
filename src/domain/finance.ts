@@ -1,5 +1,5 @@
-import { cropCatalog, cropOptions } from "./crops";
-import { buildFarmerAction } from "./farmerAction";
+import { cropCatalog, cropOptions } from "./crops.js";
+import { buildFarmerAction } from "./farmerAction.js";
 import type {
   CropComparison,
   CropDefinition,
@@ -9,7 +9,7 @@ import type {
   MarketDecision,
   PriceSensitivityPoint,
   RiskLevel,
-} from "./types";
+} from "./types.js";
 
 const sensitivityMultipliers = [0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3];
 

@@ -1,235 +1,120 @@
-# HarvestWise AI - Session Context
+# HarvestWise AI — Current Handoff
 
-Use this file as the first read in the next Codex session.
+Read this file before continuing work on HarvestWise AI.
 
-## Current Goal
+## Goal
 
-Build and polish **HarvestWise AI** for the Kaggle / GDGOC LAUTECH "Build with Gemma" hackathon:
+Build a clear, trustworthy farm-profit planner for the Kaggle / GDGOC LAUTECH **Build with Gemma** hackathon.
 
-https://www.kaggle.com/c/build-with-gemma-gdgoc-lautech
+The product helps a smallholder farmer or cooperative advisor answer one question before money is spent:
 
-The product is a Gemma-powered farm profit planner for smallholder farmers and cooperative advisors. It combines agriculture and finance, but it is not a lending or credit product.
+> What should I do next with this farm plan?
 
-Core question:
+HarvestWise AI is not a lending, credit-scoring, or loan-recommendation product.
 
-> Can this farm season make money before the farmer spends money?
+## Current State
 
-## Current Snapshot
+- Branch: `main`
+- Latest pushed commit: `71ce104 Add deterministic farmer actions`
+- GitHub: <https://github.com/dsvyro1414-lab/HarvestWise-AI>
+- Production: <https://harvestwise-ai.vercel.app>
+- Last validated: 2026-07-10
 
-The latest polished version is on `main` and pushed to GitHub.
+The Vercel project is linked as `dsvyro1414-labs-projects/harvestwise-ai`. Production has encrypted `GEMINI_API_KEY` and `GEMMA_MODEL` variables. Live extraction, scenario interpretation, and a concise validated explanation have all been observed; evidence is in `docs/screenshots/` and the README.
 
-Current `main` head:
+Production currently includes uncommitted local reliability fixes, so GitHub `main` remains behind the deployed build until these changes are committed and pushed.
 
-```bash
-18b8395 Refine brand logo and palette
-```
+The current UI has one deliberate primary path:
 
-This includes the simplified dashboard UI, final HarvestWise AI logo/palette, Vercel API entrypoints, and updated demo documentation.
+1. Enter five core assumptions: crop, land, budget, expected harvest, and market price.
+2. Read the deterministic **Recommended next action** and its two reasons.
+3. Inspect profit, break-even price, and cash status.
+4. Open scenario, crop, price, or market details only when needed.
+5. Ask Gemma to structure a farm note or explain the already-calculated result.
 
-## Product Idea
+## Deterministic Action Layer
 
-HarvestWise AI helps a farmer or advisor enter a farm season plan and see whether it is financially sensible.
+`src/domain/farmerAction.ts` now owns the single recommendation shown first in the product. It returns a typed action, stage, reasons, and an optional storage-price threshold.
 
-The app calculates:
+Possible actions:
 
-- total season cost;
-- expected revenue;
-- expected profit;
-- break-even market price;
-- ROI;
-- budget gap;
-- risk level;
-- simple next action.
+- `Plant this plan`
+- `Reduce acreage before planting`
+- `Secure a buyer before planting`
+- `Do not plant yet`
+- `Store only if price exceeds ₦X per unit`
 
-It also compares crop choices and market decisions such as selling now vs storing for later.
+The storage threshold means: the minimum future unit price at which storing beats selling immediately, after storage cost and harvest loss.
 
-## Important Positioning
+`src/domain/finance.ts` composes this action into every farm plan. There is no parallel `bestAction` string anymore.
 
-The user explicitly moved away from a credit/loan angle. Keep the concept focused on:
+## Gemma Boundary
 
-- farm profitability;
-- crop planning;
-- cost risk;
-- market timing;
-- cooperative/advisor workflows;
-- simple financial literacy for farmers.
+Gemma is intentionally an interpretation and explanation layer, never the financial authority.
 
-Do not turn it into a banking, loan scoring, or microcredit product unless the user asks.
+- Gemma extracts structured assumptions from a natural-language farm note.
+- Gemma converts what-if questions into typed parameter operations.
+- Gemma explains the deterministic plan and can generate a WhatsApp explanation.
+- The TypeScript domain layer calculates cost, revenue, risk, price thresholds, and the recommended action.
+- Gemma cannot calculate finance outputs, choose an action, replace an action, or reword the recommended action.
 
-## Gemma Integration Boundary
+Server-side prompts are isolated in:
 
-This boundary is important for judging and code quality:
-
-- Gemma extracts structured inputs from natural language.
-- Gemma maps scenario questions into parameter changes.
-- Gemma explains deterministic results in plain language.
-- Gemma does **not** calculate finances.
-
-All financial math stays in the deterministic TypeScript domain layer.
-
-Main implementation files:
-
-- `src/domain/finance.ts` - deterministic calculations.
-- `src/domain/patches.ts` - typed patch and scenario operation application.
-- `server/gemmaAdvisor.ts` - advisor notes and farmer explanation.
-- `server/gemmaStructured.ts` - structured Gemma calls for interview and scenario extraction.
-- `server/localParsers.ts` - offline fallback parsers for demo resilience.
-- `server/index.ts` - Express API routes.
-- `api/advice.ts`, `api/interview.ts`, `api/scenario.ts`, `api/health.ts` - Vercel-compatible API entrypoints.
-
-## Implemented Features
-
-The current app includes:
-
-- simplified topbar dashboard layout;
-- farm assumptions panel;
-- profit snapshot with deterministic finance metrics;
-- price sensitivity chart with current price marker;
-- crop comparison table;
-- market decision cards;
-- advisor notes panel;
-- farm interview copilot;
-- scenario mode;
-- Gemma API integration with local fallbacks;
-- Vercel serverless API entrypoints;
-- final HarvestWise AI logo, favicon, and brand palette;
-- Vitest domain tests;
-- generated dashboard concept image.
-
-Natural-language interview examples should update the form:
-
-```text
-I want to plant maize on 2 acres. My budget is 250000 naira. Seed is 35000, fertilizer is 80000, labor is 60000, transport is 20000. I expect 3200 kg and the market price is 180 per kg.
-```
-
-Scenario examples should change parameters and recalculate through the domain layer:
-
-```text
-what if fertilizer cost rises by 20%?
-what if I store for 2 months?
-what if market price drops by 15%?
-```
-
-## Repository Status
-
-Public GitHub repository:
-
-https://github.com/dsvyro1414-lab/HarvestWise-AI
-
-Current local branch:
-
-```bash
-main
-```
-
-Important pushed commits:
-
-```bash
-d484096 Initial HarvestWise AI implementation
-1c92584 Add session context handoff
-4ee9c53 Improve and simplify UI
-18b8395 Refine brand logo and palette
-```
-
-The repository was created as `HarvestWise-AI` because GitHub slugs do not support spaces. Product name in the app/docs is **HarvestWise AI**.
-
-## Run Locally
-
-```bash
-npm install
-npm run dev
-```
-
-The Vite app usually runs on:
-
-```text
-http://localhost:5173
-```
-
-Optional Gemma environment:
-
-```bash
-cp .env.example .env
-```
-
-Then set:
-
-```bash
-GEMINI_API_KEY=your_key_here
-GEMMA_MODEL=gemma-3-27b-it
-```
-
-Without a key, the demo still works through deterministic local fallbacks.
-
-## Validation Already Done
-
-These checks passed during development:
-
-```bash
-npm test
-npm run build
-```
-
-Latest validation after the final UI/logo polish:
-
-```bash
-npm run build
-```
-
-Manual browser checks were also done for:
-
-- desktop layout;
-- mobile layout;
-- final logo and palette render;
-- interview extraction fallback;
-- scenario: fertilizer +20%;
-- scenario: store for 2 months.
-
-## Key Files To Read Next
-
-For product direction:
-
-- `explain.md`
-- `docs/submission-brief.md`
-- `docs/demo-polish-journal.md`
-- `README.md`
-
-For implementation:
-
-- `src/app/App.tsx`
-- `src/domain/finance.ts`
-- `src/domain/patches.ts`
 - `server/gemmaStructured.ts`
 - `server/gemmaAdvisor.ts`
-- `src/features/farm-plan/FarmInterviewCopilot.tsx`
-- `src/features/scenario/ScenarioModePanel.tsx`
 
-For visuals:
+Both use schema-constrained JSON. The default hosted model is `gemma-4-26b-a4b-it`; `GEMMA_MODEL` may override it.
 
-- `src/styles/global.css`
-- `src/components/layout/AppShell.tsx`
-- `public/favicon.svg`
-- `assets/concepts/harvestwise-dashboard-concept.png`
+When no `GEMINI_API_KEY` is configured, local parsers and explanations keep the demo functional and are labelled as local fallback.
 
-## Suggested Next Steps
+## Main Implementation Files
 
-Most valuable next work:
+- `src/app/App.tsx` — composition and state.
+- `src/domain/finance.ts` — pure finance calculation.
+- `src/domain/farmerAction.ts` — deterministic next-action logic.
+- `src/domain/finance.test.ts` — finance and decision tests.
+- `src/features/farm-plan/FarmerActionCard.tsx` — primary action UI.
+- `src/features/farm-plan/FarmInputPanel.tsx` — core and advanced assumptions.
+- `src/features/farm-plan/ProfitSnapshot.tsx` — compact plan snapshot and optional detail.
+- `src/features/advisor/AdvisorPanel.tsx` — explicit Gemma explanation boundary.
+- `server/gemmaStructured.ts` — interview/scenario extraction.
+- `server/gemmaAdvisor.ts` — explanation and WhatsApp output.
 
-1. Make live Gemma status more obvious after successful model calls.
-2. Add a tiny sample-plan loader so judges can start without typing.
-3. Add a friendly API root/help response for people who open the backend URL directly.
-4. Add screenshots or a short demo GIF to the README.
-5. If a real Gemma key is available, verify live model responses end to end.
-6. Deploy or verify the Vercel deployment if the user asks.
+## Validation Completed
 
-## Style Notes
+The following pass on commit `71ce104`:
 
-The user prefers Russian communication.
+```bash
+npm test       # 8 tests passed
+npm run typecheck
+npm run build
+```
 
-The code should stay clean and scalable:
+Browser smoke checks also passed on desktop and a 390 px mobile viewport:
 
-- keep domain math pure and testable;
-- keep Gemma prompts isolated server-side;
-- keep UI components reusable;
-- avoid mixing AI output with authoritative financial calculations;
-- preserve fallback behavior so the demo works without API credentials.
+- the first viewport shows the action and three key metrics;
+- no console errors or Vite overlay;
+- changing the market price to ₦600 changes the action to `Do not plant yet` with calculated reasons;
+- the scenario section opens and states that Gemma interprets while HarvestWise recalculates.
+
+## Most Logical Next Step
+
+Run and record one **live Gemma proof flow** for judges. Do not add another large product feature first.
+
+Definition of done:
+
+1. Configure `GEMINI_API_KEY` in the deployed demo.
+2. Use a known farm note to show `Gemma extracted` and the updated deterministic action.
+3. Run one what-if question and show `Gemma interpreted the change` plus the recalculated profit/action.
+4. Request an explanation and show `Gemma explanation · deterministic decision`.
+5. Capture this as a short GIF/video or 3–4 README screenshots.
+
+See `docs/next-step.md` for the exact demo script and acceptance criteria.
+
+## Working Style
+
+- Keep financial math pure and testable in `src/domain`.
+- Keep prompts and API keys server-side.
+- Preserve local fallbacks.
+- Keep the first screen focused on one farmer action; put expert analysis behind disclosure controls.
+- Prefer explicit, honest AI status over implying that fallback output came from Gemma.

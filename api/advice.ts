@@ -1,5 +1,5 @@
-import { buildAdvisorNotes } from "../server/gemmaAdvisor";
-import { adviceRequestSchema } from "../server/validation";
+import { buildAdvisorNotes } from "../server/gemmaAdvisor.js";
+import { adviceRequestSchema } from "../server/validation.js";
 
 export default {
   async fetch(request: Request) {

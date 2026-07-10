@@ -6,7 +6,7 @@ HarvestWise AI is an AI farm profit planner for smallholder farmers.
 
 It helps a farmer answer one simple question before the season starts:
 
-> Can this farm season make money?
+> What should I do next with this farm plan?
 
 The product combines agriculture and finance without becoming a loan or banking product. Instead of telling farmers how to borrow money, HarvestWise AI helps them understand what to plant, how much it will cost, when they may recover their money, and which decision is safer.
 
@@ -49,9 +49,9 @@ HarvestWise AI then calculates:
 - break-even price;
 - risk level;
 - cashflow timeline;
-- best next action.
+- one deterministic recommended next action with calculated reasons.
 
-Then Gemma explains the result in simple language, so the farmer can actually understand the decision.
+Then Gemma explains the result in simple language, so the farmer can understand the decision without asking AI to make it.
 
 ## Example
 
@@ -64,7 +64,7 @@ HarvestWise AI can show:
 - the farmer needs a market price above a certain amount to avoid losing money;
 - if fertilizer prices rise or market prices fall, the profit can disappear.
 
-Instead of giving a generic answer, HarvestWise AI gives a practical recommendation:
+Instead of giving a generic answer, HarvestWise AI gives a practical, deterministic recommendation:
 
 > Plant maize only if input costs stay below this amount. If the market price drops by 15%, cassava becomes the safer option.
 
@@ -72,26 +72,26 @@ Instead of giving a generic answer, HarvestWise AI gives a practical recommendat
 
 HarvestWise AI should look like a real working product, not just a chatbot.
 
-The current polished demo uses one focused dashboard instead of separate pages. Judges see the full workflow at once:
+The current demo makes the farmer decision clear before exposing deeper analysis:
 
-1. Farm Assumptions
-   - The user enters crop, land, costs, expected harvest, and market price.
+1. Recommended Next Action
+   - The user sees one action such as `Plant this plan`, `Reduce acreage before planting`, or `Do not plant yet`.
+   - Two calculated reasons make the decision auditable.
 
-2. Profit Analysis
-   - The app shows expected profit, break-even price, ROI, cash status, risk, and a market-price sensitivity chart.
+2. Core Assumptions and Plan Snapshot
+   - The user enters crop, land, available budget, expected harvest, and market price.
+   - The app shows expected profit, break-even price, and cash status.
 
-3. Scenario Mode
+3. Optional Expert Detail
+   - Price sensitivity, crop comparison, harvest-market options, and scenario testing are available only when the judge wants to investigate.
+
+4. Scenario Mode
    - The advisor asks what-if questions such as fertilizer cost rising or storage time changing.
    - Gemma maps the question into structured changes, and deterministic code recalculates the result.
 
-4. Crop And Market Comparison
-   - The user compares crop options such as maize, cassava, rice, tomato, and beans.
-   - The user compares selling now, storing short-term, or storing longer.
-   - The app shows which option gives the best net return.
-
-5. Advisor Notes
-   - Gemma generates a simple explanation for the farmer.
-   - It also creates a short WhatsApp-style message that a cooperative or extension officer can send.
+5. Gemma Explains the Plan
+   - Gemma extracts a farm note, interprets a scenario, or explains the deterministic result.
+   - The UI explicitly states that Gemma does not calculate profit or choose the recommendation.
 
 ## Current Visual Direction
 
@@ -99,33 +99,31 @@ The app now follows the HarvestWise AI reference brand:
 
 - clean three-leaf logo mark;
 - `HarvestWise AI` wordmark treatment in the topbar;
-- tagline: `Smarter yields. Better future.`;
+- tagline: `Plan the season. Know the next step.`;
 - palette: deep green, muted green, sage, cream, and near-black;
-- compact dashboard layout with assumptions on the left, analysis in the middle, and decisions/advice on the right.
+- focused layout with action and compact metrics first, then on-demand details and an optional explanation panel.
 
 ## Recommended Live Demo Path
 
-1. Open the dashboard with the default maize plan.
-2. Show the deterministic profit snapshot and explain that Gemma does not calculate the financial outputs.
-3. Ask a scenario such as `what if fertilizer cost rises by 20%?`.
-4. Show how the plan recalculates and how the best market move changes if needed.
-5. Ask Gemma for an explanation or refresh the WhatsApp draft for a farmer-facing message.
+1. Open the dashboard with the default maize plan and point to **Recommended next action**.
+2. Change market price or budget and show that the deterministic action changes with it.
+3. Open a scenario such as `what if fertilizer cost rises by 20%?`.
+4. Show how Gemma interprets the requested parameter change and HarvestWise recalculates locally.
+5. Ask Gemma for an explanation or create the WhatsApp draft; state that it cannot choose the action.
 
 ## Where Gemma Fits
 
-Gemma is used as the reasoning and explanation layer.
+Gemma is used as the structured-language and explanation layer.
 
 The financial calculations should be handled by normal code so that the numbers are reliable. Gemma should then help with:
 
-- explaining the numbers in simple language;
-- asking follow-up questions;
+- explaining the supplied numbers in simple language;
 - turning messy farmer answers into structured farm data;
-- comparing options in plain English;
-- generating advice for farmers;
+- converting scenario questions into typed parameter operations;
 - creating advisor notes for cooperatives or extension officers;
 - translating or simplifying financial terms.
 
-This makes Gemma useful without depending on it for exact arithmetic.
+Gemma never calculates financial outputs or chooses, replaces, or rewords the recommended action. This makes Gemma useful without making financial truth dependent on model text.
 
 ## Why This Is Strong For The Hackathon
 
@@ -148,7 +146,7 @@ The idea is easy for judges to understand, but still meaningful:
 
 HarvestWise AI helps small farmers make profitable planting and selling decisions before they lose money.
 
-Farmers enter simple details about their land, costs, harvest, and market price. The app calculates profit, break-even price, risk, and cashflow. Gemma then explains the plan in simple language and generates practical advice for the farmer or cooperative advisor.
+Farmers enter simple details about their land, costs, harvest, and market price. The app calculates profit, break-even price, risk, and a recommended next action. Gemma then explains that deterministic plan in simple language for the farmer or cooperative advisor.
 
 ## One-Sentence Version
 
