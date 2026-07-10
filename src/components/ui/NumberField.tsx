@@ -5,6 +5,8 @@ interface NumberFieldProps {
   step?: number;
   min?: number;
   max?: number;
+  placeholder?: string;
+  emptyWhenZero?: boolean;
   onChange: (value: number) => void;
 }
 
@@ -15,6 +17,8 @@ export function NumberField({
   step = 1,
   min = 0,
   max,
+  placeholder,
+  emptyWhenZero = false,
   onChange,
 }: NumberFieldProps) {
   return (
@@ -26,7 +30,8 @@ export function NumberField({
           max={max}
           step={step}
           type="number"
-          value={Number.isFinite(value) ? value : 0}
+          placeholder={placeholder}
+          value={emptyWhenZero && value === 0 ? "" : Number.isFinite(value) ? value : 0}
           onChange={(event) => onChange(Number(event.target.value))}
         />
         {unit ? <span className="field__unit">{unit}</span> : null}

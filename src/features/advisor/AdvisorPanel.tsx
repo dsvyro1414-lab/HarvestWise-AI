@@ -1,11 +1,12 @@
 import { MessageSquareText, Send, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import type { AdvisorPayload } from "@/domain/types";
+import type { AdvisorChatMessage, AdvisorPayload } from "@/domain/types";
 
 interface AdvisorPanelProps {
   advice: AdvisorPayload;
-  hasExplanation: boolean;
+  error: string | null;
   isLoading: boolean;
+  messages: AdvisorChatMessage[];
   question: string;
   onQuestionChange: (question: string) => void;
   onAskGemma: () => void;
@@ -13,15 +14,16 @@ interface AdvisorPanelProps {
 }
 
 const questionSuggestions = [
-  "What if prices drop 20%?",
-  "Which cost should I reduce first?",
-  "Should I store or sell now?",
+  "Why is this my next action?",
+  "What makes this plan risky?",
+  "Which assumption should I verify first?",
 ];
 
 export function AdvisorPanel({
   advice,
-  hasExplanation,
+  error,
   isLoading,
+  messages,
   question,
   onQuestionChange,
   onAskGemma,
@@ -34,32 +36,53 @@ export function AdvisorPanel({
           <Sparkles size={21} />
           <div>
             <h2>Gemma explains the plan</h2>
-            <p>{advice.provider === "gemma" ? "Gemma explanation · deterministic decision" : "Optional explanation · deterministic decision"}</p>
+            <p>Ask follow-up questions about the numbers already calculated above.</p>
           </div>
         </div>
       </div>
 
       <div className="advisor-thread" aria-live="polite">
-        <div className="advisor-message advisor-message--gemma">
-          <Sparkles size={16} aria-hidden="true" />
-          {hasExplanation ? (
+        {messages.length === 0 ? (
+          <div className="advisor-message advisor-message--gemma">
+            <Sparkles size={16} aria-hidden="true" />
+            <p className="advisor-intro">I can explain the recommendation, risk, costs, and assumptions in this plan. Financial decisions remain calculated by HarvestWise.</p>
+          </div>
+        ) : null}
+
+        {messages.map((message) => (
+          <div className={`advisor-message advisor-message--${message.role}`} key={message.id}>
+            {message.role === "assistant" ? <Sparkles size={16} aria-hidden="true" /> : null}
             <div className="advisor-copy">
-              <p className="advisor-copy__summary">{advice.summary}</p>
-              <ul>
-                {advice.insights.slice(0, 2).map((insight) => (
-                  <li key={insight}>{insight}</li>
-                ))}
-              </ul>
+              <p className="advisor-copy__summary">{message.text}</p>
+              {message.insights && message.insights.length > 0 ? (
+                <ul>
+                  {message.insights.slice(0, 2).map((insight) => (
+                    <li key={insight}>{insight}</li>
+                  ))}
+                </ul>
+              ) : null}
+              {message.provider ? (
+                <span className="advisor-message__provider">
+                  {message.provider === "gemma" ? "Answered by Gemma" : "Local fallback answer"}
+                </span>
+              ) : null}
             </div>
-          ) : (
-            <p className="advisor-intro">I can explain this plan, test an assumption, or turn the result into a farmer-friendly message.</p>
-          )}
-        </div>
+          </div>
+        ))}
+
+        {isLoading ? (
+          <div className="advisor-message advisor-message--gemma advisor-message--loading">
+            <Sparkles size={16} aria-hidden="true" />
+            <p>Gemma is reading your plan…</p>
+          </div>
+        ) : null}
       </div>
+
+      {error ? <p className="inline-error" role="alert">{error}</p> : null}
 
       <div className="advisor-suggestions" aria-label="Suggested questions">
         {questionSuggestions.map((suggestion) => (
-          <button key={suggestion} type="button" onClick={() => onQuestionChange(suggestion)}>
+          <button disabled={isLoading} key={suggestion} type="button" onClick={() => onQuestionChange(suggestion)}>
             {suggestion}
           </button>
         ))}
@@ -76,18 +99,19 @@ export function AdvisorPanel({
           <label htmlFor="gemma-question">Ask about this calculation</label>
           <div>
             <input
+              disabled={isLoading}
               id="gemma-question"
               placeholder="Ask about this plan…"
               value={question}
               onChange={(event) => onQuestionChange(event.target.value)}
             />
-            <button aria-label="Send question" type="submit">
+            <button aria-label="Send question" disabled={isLoading || question.trim().length === 0} type="submit">
               <Send size={16} />
             </button>
           </div>
         </form>
 
-        <Button fullWidth icon={<MessageSquareText size={17} />} variant="secondary" onClick={onAskGemma}>
+        <Button disabled={isLoading} fullWidth icon={<MessageSquareText size={17} />} variant="secondary" onClick={onAskGemma}>
           {isLoading ? "Getting explanation..." : "Explain with Gemma"}
         </Button>
       </div>

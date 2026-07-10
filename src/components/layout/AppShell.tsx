@@ -1,11 +1,12 @@
-import { CalendarDays, MapPin } from "lucide-react";
+import { Calculator, ShieldCheck } from "lucide-react";
 import type { ReactNode } from "react";
 
 interface AppShellProps {
   children: ReactNode;
+  hasPlan: boolean;
 }
 
-export function AppShell({ children }: AppShellProps) {
+export function AppShell({ children, hasPlan }: AppShellProps) {
   return (
     <div className="shell">
       <header className="topbar">
@@ -24,18 +25,32 @@ export function AppShell({ children }: AppShellProps) {
 
         <nav className="journey-nav" aria-label="Plan progress">
           <a href="#farm-plan"><span>1</span>Plan</a>
-          <a href="#plan-results"><span>2</span>Results</a>
-          <a href="#ask-gemma"><span>3</span>Ask Gemma</a>
+          <a
+            aria-disabled={!hasPlan}
+            className={!hasPlan ? "is-locked" : undefined}
+            href={hasPlan ? "#plan-results" : "#farm-plan"}
+            onClick={(event) => {
+              if (!hasPlan) event.preventDefault();
+            }}
+          ><span>2</span>Results</a>
+          <a
+            aria-disabled={!hasPlan}
+            className={!hasPlan ? "is-locked" : undefined}
+            href={hasPlan ? "#ask-gemma" : "#farm-plan"}
+            onClick={(event) => {
+              if (!hasPlan) event.preventDefault();
+            }}
+          ><span>3</span>Ask Gemma</a>
         </nav>
 
         <div className="topbar__context" aria-label="Farm planning context">
           <span>
-            <MapPin size={14} />
-            Oyo, Nigeria
+            <ShieldCheck size={14} />
+            Your inputs
           </span>
           <span>
-            <CalendarDays size={14} />
-            Season 2026 A
+            <Calculator size={14} />
+            Local calculation
           </span>
         </div>
       </header>

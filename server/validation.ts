@@ -19,6 +19,15 @@ export const adviceRequestSchema = z.object({
   input: farmPlanInputSchema,
   mode: z.enum(["explain", "whatsapp"]).default("explain"),
   question: z.string().trim().max(500).optional(),
+  history: z
+    .array(
+      z.object({
+        role: z.enum(["user", "assistant"]),
+        content: z.string().trim().min(1).max(800),
+      }),
+    )
+    .max(8)
+    .optional(),
 });
 
 export const farmInterviewRequestSchema = z.object({

@@ -142,6 +142,19 @@ export interface AdvisorPayload {
   provider: "gemma" | "local-fallback";
 }
 
+export interface AdvisorConversationTurn {
+  role: "user" | "assistant";
+  content: string;
+}
+
+export interface AdvisorChatMessage {
+  id: string;
+  role: "user" | "assistant";
+  text: string;
+  insights?: string[];
+  provider?: AdvisorPayload["provider"];
+}
+
 export interface FarmInterviewResult {
   patch: FarmPlanPatch;
   confidence: number;

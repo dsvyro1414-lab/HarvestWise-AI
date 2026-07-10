@@ -119,6 +119,18 @@ export function createDefaultFarmInput(cropId: CropId = "maize"): FarmPlanInput 
   };
 }
 
+export function createEmptyFarmInput(cropId: CropId = "maize"): FarmPlanInput {
+  const defaults = createDefaultFarmInput(cropId);
+
+  return {
+    ...defaults,
+    landSizeAcres: 0,
+    availableBudget: 0,
+    expectedHarvestPerAcre: 0,
+    marketPricePerUnit: 0,
+  };
+}
+
 export function applyCropDefaults(input: FarmPlanInput, cropId: CropId): FarmPlanInput {
   const nextCrop = cropCatalog[cropId];
 

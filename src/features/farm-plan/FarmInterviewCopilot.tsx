@@ -6,6 +6,7 @@ import type { FarmInterviewResult } from "@/domain/types";
 interface FarmInterviewCopilotProps {
   text: string;
   result: FarmInterviewResult | null;
+  error: string | null;
   isLoading: boolean;
   onTextChange: (text: string) => void;
   onExtract: () => void;
@@ -14,6 +15,7 @@ interface FarmInterviewCopilotProps {
 export function FarmInterviewCopilot({
   text,
   result,
+  error,
   isLoading,
   onTextChange,
   onExtract,
@@ -53,6 +55,8 @@ export function FarmInterviewCopilot({
           </p>
         </div>
       ) : null}
+
+      {error ? <p className="inline-error" role="alert">{error}</p> : null}
     </section>
   );
 }

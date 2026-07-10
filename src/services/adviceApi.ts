@@ -1,9 +1,10 @@
-import type { AdvisorPayload, FarmPlanInput } from "@/domain/types";
+import type { AdvisorConversationTurn, AdvisorPayload, FarmPlanInput } from "@/domain/types";
 
 interface AdviceRequest {
   input: FarmPlanInput;
   mode: "explain" | "whatsapp";
   question?: string;
+  history?: AdvisorConversationTurn[];
 }
 
 export async function requestAdvisorNotes(request: AdviceRequest): Promise<AdvisorPayload> {

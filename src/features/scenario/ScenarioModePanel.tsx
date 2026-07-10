@@ -13,6 +13,7 @@ interface ScenarioSummary {
 interface ScenarioModePanelProps {
   question: string;
   lastScenario: ScenarioSummary | null;
+  error: string | null;
   isLoading: boolean;
   onQuestionChange: (question: string) => void;
   onRunScenario: () => void;
@@ -21,6 +22,7 @@ interface ScenarioModePanelProps {
 export function ScenarioModePanel({
   question,
   lastScenario,
+  error,
   isLoading,
   onQuestionChange,
   onRunScenario,
@@ -66,6 +68,8 @@ export function ScenarioModePanel({
           ) : null}
         </div>
       ) : null}
+
+      {error ? <p className="inline-error" role="alert">{error}</p> : null}
     </section>
   );
 }

@@ -23,11 +23,13 @@ Production demo: [harvestwise-ai.vercel.app](https://harvestwise-ai.vercel.app)
 ## What It Does
 
 - Builds a farm season budget from crop, land, input cost, harvest, and market price assumptions.
+- Opens with an empty personal plan: results remain hidden until the farmer enters the four required numbers and creates the plan.
 - Calculates expected profit, total cost, break-even price, ROI, budget gap, and risk level.
 - Shows one deterministic **Recommended next action** with two concrete reasons: plant, reduce acreage, secure a buyer, wait, or store only above a calculated price.
 - Compares crop options such as maize, cassava, rice, tomato, and beans.
 - Compares market decisions: sell at harvest, store short-term, or store longer.
 - Generates a plain-language explanation and WhatsApp draft through a server-side Gemma endpoint.
+- Supports follow-up Gemma questions with recent conversation context, while keeping every financial decision deterministic.
 - Extracts a farm plan from natural language through the farm interview copilot.
 - Converts what-if questions into scenario parameter changes, then recalculates with deterministic code.
 - Falls back to local advice if no API key is configured, so the demo remains usable.
@@ -55,11 +57,12 @@ Open the Vite URL printed in the terminal, usually `http://localhost:5173`.
 
 Recommended 60-90 second judge flow:
 
-1. Start on the dashboard and point to **Recommended next action** and its two calculated reasons.
-2. Change the market price or available budget to show the action update deterministically.
-3. Open **Test a change to this plan** and ask `what if fertilizer cost rises by 20%?`.
-4. Open price, crop, or market details only if the judge wants to investigate the calculation.
-5. Open **Gemma explains the plan** to demonstrate that AI explains or structures input, while HarvestWise keeps the decision deterministic.
+1. Open the app and show that no result is prefilled for the visitor.
+2. Enter crop, land, available budget, expected harvest, and market price, then create the plan.
+3. Point to **Recommended next action** and its two calculated reasons.
+4. Ask Gemma why that action was selected, then ask one follow-up question in the same conversation.
+5. Open **Test a change to this plan** and ask `what if fertilizer cost rises by 20%?`.
+6. Open price, crop, or market details only if the judge wants to investigate the calculation.
 
 ### Live Gemma Evidence
 

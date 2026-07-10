@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { AdvisorPanel } from "@/features/advisor/AdvisorPanel";
 import { CropComparisonTable } from "@/features/crop-comparison/CropComparisonTable";
@@ -7,11 +7,12 @@ import { FarmerActionCard } from "@/features/farm-plan/FarmerActionCard";
 import { ProfitSnapshot } from "@/features/farm-plan/ProfitSnapshot";
 import { MarketDecisionCards } from "@/features/market-decision/MarketDecisionCards";
 import { buildFallbackAdvice } from "@/domain/advice";
-import { applyCropDefaults, createDefaultFarmInput } from "@/domain/crops";
+import { applyCropDefaults, createEmptyFarmInput } from "@/domain/crops";
 import { buildCropComparison, buildMarketDecisions, calculateFarmPlan, getBestMarketDecision } from "@/domain/finance";
 import { applyFarmPlanPatch, describeOperations, formatFieldLabel } from "@/domain/patches";
 import type {
   AdvisorPayload,
+  AdvisorChatMessage,
   DecisionId,
   FarmInterviewResult,
   FarmPlanInput,
@@ -22,14 +23,14 @@ import { requestFarmInterviewExtraction, requestScenarioParsing } from "@/servic
 import { ScenarioModePanel } from "@/features/scenario/ScenarioModePanel";
 
 export function App() {
-  const [input, setInput] = useState<FarmPlanInput>(() => createDefaultFarmInput("maize"));
+  const [input, setInput] = useState<FarmPlanInput>(() => createEmptyFarmInput("maize"));
+  const [isPlanCreated, setIsPlanCreated] = useState(false);
   const [selectedDecisionId, setSelectedDecisionId] = useState<DecisionId>("sell-harvest");
   const [remoteAdvice, setRemoteAdvice] = useState<AdvisorPayload | null>(null);
   const [question, setQuestion] = useState("");
-  const [interviewText, setInterviewText] = useState(
-    "I want to plant maize on 2 acres. I have ₦320k. Seed is ₦22k per acre, fertilizer ₦65k per acre, labor ₦45k per acre. I expect 26 bags per acre and can sell at ₦18,500 per bag.",
-  );
+  const [interviewText, setInterviewText] = useState("");
   const [interviewResult, setInterviewResult] = useState<FarmInterviewResult | null>(null);
+  const [interviewError, setInterviewError] = useState<string | null>(null);
   const [scenarioQuestion, setScenarioQuestion] = useState("");
   const [lastScenario, setLastScenario] = useState<{
     explanation: string;
@@ -39,8 +40,19 @@ export function App() {
     provider: "gemma" | "local-fallback";
   } | null>(null);
   const [isLoadingAdvice, setIsLoadingAdvice] = useState(false);
+  const [advisorMessages, setAdvisorMessages] = useState<AdvisorChatMessage[]>([]);
+  const [advisorError, setAdvisorError] = useState<string | null>(null);
   const [isExtractingInterview, setIsExtractingInterview] = useState(false);
   const [isRunningScenario, setIsRunningScenario] = useState(false);
+  const [scenarioError, setScenarioError] = useState<string | null>(null);
+  const adviceRequestId = useRef(0);
+
+  const isPlanReady =
+    input.landSizeAcres > 0 &&
+    input.availableBudget > 0 &&
+    input.expectedHarvestPerAcre > 0 &&
+    input.marketPricePerUnit > 0;
+  const showPlan = isPlanCreated && isPlanReady;
 
   const plan = useMemo(() => calculateFarmPlan(input), [input]);
   const comparisons = useMemo(() => buildCropComparison(input), [input]);
@@ -55,28 +67,82 @@ export function App() {
   useEffect(() => {
     setSelectedDecisionId(bestMarketDecision.id);
     setRemoteAdvice(null);
+    setAdvisorMessages([]);
+    setAdvisorError(null);
+    setIsLoadingAdvice(false);
+    adviceRequestId.current += 1;
   }, [bestMarketDecision.id, input]);
 
   async function handleAskGemma(mode: "explain" | "whatsapp" = "explain") {
+    if (!showPlan) return;
+
+    const userQuestion = question.trim() || "Please explain this plan and why this is the recommended next action.";
+    const history = advisorMessages.map((message) => ({
+      role: message.role,
+      content: message.text,
+    }));
+
+    setAdvisorError(null);
     setIsLoadingAdvice(true);
+    const requestId = adviceRequestId.current + 1;
+    adviceRequestId.current = requestId;
+    if (mode === "explain") {
+      setAdvisorMessages((messages) => [
+        ...messages,
+        { id: createMessageId("user"), role: "user", text: userQuestion },
+      ]);
+      setQuestion("");
+    }
+
     try {
       const response = await requestAdvisorNotes({
         input,
         mode,
-        question: question.trim() || undefined,
+        question: userQuestion,
+        history,
       });
+      if (requestId !== adviceRequestId.current) return;
       setRemoteAdvice(response);
+      if (mode === "explain") {
+        setAdvisorMessages((messages) => [
+          ...messages,
+          {
+            id: createMessageId("assistant"),
+            role: "assistant",
+            text: response.summary,
+            insights: response.insights,
+            provider: response.provider,
+          },
+        ]);
+      }
     } catch {
-      setRemoteAdvice({
+      if (requestId !== adviceRequestId.current) return;
+      const localResponse: AdvisorPayload = {
         ...fallbackAdvice,
         summary: `${fallbackAdvice.summary} Gemma is not connected yet, so this is the local fallback explanation.`,
-      });
+        provider: "local-fallback",
+      };
+      setRemoteAdvice(localResponse);
+      setAdvisorError("Gemma could not be reached. A local explanation is shown instead.");
+      if (mode === "explain") {
+        setAdvisorMessages((messages) => [
+          ...messages,
+          {
+            id: createMessageId("assistant"),
+            role: "assistant",
+            text: localResponse.summary,
+            insights: localResponse.insights,
+            provider: "local-fallback",
+          },
+        ]);
+      }
     } finally {
-      setIsLoadingAdvice(false);
+      if (requestId === adviceRequestId.current) setIsLoadingAdvice(false);
     }
   }
 
   async function handleExtractInterview() {
+    setInterviewError(null);
     setIsExtractingInterview(true);
     try {
       const response = await requestFarmInterviewExtraction({
@@ -85,12 +151,15 @@ export function App() {
       });
       setInterviewResult(response);
       applyPatch(response.patch);
+    } catch {
+      setInterviewError("We could not read that note. Check your connection or enter the four essentials manually.");
     } finally {
       setIsExtractingInterview(false);
     }
   }
 
   async function handleRunScenario() {
+    setScenarioError(null);
     setIsRunningScenario(true);
     const beforeInput = input;
     const beforePlan = calculateFarmPlan(beforeInput);
@@ -113,6 +182,8 @@ export function App() {
         afterProfit: afterPlan.expectedProfit,
         provider: response.provider,
       });
+    } catch {
+      setScenarioError("We could not interpret that change. Try a specific value, such as “fertilizer cost rises by 20%.”");
     } finally {
       setIsRunningScenario(false);
     }
@@ -130,13 +201,37 @@ export function App() {
     return nextInput;
   }
 
+  function handleInputChange(nextInput: FarmPlanInput) {
+    setInput(nextInput);
+    setLastScenario(null);
+    setScenarioError(null);
+  }
+
+  function handleCreatePlan() {
+    if (!isPlanReady) return;
+    setIsPlanCreated(true);
+    window.setTimeout(() => {
+      document.getElementById("plan-results")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 0);
+  }
+
+  function handleReset() {
+    setInput(createEmptyFarmInput(input.cropId));
+    setIsPlanCreated(false);
+    setInterviewText("");
+    setInterviewResult(null);
+    setInterviewError(null);
+    setLastScenario(null);
+    setScenarioQuestion("");
+  }
+
   return (
-    <AppShell>
+    <AppShell hasPlan={showPlan}>
       <main className="guided-layout">
         <header className="journey-intro">
           <span className="journey-intro__eyebrow">Farm profit planner</span>
           <h2>Plan your farm season with confidence</h2>
-          <p>Enter the essentials once, review the numbers, then ask Gemma to explain the result.</p>
+          <p>Start with your own numbers. HarvestWise calculates the plan, then Gemma helps you understand it.</p>
         </header>
 
         <section className="journey-section" id="farm-plan" aria-labelledby="farm-plan-title">
@@ -151,17 +246,21 @@ export function App() {
             </div>
             <FarmInputPanel
               input={input}
+              interviewError={interviewError}
               interviewResult={interviewResult}
               interviewText={interviewText}
               isExtractingInterview={isExtractingInterview}
-              onChange={setInput}
+              isPlanCreated={showPlan}
+              onChange={handleInputChange}
+              onCreatePlan={handleCreatePlan}
               onExtractInterview={() => void handleExtractInterview()}
               onInterviewTextChange={setInterviewText}
+              onReset={handleReset}
             />
           </div>
         </section>
 
-        <section className="journey-section" id="plan-results" aria-labelledby="plan-results-title">
+        {showPlan ? <section className="journey-section journey-section--revealed" id="plan-results" aria-labelledby="plan-results-title">
           <div className="journey-step" aria-hidden="true">2</div>
           <div className="journey-section__body results-stack">
             <div className="journey-section__heading">
@@ -179,6 +278,7 @@ export function App() {
               <details className="analysis-disclosure">
                 <summary>Test a change to this plan</summary>
                 <ScenarioModePanel
+                  error={scenarioError}
                   isLoading={isRunningScenario}
                   lastScenario={lastScenario}
                   question={scenarioQuestion}
@@ -202,9 +302,9 @@ export function App() {
               </details>
             </div>
           </div>
-        </section>
+        </section> : null}
 
-        <section className="journey-section journey-section--gemma" id="ask-gemma" aria-labelledby="ask-gemma-title">
+        {showPlan ? <section className="journey-section journey-section--gemma journey-section--revealed" id="ask-gemma" aria-labelledby="ask-gemma-title">
           <div className="journey-step" aria-hidden="true">3</div>
           <div className="journey-section__body">
             <div className="journey-section__heading">
@@ -216,16 +316,21 @@ export function App() {
             </div>
             <AdvisorPanel
               advice={advice}
-              hasExplanation={remoteAdvice !== null}
+              error={advisorError}
               isLoading={isLoadingAdvice}
+              messages={advisorMessages}
               question={question}
               onAskGemma={() => void handleAskGemma("explain")}
               onGenerateWhatsApp={() => void handleAskGemma("whatsapp")}
               onQuestionChange={setQuestion}
             />
           </div>
-        </section>
+        </section> : null}
       </main>
     </AppShell>
   );
+}
+
+function createMessageId(role: AdvisorChatMessage["role"]): string {
+  return `${role}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }

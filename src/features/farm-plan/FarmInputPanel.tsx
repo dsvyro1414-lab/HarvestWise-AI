@@ -1,5 +1,6 @@
-import { ArrowDown, RotateCcw } from "lucide-react";
-import { applyCropDefaults, cropOptions, createDefaultFarmInput } from "@/domain/crops";
+import { ArrowRight, CheckCircle2, RotateCcw } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { applyCropDefaults, cropOptions } from "@/domain/crops";
 import type { CropId, FarmInterviewResult, FarmPlanInput } from "@/domain/types";
 import { NumberField } from "@/components/ui/NumberField";
 import { FarmInterviewCopilot } from "./FarmInterviewCopilot";
@@ -8,8 +9,12 @@ interface FarmInputPanelProps {
   input: FarmPlanInput;
   interviewText: string;
   interviewResult: FarmInterviewResult | null;
+  interviewError: string | null;
   isExtractingInterview: boolean;
+  isPlanCreated: boolean;
   onChange: (input: FarmPlanInput) => void;
+  onCreatePlan: () => void;
+  onReset: () => void;
   onInterviewTextChange: (text: string) => void;
   onExtractInterview: () => void;
 }
@@ -18,12 +23,23 @@ export function FarmInputPanel({
   input,
   interviewText,
   interviewResult,
+  interviewError,
   isExtractingInterview,
+  isPlanCreated,
   onChange,
+  onCreatePlan,
+  onReset,
   onInterviewTextChange,
   onExtractInterview,
 }: FarmInputPanelProps) {
   const selectedCrop = cropOptions.find((crop) => crop.id === input.cropId) ?? cropOptions[0];
+  const completedCoreInputs = [
+    input.landSizeAcres,
+    input.availableBudget,
+    input.expectedHarvestPerAcre,
+    input.marketPricePerUnit,
+  ].filter((value) => value > 0).length;
+  const isReady = completedCoreInputs === 4;
 
   function updateNumber(key: keyof FarmPlanInput, value: number) {
     onChange({
@@ -33,7 +49,11 @@ export function FarmInputPanel({
   }
 
   function updateCrop(cropId: CropId) {
-    onChange(applyCropDefaults(input, cropId));
+    onChange({
+      ...applyCropDefaults(input, cropId),
+      expectedHarvestPerAcre: 0,
+      marketPricePerUnit: 0,
+    });
   }
 
   return (
@@ -41,9 +61,9 @@ export function FarmInputPanel({
       <div className="panel-heading">
         <div>
           <h2>Farm details</h2>
-          <p>Results update instantly as you type.</p>
+          <p>Use your own season assumptions. Results stay hidden until you create the plan.</p>
         </div>
-        <button className="reset-button" type="button" onClick={() => onChange(createDefaultFarmInput(input.cropId))}>
+        <button className="reset-button" type="button" onClick={onReset}>
           <RotateCcw size={15} />
           Reset
         </button>
@@ -64,29 +84,40 @@ export function FarmInputPanel({
         </label>
 
         <NumberField
+          emptyWhenZero
           label="Land"
           min={0.1}
+          placeholder="e.g. 2"
           step={0.1}
           unit="acres"
           value={input.landSizeAcres}
           onChange={(value) => updateNumber("landSizeAcres", value)}
         />
         <NumberField
+          emptyWhenZero
           label="Available budget"
+          min={1}
+          placeholder="e.g. 320000"
           step={5000}
           unit="NGN"
           value={input.availableBudget}
           onChange={(value) => updateNumber("availableBudget", value)}
         />
         <NumberField
+          emptyWhenZero
           label="Expected harvest"
+          min={0.1}
+          placeholder="e.g. 18"
           step={1}
           unit={`${selectedCrop.unitPlural}/acre`}
           value={input.expectedHarvestPerAcre}
           onChange={(value) => updateNumber("expectedHarvestPerAcre", value)}
         />
         <NumberField
+          emptyWhenZero
           label="Market price"
+          min={1}
+          placeholder="e.g. 18500"
           step={500}
           unit={`NGN/${selectedCrop.unit}`}
           value={input.marketPricePerUnit}
@@ -134,12 +165,13 @@ export function FarmInputPanel({
           onChange={(value) => updateNumber("storageMonths", value)}
         />
         </div>
-        <p className="assumption-disclosure__note">Costs are applied to the plan immediately. Storage changes the recommended action to the harvest stage.</p>
+        <p className="assumption-disclosure__note">These starting cost assumptions come from the selected crop profile. Review them before relying on the result.</p>
       </details>
 
       <details className="copilot-disclosure">
         <summary>Import a farm note with Gemma</summary>
         <FarmInterviewCopilot
+          error={interviewError}
           isLoading={isExtractingInterview}
           result={interviewResult}
           text={interviewText}
@@ -148,12 +180,26 @@ export function FarmInputPanel({
         />
       </details>
 
-      <a className="button button--primary button--full input-panel__cta" href="#plan-results">
-        View my plan
-        <ArrowDown size={16} />
-      </a>
+      <div className="input-readiness" aria-live="polite">
+        <span>{completedCoreInputs} of 4 personal inputs complete</span>
+        <span className="input-readiness__track" aria-hidden="true">
+          <span style={{ width: `${completedCoreInputs * 25}%` }} />
+        </span>
+      </div>
 
-      <p className="input-panel__timestamp">Live calculation · edited today</p>
+      <Button
+        className="input-panel__cta"
+        disabled={!isReady}
+        fullWidth
+        icon={isPlanCreated ? <CheckCircle2 size={16} /> : <ArrowRight size={16} />}
+        onClick={onCreatePlan}
+      >
+        {isPlanCreated ? "View updated plan" : "Create my farm plan"}
+      </Button>
+
+      <p className="input-panel__timestamp">
+        {isReady ? "Ready to calculate from your entries" : "Complete the four blank fields to continue"}
+      </p>
     </section>
   );
 }

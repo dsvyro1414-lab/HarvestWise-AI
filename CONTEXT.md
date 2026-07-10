@@ -12,6 +12,15 @@ The product helps a smallholder farmer or cooperative advisor answer one questio
 
 HarvestWise AI is not a lending, credit-scoring, or loan-recommendation product.
 
+## End-user Flow Update — 2026-07-11
+
+- A new visitor now sees an empty personal plan instead of a calculated demo result.
+- Results and the Gemma workspace remain locked until crop plus four personal values are complete and the user creates the plan.
+- The hardcoded Oyo/season context has been removed from the header.
+- Gemma now renders a real conversation thread and receives up to eight recent turns for follow-up context.
+- Every answer is labelled `Answered by Gemma` or `Local fallback answer`; a provider failure never masquerades as model output.
+- Network failures in interview extraction, scenarios, and advice now produce visible recovery messages instead of unhandled UI failures.
+
 ## Current State
 
 - Branch: `main`
