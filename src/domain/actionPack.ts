@@ -18,6 +18,13 @@ export interface DeterministicActionPack {
   nextSteps: string[];
 }
 
+export interface RealityCheckPrompt {
+  checkId: RealityCheckItem["id"];
+  question: string;
+  context: string;
+  provider: "gemma" | "local-fallback";
+}
+
 /**
  * Keeps verification prompts and practical steps deterministic. These checks
  * help a farmer validate local assumptions; they never create a new price,
@@ -79,4 +86,35 @@ export function buildActionPack(input: FarmPlanInput, plan: FarmPlanResult): Det
 
 function priorityRank(priority: VerificationPriority): number {
   return priority === "urgent" ? 0 : 1;
+}
+
+/**
+ * Selects the verification topic deterministically; Gemma may only turn this
+ * selected topic into a more natural question when the farmer asks for help.
+ */
+export function buildLocalRealityCheckPrompt(input: FarmPlanInput, plan: FarmPlanResult): RealityCheckPrompt {
+  const check = buildActionPack(input, plan).checks[0];
+
+  return {
+    checkId: check.id,
+    context: check.detail,
+    question: questionForCheck(check.id, input, plan),
+    provider: "local-fallback",
+  };
+}
+
+function questionForCheck(checkId: RealityCheckItem["id"], input: FarmPlanInput, plan: FarmPlanResult): string {
+  if (checkId === "buyer-price") {
+    return `What price, grade, delivery date, and quantity can you confirm for ${plan.crop.name.toLowerCase()} in writing?`;
+  }
+  if (checkId === "lease") {
+    return `Can we confirm the ${formatCurrency(input.landLeaseCostPerAcre)} per-acre lease, payment date, and included services in writing?`;
+  }
+  if (checkId === "input-quotes") {
+    return "What is the delivered price from two suppliers for seed, fertilizer, and fieldwork today?";
+  }
+  if (checkId === "yield-history") {
+    return `What were this field's actual yields over the last three seasons, compared with the planned ${formatNumber(input.expectedHarvestPerAcre)} ${plan.crop.unitPlural} per acre?`;
+  }
+  return "What planting, harvest, and delivery dates can the field and buyer realistically support this season?";
 }

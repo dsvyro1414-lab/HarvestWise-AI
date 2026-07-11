@@ -1,9 +1,9 @@
 import type {
   FarmInterviewResult,
   FarmPlanInput,
-  GuidedInterviewPrompt,
   ScenarioParseResult,
 } from "@/domain/types";
+import type { RealityCheckPrompt } from "@/domain/actionPack";
 
 export async function requestFarmInterviewExtraction(request: {
   text: string;
@@ -24,10 +24,10 @@ export async function requestFarmInterviewExtraction(request: {
   return response.json() as Promise<FarmInterviewResult>;
 }
 
-export async function requestGuidedInterviewPrompt(request: {
-  currentInput: FarmPlanInput;
-}): Promise<GuidedInterviewPrompt> {
-  const response = await fetch("/api/interview/next-question", {
+export async function requestRealityCheckQuestion(request: {
+  input: FarmPlanInput;
+}): Promise<RealityCheckPrompt> {
+  const response = await fetch("/api/reality-check/question", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -36,10 +36,10 @@ export async function requestGuidedInterviewPrompt(request: {
   });
 
   if (!response.ok) {
-    throw new Error(`Guided interview request failed with ${response.status}`);
+    throw new Error(`Reality-check question request failed with ${response.status}`);
   }
 
-  return response.json() as Promise<GuidedInterviewPrompt>;
+  return response.json() as Promise<RealityCheckPrompt>;
 }
 
 export async function requestScenarioParsing(request: {

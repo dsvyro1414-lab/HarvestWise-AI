@@ -1,11 +1,22 @@
 import { CheckCircle2, TriangleAlert } from "lucide-react";
-import type { DeterministicActionPack } from "@/domain/actionPack";
+import { Button } from "@/components/ui/Button";
+import type { DeterministicActionPack, RealityCheckPrompt } from "@/domain/actionPack";
 
 interface ActionPackPanelProps {
   pack: DeterministicActionPack;
+  gemmaPrompt: RealityCheckPrompt | null;
+  gemmaError: string | null;
+  isLoadingGemmaPrompt: boolean;
+  onAskGemma: () => void;
 }
 
-export function ActionPackPanel({ pack }: ActionPackPanelProps) {
+export function ActionPackPanel({
+  pack,
+  gemmaPrompt,
+  gemmaError,
+  isLoadingGemmaPrompt,
+  onAskGemma,
+}: ActionPackPanelProps) {
   return (
     <section className="action-pack" aria-labelledby="action-pack-title">
       <header className="action-pack__heading">
@@ -49,6 +60,23 @@ export function ActionPackPanel({ pack }: ActionPackPanelProps) {
             </div>
           </article>
         ))}
+      </section>
+
+      <section className="action-pack__gemma" aria-label="Gemma verification help">
+        <div>
+          <h4>Need help validating the first check?</h4>
+          <p>Gemma can turn the already-selected verification item into one question to take to a buyer, landowner, or supplier.</p>
+        </div>
+        <Button disabled={isLoadingGemmaPrompt} variant="secondary" onClick={onAskGemma}>
+          {isLoadingGemmaPrompt ? "Drafting question..." : "Ask Gemma for a verification question"}
+        </Button>
+        {gemmaPrompt ? (
+          <div className="gemma-verification-question">
+            <span>{gemmaPrompt.provider === "gemma" ? "Gemma wording" : "Local fallback wording"}</span>
+            <strong>{gemmaPrompt.question}</strong>
+          </div>
+        ) : null}
+        {gemmaError ? <p className="inline-error" role="alert">{gemmaError}</p> : null}
       </section>
     </section>
   );

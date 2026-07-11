@@ -1,10 +1,11 @@
 import express from "express";
 import { buildAdvisorNotes } from "./gemmaAdvisor.js";
-import { extractFarmInterview, getGuidedInterviewPrompt, parseScenarioQuestion } from "./gemmaStructured.js";
+import { buildRealityCheckQuestion } from "./gemmaRealityCheck.js";
+import { extractFarmInterview, parseScenarioQuestion } from "./gemmaStructured.js";
 import {
   adviceRequestSchema,
   farmInterviewRequestSchema,
-  guidedInterviewRequestSchema,
+  realityCheckRequestSchema,
   scenarioRequestSchema,
 } from "./validation.js";
 
@@ -50,18 +51,18 @@ app.post("/api/interview", async (request, response) => {
   response.json(result);
 });
 
-app.post("/api/interview/next-question", async (request, response) => {
-  const parsed = guidedInterviewRequestSchema.safeParse(request.body);
+app.post("/api/reality-check/question", async (request, response) => {
+  const parsed = realityCheckRequestSchema.safeParse(request.body);
 
   if (!parsed.success) {
     response.status(400).json({
-      error: "Invalid guided interview request",
+      error: "Invalid reality-check request",
       issues: parsed.error.flatten(),
     });
     return;
   }
 
-  const result = await getGuidedInterviewPrompt(parsed.data);
+  const result = await buildRealityCheckQuestion(parsed.data);
   response.json(result);
 });
 

@@ -167,13 +167,6 @@ export interface FarmInterviewResult {
   provider: "gemma" | "local-fallback";
 }
 
-export interface GuidedInterviewPrompt {
-  field: FarmPlanField | null;
-  question: string | null;
-  summary: string;
-  provider: "gemma" | "local-fallback";
-}
-
 export interface ScenarioParseResult {
   operations: ScenarioOperation[];
   patch: FarmPlanPatch;

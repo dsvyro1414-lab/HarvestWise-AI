@@ -1,7 +1,7 @@
 import { ArrowRight, CheckCircle2, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { applyCropDefaults, cropOptions } from "@/domain/crops";
-import type { CropId, FarmInterviewResult, FarmPlanInput, GuidedInterviewPrompt } from "@/domain/types";
+import type { CropId, FarmInterviewResult, FarmPlanInput } from "@/domain/types";
 import { NumberField } from "@/components/ui/NumberField";
 import { FarmInterviewCopilot } from "./FarmInterviewCopilot";
 
@@ -9,36 +9,28 @@ interface FarmInputPanelProps {
   input: FarmPlanInput;
   interviewText: string;
   interviewResult: FarmInterviewResult | null;
-  guidedPrompt: GuidedInterviewPrompt;
   interviewError: string | null;
-  guidanceError: string | null;
   isExtractingInterview: boolean;
-  isRequestingGuidance: boolean;
   isPlanCreated: boolean;
   onChange: (input: FarmPlanInput) => void;
   onCreatePlan: () => void;
   onReset: () => void;
   onInterviewTextChange: (text: string) => void;
   onExtractInterview: () => void;
-  onRequestGuidance: () => void;
 }
 
 export function FarmInputPanel({
   input,
   interviewText,
   interviewResult,
-  guidedPrompt,
   interviewError,
-  guidanceError,
   isExtractingInterview,
-  isRequestingGuidance,
   isPlanCreated,
   onChange,
   onCreatePlan,
   onReset,
   onInterviewTextChange,
   onExtractInterview,
-  onRequestGuidance,
 }: FarmInputPanelProps) {
   const selectedCrop = cropOptions.find((crop) => crop.id === input.cropId) ?? cropOptions[0];
   const completedCoreInputs = [
@@ -183,18 +175,17 @@ export function FarmInputPanel({
         <p className="assumption-disclosure__note">Midwest U.S. benchmarks are starting assumptions, not live bids. Review lease, fieldwork, and local market costs before relying on the result.</p>
       </details>
 
-      <FarmInterviewCopilot
-        error={interviewError}
-        guidanceError={guidanceError}
-        isLoading={isExtractingInterview}
-        isRequestingGuidance={isRequestingGuidance}
-        prompt={guidedPrompt}
-        result={interviewResult}
-        text={interviewText}
-        onExtract={onExtractInterview}
-        onRequestGuidance={onRequestGuidance}
-        onTextChange={onInterviewTextChange}
-      />
+      <details className="copilot-disclosure">
+        <summary>Prefer to paste a farm note?</summary>
+        <FarmInterviewCopilot
+          error={interviewError}
+          isLoading={isExtractingInterview}
+          result={interviewResult}
+          text={interviewText}
+          onExtract={onExtractInterview}
+          onTextChange={onInterviewTextChange}
+        />
+      </details>
 
       <div className="input-readiness" aria-live="polite">
         <span>{completedCoreInputs} of 4 personal inputs complete</span>

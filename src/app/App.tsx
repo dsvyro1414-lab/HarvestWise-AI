@@ -9,10 +9,9 @@ import { ActionPackPanel } from "@/features/farm-plan/ActionPackPanel";
 import { MarketDecisionCards } from "@/features/market-decision/MarketDecisionCards";
 import { PostPlanDashboard, type PostPlanScenario } from "@/features/post-plan/PostPlanDashboard";
 import { buildFallbackAdvice } from "@/domain/advice";
-import { buildActionPack } from "@/domain/actionPack";
+import { buildActionPack, type RealityCheckPrompt } from "@/domain/actionPack";
 import { applyCropDefaults, createEmptyFarmInput } from "@/domain/crops";
 import { buildCropComparison, buildMarketDecisions, calculateFarmPlan, getBestMarketDecision } from "@/domain/finance";
-import { buildGuidedAnswerStatement, buildLocalGuidedInterview } from "@/domain/guidedInterview";
 import { applyFarmPlanPatch, describeOperations, formatFieldLabel } from "@/domain/patches";
 import type {
   AdvisorPayload,
@@ -21,12 +20,11 @@ import type {
   FarmInterviewResult,
   FarmPlanInput,
   FarmPlanPatch,
-  GuidedInterviewPrompt,
 } from "@/domain/types";
 import { requestAdvisorNotes } from "@/services/adviceApi";
 import {
   requestFarmInterviewExtraction,
-  requestGuidedInterviewPrompt,
+  requestRealityCheckQuestion,
   requestScenarioParsing,
 } from "@/services/copilotApi";
 import { ScenarioModePanel } from "@/features/scenario/ScenarioModePanel";
@@ -40,8 +38,8 @@ export function App() {
   const [interviewText, setInterviewText] = useState("");
   const [interviewResult, setInterviewResult] = useState<FarmInterviewResult | null>(null);
   const [interviewError, setInterviewError] = useState<string | null>(null);
-  const [guidedPrompt, setGuidedPrompt] = useState<GuidedInterviewPrompt>(() => buildLocalGuidedInterview(input));
-  const [guidanceError, setGuidanceError] = useState<string | null>(null);
+  const [realityCheckPrompt, setRealityCheckPrompt] = useState<RealityCheckPrompt | null>(null);
+  const [realityCheckError, setRealityCheckError] = useState<string | null>(null);
   const [scenarioQuestion, setScenarioQuestion] = useState("");
   const [lastScenario, setLastScenario] = useState<PostPlanScenario | null>(null);
   const [isScenarioOpen, setIsScenarioOpen] = useState(false);
@@ -49,7 +47,7 @@ export function App() {
   const [advisorMessages, setAdvisorMessages] = useState<AdvisorChatMessage[]>([]);
   const [advisorError, setAdvisorError] = useState<string | null>(null);
   const [isExtractingInterview, setIsExtractingInterview] = useState(false);
-  const [isRequestingGuidance, setIsRequestingGuidance] = useState(false);
+  const [isRequestingRealityCheck, setIsRequestingRealityCheck] = useState(false);
   const [isRunningScenario, setIsRunningScenario] = useState(false);
   const [scenarioError, setScenarioError] = useState<string | null>(null);
   const adviceRequestId = useRef(0);
@@ -153,17 +151,13 @@ export function App() {
     setInterviewError(null);
     setIsExtractingInterview(true);
     try {
-      const textForExtraction = guidedPrompt.field
-        ? buildGuidedAnswerStatement(guidedPrompt.field, interviewText)
-        : interviewText;
       const response = await requestFarmInterviewExtraction({
-        text: textForExtraction,
+        text: interviewText,
         currentInput: input,
       });
       setInterviewResult(response);
-      const nextInput = applyPatch(response.patch);
+      applyPatch(response.patch);
       setInterviewText("");
-      void handleRequestGuidance(nextInput);
     } catch {
       setInterviewError("We could not read that note. Check your connection or enter the four essentials manually.");
     } finally {
@@ -171,17 +165,17 @@ export function App() {
     }
   }
 
-  async function handleRequestGuidance(currentInput = input) {
-    setGuidanceError(null);
-    setIsRequestingGuidance(true);
+  async function handleAskRealityCheck() {
+    if (!showPlan) return;
+    setRealityCheckError(null);
+    setIsRequestingRealityCheck(true);
     try {
-      const response = await requestGuidedInterviewPrompt({ currentInput });
-      setGuidedPrompt(response);
+      const response = await requestRealityCheckQuestion({ input });
+      setRealityCheckPrompt(response);
     } catch {
-      setGuidanceError("Gemma could not prepare a question. The local guide is still available.");
-      setGuidedPrompt(buildLocalGuidedInterview(currentInput));
+      setRealityCheckError("Gemma could not draft the verification question. Try again in a moment.");
     } finally {
-      setIsRequestingGuidance(false);
+      setIsRequestingRealityCheck(false);
     }
   }
 
@@ -226,17 +220,19 @@ export function App() {
     const nextInput = applyFarmPlanPatch(base, patch);
 
     setInput(nextInput);
-    setGuidedPrompt(buildLocalGuidedInterview(nextInput));
     setRemoteAdvice(null);
     setLastScenario(null);
+    setRealityCheckPrompt(null);
+    setRealityCheckError(null);
     return nextInput;
   }
 
   function handleInputChange(nextInput: FarmPlanInput) {
     setInput(nextInput);
-    setGuidedPrompt(buildLocalGuidedInterview(nextInput));
     setLastScenario(null);
     setScenarioError(null);
+    setRealityCheckPrompt(null);
+    setRealityCheckError(null);
   }
 
   function handleCreatePlan() {
@@ -250,12 +246,12 @@ export function App() {
   function handleReset() {
     const nextInput = createEmptyFarmInput(input.cropId);
     setInput(nextInput);
-    setGuidedPrompt(buildLocalGuidedInterview(nextInput));
     setIsPlanCreated(false);
     setInterviewText("");
     setInterviewResult(null);
     setInterviewError(null);
-    setGuidanceError(null);
+    setRealityCheckPrompt(null);
+    setRealityCheckError(null);
     setLastScenario(null);
     setIsScenarioOpen(false);
     setScenarioQuestion("");
@@ -285,16 +281,12 @@ export function App() {
               interviewError={interviewError}
               interviewResult={interviewResult}
               interviewText={interviewText}
-              guidedPrompt={guidedPrompt}
-              guidanceError={guidanceError}
               isExtractingInterview={isExtractingInterview}
-              isRequestingGuidance={isRequestingGuidance}
               isPlanCreated={showPlan}
               onChange={handleInputChange}
               onCreatePlan={handleCreatePlan}
               onExtractInterview={() => void handleExtractInterview()}
               onInterviewTextChange={setInterviewText}
-              onRequestGuidance={() => void handleRequestGuidance()}
               onReset={handleReset}
             />
           </div>
@@ -319,7 +311,13 @@ export function App() {
               scenario={lastScenario}
               onOpenScenario={() => setIsScenarioOpen(true)}
             />
-            <ActionPackPanel pack={actionPack} />
+            <ActionPackPanel
+              gemmaError={realityCheckError}
+              gemmaPrompt={realityCheckPrompt}
+              isLoadingGemmaPrompt={isRequestingRealityCheck}
+              pack={actionPack}
+              onAskGemma={() => void handleAskRealityCheck()}
+            />
 
             <div className="analysis-disclosure-grid">
               <details

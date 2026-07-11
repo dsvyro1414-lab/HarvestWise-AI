@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createDefaultFarmInput } from "./crops.js";
-import { buildActionPack } from "./actionPack.js";
+import { buildActionPack, buildLocalRealityCheckPrompt } from "./actionPack.js";
 import { calculateFarmPlan } from "./finance.js";
 
 describe("deterministic action pack", () => {
@@ -26,5 +26,13 @@ describe("deterministic action pack", () => {
     const pack = buildActionPack(input, plan);
 
     expect(pack.checks[0]).toMatchObject({ id: "buyer-price", priority: "urgent" });
+  });
+
+  it("chooses a Gemma-ready question from the deterministic first verification item", () => {
+    const input = createDefaultFarmInput("corn");
+    const prompt = buildLocalRealityCheckPrompt(input, calculateFarmPlan(input));
+
+    expect(prompt).toMatchObject({ checkId: "buyer-price", provider: "local-fallback" });
+    expect(prompt.question).toContain("price");
   });
 });

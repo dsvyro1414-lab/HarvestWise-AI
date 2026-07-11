@@ -420,57 +420,6 @@ button:active {
   font-size: 11px;
 }
 
-.copilot-box__provider {
-  display: inline-flex;
-  align-items: center;
-  min-height: 23px;
-  border-radius: 999px;
-  padding: 0 8px;
-  font-size: 10px;
-  font-weight: 820;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.copilot-box__provider--gemma {
-  background: rgba(var(--green-rgb), 0.14);
-  color: var(--green);
-}
-
-.copilot-box__provider--local-fallback {
-  background: rgba(var(--ink-rgb), 0.06);
-  color: var(--muted);
-}
-
-.copilot-question {
-  display: grid;
-  gap: 4px;
-  border-left: 2px solid var(--green);
-  padding: 2px 0 2px 10px;
-}
-
-.copilot-question > span {
-  color: var(--green);
-  font-size: 10px;
-  font-weight: 820;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.copilot-question strong {
-  color: var(--green-strong);
-  font-size: 14px;
-  line-height: 1.35;
-}
-
-.copilot-question p {
-  margin: 0;
-  color: var(--muted);
-  font-size: 11px;
-  line-height: 1.4;
-}
-
 .copilot-box textarea {
   width: 100%;
   min-height: 94px;
@@ -483,26 +432,6 @@ button:active {
   color: var(--text);
   font-size: 12px;
   line-height: 1.45;
-}
-
-.copilot-box__refresh {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  width: fit-content;
-  min-height: 28px;
-  border: 0;
-  padding: 0;
-  background: transparent;
-  color: var(--green);
-  font-size: 11px;
-  font-weight: 780;
-}
-
-.copilot-box__refresh:disabled {
-  cursor: wait;
-  opacity: 0.64;
 }
 
 .copilot-result {
@@ -2068,6 +1997,56 @@ button:active {
   line-height: 1.42;
 }
 
+.action-pack__gemma {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px 20px;
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+}
+
+.action-pack__gemma h4 {
+  margin: 0;
+  color: var(--text);
+  font-size: 13px;
+}
+
+.action-pack__gemma p {
+  max-width: 620px;
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.action-pack__gemma .button {
+  min-height: 36px;
+  white-space: nowrap;
+}
+
+.gemma-verification-question {
+  display: grid;
+  grid-column: 1 / -1;
+  gap: 5px;
+  border-left: 2px solid var(--green);
+  padding-left: 11px;
+}
+
+.gemma-verification-question span {
+  color: var(--green);
+  font-size: 10px;
+  font-weight: 820;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.gemma-verification-question strong {
+  color: var(--green-strong);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
 .post-plan-dashboard__heading,
 .decision-panel__heading {
   display: flex;
@@ -2777,6 +2756,16 @@ button:active {
   .action-pack__heading > p {
     max-width: none;
     text-align: left;
+  }
+
+  .action-pack__gemma {
+    grid-template-columns: 1fr;
+    align-items: flex-start;
+  }
+
+  .action-pack__gemma .button {
+    width: 100%;
+    white-space: normal;
   }
 
   .price-safety-metrics {

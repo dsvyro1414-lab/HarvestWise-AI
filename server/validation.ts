@@ -36,8 +36,8 @@ export const farmInterviewRequestSchema = z.object({
   currentInput: farmPlanInputSchema,
 });
 
-export const guidedInterviewRequestSchema = z.object({
-  currentInput: farmPlanInputSchema,
+export const realityCheckRequestSchema = z.object({
+  input: farmPlanInputSchema,
 });
 
 export const scenarioRequestSchema = z.object({
