@@ -1,7 +1,12 @@
 import express from "express";
 import { buildAdvisorNotes } from "./gemmaAdvisor.js";
-import { extractFarmInterview, parseScenarioQuestion } from "./gemmaStructured.js";
-import { adviceRequestSchema, farmInterviewRequestSchema, scenarioRequestSchema } from "./validation.js";
+import { extractFarmInterview, getGuidedInterviewPrompt, parseScenarioQuestion } from "./gemmaStructured.js";
+import {
+  adviceRequestSchema,
+  farmInterviewRequestSchema,
+  guidedInterviewRequestSchema,
+  scenarioRequestSchema,
+} from "./validation.js";
 
 const app = express();
 const port = Number(process.env.PORT ?? 8787);
@@ -42,6 +47,21 @@ app.post("/api/interview", async (request, response) => {
   }
 
   const result = await extractFarmInterview(parsed.data);
+  response.json(result);
+});
+
+app.post("/api/interview/next-question", async (request, response) => {
+  const parsed = guidedInterviewRequestSchema.safeParse(request.body);
+
+  if (!parsed.success) {
+    response.status(400).json({
+      error: "Invalid guided interview request",
+      issues: parsed.error.flatten(),
+    });
+    return;
+  }
+
+  const result = await getGuidedInterviewPrompt(parsed.data);
   response.json(result);
 });
 

@@ -1,10 +1,12 @@
 import { GoogleGenAI } from "@google/genai";
+import { buildLocalGuidedInterview } from "../src/domain/guidedInterview.js";
 import { applyScenarioOperations, getMissingCoreFields, getPatchFields } from "../src/domain/patches.js";
 import type {
   FarmInterviewResult,
   FarmPlanField,
   FarmPlanInput,
   FarmPlanPatch,
+  GuidedInterviewPrompt,
   NumericFarmPlanField,
   ScenarioOperation,
   ScenarioParseResult,
@@ -52,6 +54,47 @@ export async function extractFarmInterview(args: {
     };
   } catch (error) {
     console.warn("Gemma interview extraction failed; using fallback.", error);
+    return fallback;
+  }
+}
+
+export async function getGuidedInterviewPrompt(args: {
+  currentInput: FarmPlanInput;
+}): Promise<GuidedInterviewPrompt> {
+  const fallback = buildLocalGuidedInterview(args.currentInput);
+  const apiKey = process.env.GEMINI_API_KEY ?? process.env.GOOGLE_API_KEY;
+
+  if (!apiKey) return fallback;
+
+  try {
+    const ai = new GoogleGenAI({
+      apiKey,
+      httpOptions: { retryOptions: { attempts: 3 } },
+    });
+    const response = await ai.models.generateContent({
+      model: modelName,
+      contents: buildGuidedInterviewPrompt(fallback, args.currentInput),
+      config: {
+        temperature: 0.2,
+        systemInstruction:
+          "You guide a farm-planning interview. Ask only the supplied next field, or summarize only the supplied plan. Never calculate finance, choose an action, introduce another field, or invent a value.",
+      },
+    });
+    const parsed = parseGemmaJson(response.text ?? "") as Record<string, unknown>;
+    const question = cleanGuidanceText(parsed.question, 280);
+    const summary = cleanGuidanceText(parsed.summary, 420);
+
+    if (fallback.field && !question) throw new SyntaxError("Gemma returned no usable guided question.");
+    if (!fallback.field && !summary) throw new SyntaxError("Gemma returned no usable captured-plan summary.");
+
+    return {
+      ...fallback,
+      question: fallback.field ? question ?? fallback.question : null,
+      summary: summary ?? fallback.summary,
+      provider: "gemma",
+    };
+  } catch (error) {
+    console.warn("Gemma guided interview failed; using local guide.", error);
     return fallback;
   }
 }
@@ -187,6 +230,35 @@ function buildScenarioPrompt(question: string, currentInput: FarmPlanInput): str
   );
 }
 
+function buildGuidedInterviewPrompt(fallback: GuidedInterviewPrompt, currentInput: FarmPlanInput): string {
+  return JSON.stringify(
+    {
+      task: fallback.field ? "Ask one farmer-friendly question." : "Summarize the captured farm plan in plain language.",
+      deterministicNextField: fallback.field,
+      localQuestion: fallback.question,
+      capturedPlanSummary: fallback.summary,
+      currentInput,
+      rules: fallback.field
+        ? [
+            "Return exactly one JSON object with question and summary.",
+            "Ask only about deterministicNextField.",
+            "Ask exactly one short question and do not include a recommendation or calculation.",
+            "Keep summary to one short sentence describing what is already captured.",
+          ]
+        : [
+            "Return exactly one JSON object with summary and question set to null.",
+            "Use only currentInput and do not calculate financial outputs.",
+            "Keep the summary under 55 words and mention that local assumptions still need verification.",
+          ],
+      outputExample: fallback.field
+        ? { question: fallback.question, summary: fallback.summary }
+        : { question: null, summary: fallback.summary },
+    },
+    null,
+    2,
+  );
+}
+
 function normalizePatch(raw: unknown): FarmPlanPatch {
   const source = unwrapObject(raw, "patch");
   const patch: FarmPlanPatch = {};
@@ -237,6 +309,12 @@ function unwrapObject(raw: unknown, key: string): unknown {
   }
 
   return raw;
+}
+
+function cleanGuidanceText(value: unknown, maxLength: number): string | undefined {
+  if (typeof value !== "string") return undefined;
+  const text = value.trim();
+  return text.length >= 8 && text.length <= maxLength && !/[{}]/.test(text) ? text : undefined;
 }
 
 function isFarmPlanField(value: string): value is FarmPlanField {

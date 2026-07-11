@@ -36,6 +36,10 @@ export const farmInterviewRequestSchema = z.object({
   currentInput: farmPlanInputSchema,
 });
 
+export const guidedInterviewRequestSchema = z.object({
+  currentInput: farmPlanInputSchema,
+});
+
 export const scenarioRequestSchema = z.object({
   question: z.string().trim().min(3).max(1000),
   currentInput: farmPlanInputSchema,

@@ -5,10 +5,14 @@ import { CropComparisonTable } from "@/features/crop-comparison/CropComparisonTa
 import { FarmInputPanel } from "@/features/farm-plan/FarmInputPanel";
 import { FarmerActionCard } from "@/features/farm-plan/FarmerActionCard";
 import { ProfitSnapshot } from "@/features/farm-plan/ProfitSnapshot";
+import { ActionPackPanel } from "@/features/farm-plan/ActionPackPanel";
 import { MarketDecisionCards } from "@/features/market-decision/MarketDecisionCards";
+import { PostPlanDashboard, type PostPlanScenario } from "@/features/post-plan/PostPlanDashboard";
 import { buildFallbackAdvice } from "@/domain/advice";
+import { buildActionPack } from "@/domain/actionPack";
 import { applyCropDefaults, createEmptyFarmInput } from "@/domain/crops";
 import { buildCropComparison, buildMarketDecisions, calculateFarmPlan, getBestMarketDecision } from "@/domain/finance";
+import { buildGuidedAnswerStatement, buildLocalGuidedInterview } from "@/domain/guidedInterview";
 import { applyFarmPlanPatch, describeOperations, formatFieldLabel } from "@/domain/patches";
 import type {
   AdvisorPayload,
@@ -17,9 +21,14 @@ import type {
   FarmInterviewResult,
   FarmPlanInput,
   FarmPlanPatch,
+  GuidedInterviewPrompt,
 } from "@/domain/types";
 import { requestAdvisorNotes } from "@/services/adviceApi";
-import { requestFarmInterviewExtraction, requestScenarioParsing } from "@/services/copilotApi";
+import {
+  requestFarmInterviewExtraction,
+  requestGuidedInterviewPrompt,
+  requestScenarioParsing,
+} from "@/services/copilotApi";
 import { ScenarioModePanel } from "@/features/scenario/ScenarioModePanel";
 
 export function App() {
@@ -31,18 +40,16 @@ export function App() {
   const [interviewText, setInterviewText] = useState("");
   const [interviewResult, setInterviewResult] = useState<FarmInterviewResult | null>(null);
   const [interviewError, setInterviewError] = useState<string | null>(null);
+  const [guidedPrompt, setGuidedPrompt] = useState<GuidedInterviewPrompt>(() => buildLocalGuidedInterview(input));
+  const [guidanceError, setGuidanceError] = useState<string | null>(null);
   const [scenarioQuestion, setScenarioQuestion] = useState("");
-  const [lastScenario, setLastScenario] = useState<{
-    explanation: string;
-    changedFields: string[];
-    beforeProfit: number;
-    afterProfit: number;
-    provider: "gemma" | "local-fallback";
-  } | null>(null);
+  const [lastScenario, setLastScenario] = useState<PostPlanScenario | null>(null);
+  const [isScenarioOpen, setIsScenarioOpen] = useState(false);
   const [isLoadingAdvice, setIsLoadingAdvice] = useState(false);
   const [advisorMessages, setAdvisorMessages] = useState<AdvisorChatMessage[]>([]);
   const [advisorError, setAdvisorError] = useState<string | null>(null);
   const [isExtractingInterview, setIsExtractingInterview] = useState(false);
+  const [isRequestingGuidance, setIsRequestingGuidance] = useState(false);
   const [isRunningScenario, setIsRunningScenario] = useState(false);
   const [scenarioError, setScenarioError] = useState<string | null>(null);
   const adviceRequestId = useRef(0);
@@ -63,6 +70,7 @@ export function App() {
     [comparisons, input, marketDecisions, plan],
   );
   const advice = remoteAdvice ?? fallbackAdvice;
+  const actionPack = useMemo(() => buildActionPack(input, plan), [input, plan]);
 
   useEffect(() => {
     setSelectedDecisionId(bestMarketDecision.id);
@@ -145,16 +153,35 @@ export function App() {
     setInterviewError(null);
     setIsExtractingInterview(true);
     try {
+      const textForExtraction = guidedPrompt.field
+        ? buildGuidedAnswerStatement(guidedPrompt.field, interviewText)
+        : interviewText;
       const response = await requestFarmInterviewExtraction({
-        text: interviewText,
+        text: textForExtraction,
         currentInput: input,
       });
       setInterviewResult(response);
-      applyPatch(response.patch);
+      const nextInput = applyPatch(response.patch);
+      setInterviewText("");
+      void handleRequestGuidance(nextInput);
     } catch {
       setInterviewError("We could not read that note. Check your connection or enter the four essentials manually.");
     } finally {
       setIsExtractingInterview(false);
+    }
+  }
+
+  async function handleRequestGuidance(currentInput = input) {
+    setGuidanceError(null);
+    setIsRequestingGuidance(true);
+    try {
+      const response = await requestGuidedInterviewPrompt({ currentInput });
+      setGuidedPrompt(response);
+    } catch {
+      setGuidanceError("Gemma could not prepare a question. The local guide is still available.");
+      setGuidedPrompt(buildLocalGuidedInterview(currentInput));
+    } finally {
+      setIsRequestingGuidance(false);
     }
   }
 
@@ -178,8 +205,10 @@ export function App() {
           response.operations.length > 0
             ? describeOperations(response.operations)
             : response.changedFields.map(formatFieldLabel),
-        beforeProfit: beforePlan.expectedProfit,
-        afterProfit: afterPlan.expectedProfit,
+        beforeInput,
+        afterInput: nextInput,
+        beforePlan,
+        afterPlan,
         provider: response.provider,
       });
     } catch {
@@ -197,12 +226,15 @@ export function App() {
     const nextInput = applyFarmPlanPatch(base, patch);
 
     setInput(nextInput);
+    setGuidedPrompt(buildLocalGuidedInterview(nextInput));
     setRemoteAdvice(null);
+    setLastScenario(null);
     return nextInput;
   }
 
   function handleInputChange(nextInput: FarmPlanInput) {
     setInput(nextInput);
+    setGuidedPrompt(buildLocalGuidedInterview(nextInput));
     setLastScenario(null);
     setScenarioError(null);
   }
@@ -216,12 +248,16 @@ export function App() {
   }
 
   function handleReset() {
-    setInput(createEmptyFarmInput(input.cropId));
+    const nextInput = createEmptyFarmInput(input.cropId);
+    setInput(nextInput);
+    setGuidedPrompt(buildLocalGuidedInterview(nextInput));
     setIsPlanCreated(false);
     setInterviewText("");
     setInterviewResult(null);
     setInterviewError(null);
+    setGuidanceError(null);
     setLastScenario(null);
+    setIsScenarioOpen(false);
     setScenarioQuestion("");
   }
 
@@ -249,12 +285,16 @@ export function App() {
               interviewError={interviewError}
               interviewResult={interviewResult}
               interviewText={interviewText}
+              guidedPrompt={guidedPrompt}
+              guidanceError={guidanceError}
               isExtractingInterview={isExtractingInterview}
+              isRequestingGuidance={isRequestingGuidance}
               isPlanCreated={showPlan}
               onChange={handleInputChange}
               onCreatePlan={handleCreatePlan}
               onExtractInterview={() => void handleExtractInterview()}
               onInterviewTextChange={setInterviewText}
+              onRequestGuidance={() => void handleRequestGuidance()}
               onReset={handleReset}
             />
           </div>
@@ -273,9 +313,20 @@ export function App() {
 
             <FarmerActionCard key={`${plan.action.id}-${Math.round(plan.expectedProfit)}`} action={plan.action} />
             <ProfitSnapshot input={input} plan={plan} />
+            <PostPlanDashboard
+              input={input}
+              plan={plan}
+              scenario={lastScenario}
+              onOpenScenario={() => setIsScenarioOpen(true)}
+            />
+            <ActionPackPanel pack={actionPack} />
 
             <div className="analysis-disclosure-grid">
-              <details className="analysis-disclosure">
+              <details
+                className="analysis-disclosure"
+                open={isScenarioOpen}
+                onToggle={(event) => setIsScenarioOpen(event.currentTarget.open)}
+              >
                 <summary>Test a change to this plan</summary>
                 <ScenarioModePanel
                   error={scenarioError}

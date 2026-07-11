@@ -5,8 +5,8 @@ import { formatCurrency } from "@/utils/formatters";
 interface ScenarioSummary {
   explanation: string;
   changedFields: string[];
-  beforeProfit: number;
-  afterProfit: number;
+  beforePlan: { expectedProfit: number };
+  afterPlan: { expectedProfit: number };
   provider: "gemma" | "local-fallback";
 }
 
@@ -56,7 +56,7 @@ export function ScenarioModePanel({
         <div className="scenario-panel__result">
           <span>{lastScenario.provider === "gemma" ? "Gemma interpreted the change" : "Local interpreter"}</span>
           <strong>
-            {formatCurrency(lastScenario.beforeProfit)} → {formatCurrency(lastScenario.afterProfit)}
+            {formatCurrency(lastScenario.beforePlan.expectedProfit)} → {formatCurrency(lastScenario.afterPlan.expectedProfit)}
           </strong>
           <p>{lastScenario.explanation}</p>
           {lastScenario.changedFields.length > 0 ? (

@@ -1,6 +1,7 @@
 import type {
   FarmInterviewResult,
   FarmPlanInput,
+  GuidedInterviewPrompt,
   ScenarioParseResult,
 } from "@/domain/types";
 
@@ -21,6 +22,24 @@ export async function requestFarmInterviewExtraction(request: {
   }
 
   return response.json() as Promise<FarmInterviewResult>;
+}
+
+export async function requestGuidedInterviewPrompt(request: {
+  currentInput: FarmPlanInput;
+}): Promise<GuidedInterviewPrompt> {
+  const response = await fetch("/api/interview/next-question", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(request),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Guided interview request failed with ${response.status}`);
+  }
+
+  return response.json() as Promise<GuidedInterviewPrompt>;
 }
 
 export async function requestScenarioParsing(request: {
