@@ -44,7 +44,7 @@ export function MarketDecisionCards({ decisions, selectedId, onSelect }: MarketD
             <span className="decision-card__footer">
               <RiskBadge level={decision.riskLevel} />
               <em>
-                {formatCurrency(decision.estimatedPrice, true)} · {formatNumber(decision.harvestAfterLoss, 1)} after loss
+                {formatCurrency(decision.estimatedPrice)} · {formatNumber(decision.harvestAfterLoss, 1)} after loss
               </em>
             </span>
           </button>

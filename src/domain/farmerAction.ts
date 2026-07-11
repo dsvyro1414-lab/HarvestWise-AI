@@ -102,5 +102,5 @@ export function getStoragePriceThreshold(input: FarmPlanInput, plan: Pick<FarmPl
 
 function formatStoredHarvest(input: FarmPlanInput, plan: Pick<FarmPlanResult, "crop" | "expectedHarvest">): string {
   const harvestAfterLoss = plan.expectedHarvest * Math.max(0, 1 - plan.crop.storageLossRatePerMonth * input.storageMonths);
-  return new Intl.NumberFormat("en-NG", { maximumFractionDigits: 1 }).format(harvestAfterLoss);
+  return new Intl.NumberFormat("en-US", { maximumFractionDigits: 1 }).format(harvestAfterLoss);
 }

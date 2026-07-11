@@ -12,6 +12,14 @@ The product helps a smallholder farmer or cooperative advisor answer one questio
 
 HarvestWise AI is not a lending, credit-scoring, or loan-recommendation product.
 
+## U.S. Midwest Baseline — 2026-07-11
+
+- The active crop catalog is now Corn, Soybeans, and Wheat; money is USD and grain yields are bushels per acre.
+- The starting context is an editable Midwest benchmark, not a live bid or a claim about a farmer's actual operation.
+- Land lease is a separate deterministic cost. Seed, fertilizer, fieldwork/equipment, lease, hauling, yield, and price must be reviewed for the local farm.
+- Source notes and limitations are in `docs/us-baseline.md`.
+- The next planned product session is the post-plan dashboard: compact price safety, cost drivers, and scenario comparison. Do not add dashboard-card clutter to the first-run plan flow.
+
 ## End-user Flow Update — 2026-07-11
 
 - A new visitor now sees an empty personal plan instead of a calculated demo result.
@@ -23,15 +31,15 @@ HarvestWise AI is not a lending, credit-scoring, or loan-recommendation product.
 
 ## Current State
 
-- Branch: `main`
-- Latest pushed commit: `71ce104 Add deterministic farmer actions`
+- Branch: `codex/gemma-reliability-proof`
+- Latest pushed and deployed commit: `01ab717 Make HarvestWise ready for real user input`
 - GitHub: <https://github.com/dsvyro1414-lab/HarvestWise-AI>
 - Production: <https://harvestwise-ai.vercel.app>
-- Last validated: 2026-07-10
+- Last validated: 2026-07-11
 
 The Vercel project is linked as `dsvyro1414-labs-projects/harvestwise-ai`. Production has encrypted `GEMINI_API_KEY` and `GEMMA_MODEL` variables. Live extraction, scenario interpretation, and a concise validated explanation have all been observed; evidence is in `docs/screenshots/` and the README.
 
-Production currently includes uncommitted local reliability fixes, so GitHub `main` remains behind the deployed build until these changes are committed and pushed.
+The current worktree adds the U.S. Midwest migration and remains uncommitted pending review. Production still serves commit `01ab717` until this change is intentionally committed and deployed.
 
 The current branch introduces one deliberate, vertically guided primary path:
 
@@ -51,7 +59,7 @@ Possible actions:
 - `Reduce acreage before planting`
 - `Secure a buyer before planting`
 - `Do not plant yet`
-- `Store only if price exceeds ₦X per unit`
+- `Store only if price exceeds $X per unit`
 
 The storage threshold means: the minimum future unit price at which storing beats selling immediately, after storage cost and harvest loss.
 
@@ -91,10 +99,10 @@ When no `GEMINI_API_KEY` is configured, local parsers and explanations keep the 
 
 ## Validation Completed
 
-The following pass on commit `71ce104`:
+The following pass for the U.S. Midwest worktree:
 
 ```bash
-npm test       # 8 tests passed
+npm test       # 15 tests passed
 npm run typecheck
 npm run build
 ```
@@ -103,14 +111,14 @@ Browser smoke checks also passed on desktop and a 390 px mobile viewport:
 
 - the first viewport shows the action and three key metrics;
 - no console errors or Vite overlay;
-- changing the market price to ₦600 changes the action to `Do not plant yet` with calculated reasons;
+- a 40-acre Corn plan at 220 bu/acre and $4.05/bu calculates $2,440 expected profit with a $3.77/bu break-even;
 - the scenario section opens and states that Gemma interprets while HarvestWise recalculates.
 
 ## Most Logical Next Step
 
-Review, merge, and deploy the guided one-page UI, then verify the same `Plan → Results → Ask Gemma` sequence in production on desktop and mobile.
+Review, commit, and deploy the U.S. Midwest foundation, then verify the same `Plan → Results → Ask Gemma` sequence in production on desktop and mobile.
 
-After that delivery check, begin the approved product-foundation phase: convert the demo to a US-readable baseline and replace the unusually optimistic default with realistic sample plans. Treat that as a full units, currency, defaults, market-context, and copy change rather than a cosmetic label edit.
+The U.S. foundation phase is now implemented in the working tree. Validate the new Midwest assumptions visually, then move to the post-plan dashboard and a sourced USDA Market Pulse rather than adding decorative charts to the initial journey.
 
 See `docs/next-step.md` for the latest progress and acceptance evidence.
 

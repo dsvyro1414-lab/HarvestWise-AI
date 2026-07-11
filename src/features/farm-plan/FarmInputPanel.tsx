@@ -87,7 +87,7 @@ export function FarmInputPanel({
           emptyWhenZero
           label="Land"
           min={0.1}
-          placeholder="e.g. 2"
+          placeholder="e.g. 40"
           step={0.1}
           unit="acres"
           value={input.landSizeAcres}
@@ -97,9 +97,9 @@ export function FarmInputPanel({
           emptyWhenZero
           label="Available budget"
           min={1}
-          placeholder="e.g. 320000"
-          step={5000}
-          unit="NGN"
+          placeholder="e.g. 35000"
+          step={500}
+          unit="USD"
           value={input.availableBudget}
           onChange={(value) => updateNumber("availableBudget", value)}
         />
@@ -107,7 +107,7 @@ export function FarmInputPanel({
           emptyWhenZero
           label="Expected harvest"
           min={0.1}
-          placeholder="e.g. 18"
+          placeholder="e.g. 220"
           step={1}
           unit={`${selectedCrop.unitPlural}/acre`}
           value={input.expectedHarvestPerAcre}
@@ -116,10 +116,10 @@ export function FarmInputPanel({
         <NumberField
           emptyWhenZero
           label="Market price"
-          min={1}
-          placeholder="e.g. 18500"
-          step={500}
-          unit={`NGN/${selectedCrop.unit}`}
+          min={0.01}
+          placeholder="e.g. 4.05"
+          step={0.05}
+          unit={`USD/${selectedCrop.unit}`}
           value={input.marketPricePerUnit}
           onChange={(value) => updateNumber("marketPricePerUnit", value)}
         />
@@ -130,29 +130,36 @@ export function FarmInputPanel({
         <div className="input-panel__fields input-panel__fields--advanced">
         <NumberField
           label="Seed"
-          step={1000}
-          unit="NGN/acre"
+          step={5}
+          unit="USD/acre"
           value={input.seedCostPerAcre}
           onChange={(value) => updateNumber("seedCostPerAcre", value)}
         />
         <NumberField
           label="Fertilizer"
-          step={1000}
-          unit="NGN/acre"
+          step={5}
+          unit="USD/acre"
           value={input.fertilizerCostPerAcre}
           onChange={(value) => updateNumber("fertilizerCostPerAcre", value)}
         />
         <NumberField
-          label="Labor"
-          step={1000}
-          unit="NGN/acre"
+          label="Fieldwork & equipment"
+          step={5}
+          unit="USD/acre"
           value={input.laborCostPerAcre}
           onChange={(value) => updateNumber("laborCostPerAcre", value)}
         />
         <NumberField
-          label="Transport"
-          step={1000}
-          unit="NGN"
+          label="Land lease"
+          step={5}
+          unit="USD/acre"
+          value={input.landLeaseCostPerAcre}
+          onChange={(value) => updateNumber("landLeaseCostPerAcre", value)}
+        />
+        <NumberField
+          label="Hauling & delivery"
+          step={50}
+          unit="USD total"
           value={input.transportCost}
           onChange={(value) => updateNumber("transportCost", value)}
         />
@@ -165,7 +172,7 @@ export function FarmInputPanel({
           onChange={(value) => updateNumber("storageMonths", value)}
         />
         </div>
-        <p className="assumption-disclosure__note">These starting cost assumptions come from the selected crop profile. Review them before relying on the result.</p>
+        <p className="assumption-disclosure__note">Midwest U.S. benchmarks are starting assumptions, not live bids. Review lease, fieldwork, and local market costs before relying on the result.</p>
       </details>
 
       <details className="copilot-disclosure">

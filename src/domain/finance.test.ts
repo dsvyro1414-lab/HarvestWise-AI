@@ -5,17 +5,27 @@ import { getStoragePriceThreshold } from "./farmerAction.js";
 
 describe("farm finance model", () => {
   it("calculates a positive baseline plan with a finite break-even price", () => {
-    const plan = calculateFarmPlan(createDefaultFarmInput("maize"));
+    const plan = calculateFarmPlan(createDefaultFarmInput("corn"));
 
     expect(plan.expectedProfit).toBeGreaterThan(0);
     expect(plan.breakEvenPrice).toBeGreaterThan(0);
     expect(plan.sensitivity).toHaveLength(7);
   });
 
+  it("includes land lease in season cost instead of treating field access as free", () => {
+    const input = createDefaultFarmInput("corn");
+    const withoutLease = calculateFarmPlan({ ...input, landLeaseCostPerAcre: 0 });
+    const withLease = calculateFarmPlan(input);
+
+    expect(withLease.totalSeasonCost - withoutLease.totalSeasonCost).toBe(
+      input.landSizeAcres * input.landLeaseCostPerAcre,
+    );
+  });
+
   it("tells the farmer not to plant an unprofitable season", () => {
     const input = {
-      ...createDefaultFarmInput("tomato"),
-      marketPricePerUnit: 600,
+      ...createDefaultFarmInput("wheat"),
+      marketPricePerUnit: 4,
     };
     const plan = calculateFarmPlan(input);
 
@@ -25,16 +35,16 @@ describe("farm finance model", () => {
   });
 
   it("builds crop and market options for the dashboard", () => {
-    const input = createDefaultFarmInput("maize");
+    const input = createDefaultFarmInput("corn");
 
-    expect(buildCropComparison(input).length).toBeGreaterThan(3);
+    expect(buildCropComparison(input)).toHaveLength(3);
     expect(buildMarketDecisions(input)).toHaveLength(3);
   });
 
   it("recommends reducing acreage when a profitable plan exceeds the budget", () => {
     const input = {
-      ...createDefaultFarmInput("maize"),
-      availableBudget: 100000,
+      ...createDefaultFarmInput("corn"),
+      availableBudget: 1_000,
     };
 
     expect(calculateFarmPlan(input).action.id).toBe("reduce-acreage");
@@ -42,7 +52,7 @@ describe("farm finance model", () => {
 
   it("requires a price threshold before storing a viable crop", () => {
     const input = {
-      ...createDefaultFarmInput("maize"),
+      ...createDefaultFarmInput("corn"),
       storageMonths: 2,
     };
     const plan = calculateFarmPlan(input);
@@ -60,10 +70,10 @@ describe("farm finance model", () => {
 
   it("asks for a buyer before planting a high-risk but profitable plan", () => {
     const input = {
-      ...createDefaultFarmInput("cassava"),
-      availableBudget: 400000,
-      storageMonths: 6,
-      marketPricePerUnit: 18400,
+      ...createDefaultFarmInput("corn"),
+      availableBudget: 35_000,
+      storageMonths: 12,
+      marketPricePerUnit: 4.2,
     };
     const plan = calculateFarmPlan(input);
 

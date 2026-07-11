@@ -1,4 +1,6 @@
-# Next Step: Prove the Gemma Flow
+# Historical Delivery Notes: Gemma Flow
+
+> This document preserves the earlier Nigeria-oriented demo evidence. The active product baseline is now U.S. Midwest; see [U.S. baseline notes](us-baseline.md).
 
 ## Guided Page Progress — 2026-07-10
 

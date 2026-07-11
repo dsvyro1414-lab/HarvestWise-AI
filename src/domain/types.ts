@@ -1,6 +1,6 @@
-export type CurrencyCode = "NGN";
+export type CurrencyCode = "USD";
 
-export type CropId = "maize" | "cassava" | "rice" | "tomato" | "beans";
+export type CropId = "corn" | "soybeans" | "wheat";
 
 export type RiskLevel = "low" | "medium" | "high";
 
@@ -22,6 +22,7 @@ export type FarmPlanField =
   | "seedCostPerAcre"
   | "fertilizerCostPerAcre"
   | "laborCostPerAcre"
+  | "landLeaseCostPerAcre"
   | "expectedHarvestPerAcre"
   | "marketPricePerUnit"
   | "transportCost"
@@ -50,6 +51,7 @@ export interface CropDefaults {
   seedCostPerAcre: number;
   fertilizerCostPerAcre: number;
   laborCostPerAcre: number;
+  landLeaseCostPerAcre: number;
   expectedHarvestPerAcre: number;
   marketPricePerUnit: number;
   transportCost: number;
@@ -75,6 +77,7 @@ export interface FarmPlanInput {
   seedCostPerAcre: number;
   fertilizerCostPerAcre: number;
   laborCostPerAcre: number;
+  landLeaseCostPerAcre: number;
   expectedHarvestPerAcre: number;
   marketPricePerUnit: number;
   transportCost: number;

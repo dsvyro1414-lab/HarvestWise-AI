@@ -77,7 +77,7 @@ export function PriceSensitivityChart({
             <g className="chart__tooltip" transform={`translate(${tooltipX} ${tooltipY})`}>
               <rect height="44" rx="7" width="160" />
               <text x="10" y="18">
-                Current {formatCurrency(currentPrice ?? 0, true)}
+                Current {formatCurrency(currentPrice ?? 0)}
               </text>
               <text className="chart__tooltip-profit" x="10" y="34">
                 Profit {formatCurrency(currentProfit ?? 0, true)}
@@ -89,7 +89,7 @@ export function PriceSensitivityChart({
           Market price
         </text>
         <text className="chart__label" x={breakEvenX + 8} y={padding.top + 22}>
-          Break-even {formatCurrency(breakEvenPrice, true)}
+          Break-even {formatCurrency(breakEvenPrice)}
         </text>
       </svg>
     </div>

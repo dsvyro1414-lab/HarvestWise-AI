@@ -23,7 +23,7 @@ import { requestFarmInterviewExtraction, requestScenarioParsing } from "@/servic
 import { ScenarioModePanel } from "@/features/scenario/ScenarioModePanel";
 
 export function App() {
-  const [input, setInput] = useState<FarmPlanInput>(() => createEmptyFarmInput("maize"));
+  const [input, setInput] = useState<FarmPlanInput>(() => createEmptyFarmInput("corn"));
   const [isPlanCreated, setIsPlanCreated] = useState(false);
   const [selectedDecisionId, setSelectedDecisionId] = useState<DecisionId>("sell-harvest");
   const [remoteAdvice, setRemoteAdvice] = useState<AdvisorPayload | null>(null);

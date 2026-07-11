@@ -23,7 +23,8 @@ export function calculateFarmPlan(
     landSize *
     (positive(input.seedCostPerAcre) +
       positive(input.fertilizerCostPerAcre) +
-      positive(input.laborCostPerAcre));
+      positive(input.laborCostPerAcre) +
+      positive(input.landLeaseCostPerAcre));
   const storageCost = positive(input.storageMonths) * positive(input.storageCostPerMonth);
   const totalSeasonCost = inputCost + positive(input.transportCost) + storageCost;
   const grossRevenue = harvest * positive(input.marketPricePerUnit);
@@ -77,6 +78,7 @@ export function buildCropComparison(input: FarmPlanInput): CropComparison[] {
               seedCostPerAcre: crop.defaults.seedCostPerAcre,
               fertilizerCostPerAcre: crop.defaults.fertilizerCostPerAcre,
               laborCostPerAcre: crop.defaults.laborCostPerAcre,
+              landLeaseCostPerAcre: crop.defaults.landLeaseCostPerAcre,
               expectedHarvestPerAcre: crop.defaults.expectedHarvestPerAcre,
               marketPricePerUnit: crop.defaults.marketPricePerUnit,
               transportCost: crop.defaults.transportCost,
@@ -117,7 +119,8 @@ export function buildMarketDecisions(input: FarmPlanInput): MarketDecision[] {
       positive(input.landSizeAcres) *
         (positive(input.seedCostPerAcre) +
           positive(input.fertilizerCostPerAcre) +
-          positive(input.laborCostPerAcre)) +
+          positive(input.laborCostPerAcre) +
+          positive(input.landLeaseCostPerAcre)) +
       positive(input.transportCost) +
       storageCost;
     const netRevenue = storedHarvest * price;
@@ -167,6 +170,7 @@ export function createScenarioInput(input: FarmPlanInput, cropId: CropId): FarmP
     seedCostPerAcre: crop.defaults.seedCostPerAcre,
     fertilizerCostPerAcre: crop.defaults.fertilizerCostPerAcre,
     laborCostPerAcre: crop.defaults.laborCostPerAcre,
+    landLeaseCostPerAcre: crop.defaults.landLeaseCostPerAcre,
     expectedHarvestPerAcre: crop.defaults.expectedHarvestPerAcre,
     marketPricePerUnit: crop.defaults.marketPricePerUnit,
     transportCost: crop.defaults.transportCost,
@@ -210,7 +214,7 @@ function calculateRiskScore(args: {
 }
 
 function riskLevelFromScore(score: number): RiskLevel {
-  if (score >= 62) return "high";
+  if (score >= 55) return "high";
   if (score >= 36) return "medium";
   return "low";
 }

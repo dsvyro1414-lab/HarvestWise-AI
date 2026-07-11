@@ -10,12 +10,12 @@ It keeps financial calculations deterministic in TypeScript, then uses Gemma to 
 
 ## Current Status
 
-The deterministic farmer-action layer, simplified judge flow, Gemma output schemas, and updated demo documentation are now merged into `main`.
+The production demo is built around a guided farmer flow, deterministic finance, and a server-side Gemma explanation layer.
 
-Latest pushed main commit:
+Latest production commit:
 
 ```bash
-71ce104 Add deterministic farmer actions
+01ab717 Make HarvestWise ready for real user input
 ```
 
 Production demo: [harvestwise-ai.vercel.app](https://harvestwise-ai.vercel.app)
@@ -26,7 +26,8 @@ Production demo: [harvestwise-ai.vercel.app](https://harvestwise-ai.vercel.app)
 - Opens with an empty personal plan: results remain hidden until the farmer enters the four required numbers and creates the plan.
 - Calculates expected profit, total cost, break-even price, ROI, budget gap, and risk level.
 - Shows one deterministic **Recommended next action** with two concrete reasons: plant, reduce acreage, secure a buyer, wait, or store only above a calculated price.
-- Compares crop options such as maize, cassava, rice, tomato, and beans.
+- Uses a U.S. Midwest baseline with corn, soybeans, and wheat; money is USD and field-crop yields are bushels per acre.
+- Includes land lease as a separate cost so a plan does not overstate profitability by omitting access to the field.
 - Compares market decisions: sell at harvest, store short-term, or store longer.
 - Generates a plain-language explanation and WhatsApp draft through a server-side Gemma endpoint.
 - Supports follow-up Gemma questions with recent conversation context, while keeping every financial decision deterministic.
@@ -63,6 +64,10 @@ Recommended 60-90 second judge flow:
 4. Ask Gemma why that action was selected, then ask one follow-up question in the same conversation.
 5. Open **Test a change to this plan** and ask `what if fertilizer cost rises by 20%?`.
 6. Open price, crop, or market details only if the judge wants to investigate the calculation.
+
+## U.S. Baseline
+
+The current product defaults are Midwest grain benchmarks, not live cash bids. They are deliberately editable and include seed, fertilizer, fieldwork/equipment, land lease, hauling, expected yield, and market price. See [U.S. baseline notes](docs/us-baseline.md) for sources, limits, and the path to an attributed USDA Market Pulse.
 
 ### Live Gemma Evidence
 

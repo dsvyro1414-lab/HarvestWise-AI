@@ -102,7 +102,7 @@ function buildInterviewPrompt(text: string): string {
   return JSON.stringify(
     {
       task: "Extract a farm plan patch from the farmer's natural-language plan.",
-      allowedCropIds: ["maize", "cassava", "rice", "tomato", "beans"],
+      allowedCropIds: ["corn", "soybeans", "wheat"],
       allowedPatchFields: [
         "cropId",
         "landSizeAcres",
@@ -110,6 +110,7 @@ function buildInterviewPrompt(text: string): string {
         "seedCostPerAcre",
         "fertilizerCostPerAcre",
         "laborCostPerAcre",
+        "landLeaseCostPerAcre",
         "expectedHarvestPerAcre",
         "marketPricePerUnit",
         "transportCost",
@@ -118,7 +119,7 @@ function buildInterviewPrompt(text: string): string {
         "expectedMonthlyPriceGrowth",
       ],
       units: {
-        money: "NGN numbers only",
+        money: "USD numbers only",
         landSizeAcres: "acres",
         expectedHarvestPerAcre: "crop units per acre",
         expectedMonthlyPriceGrowth: "decimal, so 5% is 0.05",
@@ -131,10 +132,10 @@ function buildInterviewPrompt(text: string): string {
       ],
       outputExample: {
         patch: {
-          cropId: "maize",
-          landSizeAcres: 2,
-          availableBudget: 320000,
-          fertilizerCostPerAcre: 65000,
+          cropId: "corn",
+          landSizeAcres: 40,
+          availableBudget: 35000,
+          fertilizerCostPerAcre: 210,
         },
       },
       farmerText: text,
@@ -155,6 +156,7 @@ function buildScenarioPrompt(question: string, currentInput: FarmPlanInput): str
         "seedCostPerAcre",
         "fertilizerCostPerAcre",
         "laborCostPerAcre",
+        "landLeaseCostPerAcre",
         "expectedHarvestPerAcre",
         "marketPricePerUnit",
         "transportCost",
@@ -244,6 +246,7 @@ function isFarmPlanField(value: string): value is FarmPlanField {
     "seedCostPerAcre",
     "fertilizerCostPerAcre",
     "laborCostPerAcre",
+    "landLeaseCostPerAcre",
     "expectedHarvestPerAcre",
     "marketPricePerUnit",
     "transportCost",

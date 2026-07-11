@@ -34,7 +34,7 @@ The product does not ask Gemma to perform exact arithmetic or choose an action. 
 
 ## Demo Story
 
-1. A cooperative advisor enters a maize season plan for a farmer.
+1. A farmer or advisor enters a U.S. Midwest corn, soybean, or wheat season plan.
 2. HarvestWise AI instantly shows one recommended next action, its calculated reasons, and a compact profit snapshot.
 3. The advisor changes price or budget to prove that the action updates deterministically.
 4. The advisor opens crop, price, and harvest-market details only when deeper analysis is needed.
@@ -73,7 +73,7 @@ Gemma returns schema-constrained JSON for extraction, scenarios, and explanation
 
 ## Why It Can Scale
 
-HarvestWise AI starts with a few crops and Nigeria-oriented assumptions, but the architecture can expand to:
+HarvestWise AI starts with a Midwest U.S. grain baseline, but the architecture can expand to:
 
 - more crops;
 - regional cost profiles;

@@ -14,7 +14,7 @@ interface BuildAdvisorArgs {
 
 const modelName = process.env.GEMMA_MODEL ?? "gemma-4-26b-a4b-it";
 
-export async function buildAdvisorNotes({ input, mode, question }: BuildAdvisorArgs): Promise<AdvisorPayload> {
+export async function buildAdvisorNotes({ input, mode, question, history }: BuildAdvisorArgs): Promise<AdvisorPayload> {
   const plan = calculateFarmPlan(input);
   const comparisons = buildCropComparison(input);
   const marketDecisions = buildMarketDecisions(input);
@@ -32,7 +32,7 @@ export async function buildAdvisorNotes({ input, mode, question }: BuildAdvisorA
     });
     const response = await ai.models.generateContent({
       model: modelName,
-      contents: buildPrompt({ input, mode, question }),
+      contents: buildPrompt({ input, mode, question, history }),
       config: {
         temperature: 0.35,
         systemInstruction:

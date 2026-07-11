@@ -1,12 +1,13 @@
 import { z } from "zod";
 
 export const farmPlanInputSchema = z.object({
-  cropId: z.enum(["maize", "cassava", "rice", "tomato", "beans"]),
+  cropId: z.enum(["corn", "soybeans", "wheat"]),
   landSizeAcres: z.number().min(0),
   availableBudget: z.number().min(0),
   seedCostPerAcre: z.number().min(0),
   fertilizerCostPerAcre: z.number().min(0),
   laborCostPerAcre: z.number().min(0),
+  landLeaseCostPerAcre: z.number().min(0),
   expectedHarvestPerAcre: z.number().min(0),
   marketPricePerUnit: z.number().min(0),
   transportCost: z.number().min(0),

@@ -1,4 +1,4 @@
-import { Calculator, ShieldCheck } from "lucide-react";
+import { Calculator, MapPin } from "lucide-react";
 import type { ReactNode } from "react";
 
 interface AppShellProps {
@@ -45,12 +45,12 @@ export function AppShell({ children, hasPlan }: AppShellProps) {
 
         <div className="topbar__context" aria-label="Farm planning context">
           <span>
-            <ShieldCheck size={14} />
-            Your inputs
+            <MapPin size={14} />
+            U.S. Midwest baseline
           </span>
           <span>
             <Calculator size={14} />
-            Local calculation
+            USD · bushels
           </span>
         </div>
       </header>
