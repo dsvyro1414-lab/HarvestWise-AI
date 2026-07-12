@@ -1,6 +1,16 @@
 # Next Session Roadmap
 
-The U.S. Midwest baseline, post-plan dashboard, guided reality check/action pack, USDA Market Pulse, and NWS weather context are implemented. The agreed product roadmap is complete; choose a new priority before expanding scope.
+The U.S. Midwest baseline, post-plan dashboard, guided reality check/action pack, USDA Market Pulse, NWS weather context, and Field-ready Decision Pack are implemented. The agreed product roadmap is complete; choose a new priority before expanding scope.
+
+## Field-ready Decision Pack
+
+The Decision Pack turns the current deterministic plan into one shareable handoff for a buyer, landowner, supplier, or cooperative.
+
+- It includes the calculated next action, profit, break-even, margin, cash position, and the three most important local checks.
+- It preserves the latest what-if result when one has been run.
+- It includes the current USDA/NWS state with an honest unavailable or not-checked label rather than inventing a source.
+- **Copy summary** produces a WhatsApp/co-op-note-ready text version; **Print / Save PDF** produces a focused one-page print view.
+- It repeats the boundary that HarvestWise calculates the financial result and action; Gemma may only interpret or explain.
 
 ## NWS weather and alerts
 
@@ -38,4 +48,5 @@ The weather panel is an optional, explicit lookup for a farmer-selected Midwest 
 - External data never overwrites user inputs without an explicit action.
 - Gemma output is labelled separately from local fallback output.
 - All financial values and actions still come from deterministic domain code.
+- A copied or printed plan preserves the same source states and deterministic action shown on screen.
 - The full `Plan → Dashboard → Ask Gemma → Verify/Apply` path works on desktop and mobile.

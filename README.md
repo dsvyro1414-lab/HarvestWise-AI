@@ -12,12 +12,6 @@ It keeps financial calculations deterministic in TypeScript, then uses Gemma to 
 
 The production demo is built around a guided farmer flow, deterministic finance, and a server-side Gemma explanation layer.
 
-Latest production commit:
-
-```bash
-01ab717 Make HarvestWise ready for real user input
-```
-
 Production demo: [harvestwise-ai.vercel.app](https://harvestwise-ai.vercel.app)
 
 ## What It Does
@@ -35,6 +29,7 @@ Production demo: [harvestwise-ai.vercel.app](https://harvestwise-ai.vercel.app)
 - Converts what-if questions into scenario parameter changes, then recalculates with deterministic code.
 - Can load one explicitly requested USDA Market News cash-bid observation, with report, location, grade, unit, timestamp, freshness, and a manual **Apply to plan** action.
 - Can load an explicitly requested NWS forecast and active alerts for a farmer-selected Midwest location; it creates a timing prompt only and never changes finance or the recommended action.
+- Creates a field-ready **Decision Pack** from the current plan: the calculated action, key financial limits, local checks, latest scenario, and clearly labelled USDA/NWS context. It can be copied into a co-op note or printed/saved as a PDF.
 - Falls back to local advice if no API key is configured, so the demo remains usable.
 - Keeps the farmer journey focused: core assumptions, one recommended action, and a compact plan snapshot. Scenario testing, crop comparison, price sensitivity, and market options are available on demand.
 
@@ -65,7 +60,8 @@ Recommended 60-90 second judge flow:
 3. Point to **Recommended next action** and its two calculated reasons.
 4. Ask Gemma why that action was selected, then ask one follow-up question in the same conversation.
 5. Open **Test a change to this plan** and ask `what if fertilizer cost rises by 20%?`.
-6. Open price, crop, or market details only if the judge wants to investigate the calculation.
+6. Show the **Field-ready decision pack**, then copy it or print/save it as a PDF for a buyer, cooperative, or field visit.
+7. Open price, crop, or market details only if the judge wants to investigate the calculation.
 
 ## U.S. Baseline
 

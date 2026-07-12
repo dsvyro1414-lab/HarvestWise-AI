@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { AdvisorPanel } from "@/features/advisor/AdvisorPanel";
 import { CropComparisonTable } from "@/features/crop-comparison/CropComparisonTable";
+import { DecisionPackPanel } from "@/features/decision-pack/DecisionPackPanel";
 import { FarmInputPanel } from "@/features/farm-plan/FarmInputPanel";
 import { FarmerActionCard } from "@/features/farm-plan/FarmerActionCard";
 import { ProfitSnapshot } from "@/features/farm-plan/ProfitSnapshot";
@@ -393,6 +394,14 @@ export function App() {
               isLoadingGemmaPrompt={isRequestingRealityCheck}
               pack={actionPack}
               onAskGemma={() => void handleAskRealityCheck()}
+            />
+            <DecisionPackPanel
+              input={input}
+              marketPulse={marketPulse}
+              pack={actionPack}
+              plan={plan}
+              scenario={lastScenario}
+              weatherResponse={weatherResponse}
             />
 
             <div className="analysis-disclosure-grid">
