@@ -1,5 +1,12 @@
 import { z } from "zod";
 
+const marketPriceEvidenceSchema = z.object({
+  sourceType: z.enum(["buyer", "co-op", "elevator", "other", ""]),
+  sourceName: z.string().trim().max(120),
+  location: z.string().trim().max(120),
+  checkedAt: z.string().regex(/^$|^\d{4}-\d{2}-\d{2}$/),
+});
+
 export const farmPlanInputSchema = z.object({
   cropId: z.enum(["corn", "soybeans", "wheat"]),
   landSizeAcres: z.number().min(0),
@@ -14,6 +21,7 @@ export const farmPlanInputSchema = z.object({
   storageMonths: z.number().min(0).max(12),
   storageCostPerMonth: z.number().min(0),
   expectedMonthlyPriceGrowth: z.number().min(0).max(1),
+  priceEvidence: marketPriceEvidenceSchema.optional(),
 });
 
 export const adviceRequestSchema = z.object({

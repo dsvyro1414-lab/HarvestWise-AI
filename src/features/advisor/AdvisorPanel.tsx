@@ -1,6 +1,8 @@
 import { MessageSquareText, Send, Sparkles } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import type { AdvisorChatMessage, AdvisorPayload } from "@/domain/types";
+import { getAdviceLoadingStatus } from "./adviceProgress";
 
 interface AdvisorPanelProps {
   advice: AdvisorPayload;
@@ -29,6 +31,9 @@ export function AdvisorPanel({
   onAskGemma,
   onGenerateWhatsApp,
 }: AdvisorPanelProps) {
+  const elapsedSeconds = useAdviceElapsedSeconds(isLoading);
+  const loadingStatus = getAdviceLoadingStatus(elapsedSeconds);
+
   return (
     <aside className="side-panel advisor-panel" id="advisor-notes" aria-label="Advisor notes">
       <div className="advisor-panel__heading">
@@ -73,7 +78,10 @@ export function AdvisorPanel({
         {isLoading ? (
           <div className="advisor-message advisor-message--gemma advisor-message--loading">
             <Sparkles size={16} aria-hidden="true" />
-            <p>Gemma is reading your plan…</p>
+            <div className="advisor-loading__copy">
+              <p aria-atomic="true" aria-live="polite" role="status">{loadingStatus.message}</p>
+              <span aria-hidden="true" className="advisor-loading__elapsed">{elapsedSeconds}s elapsed</span>
+            </div>
           </div>
         ) : null}
       </div>
@@ -125,4 +133,24 @@ export function AdvisorPanel({
       </details>
     </aside>
   );
+}
+
+function useAdviceElapsedSeconds(isLoading: boolean): number {
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+
+  useEffect(() => {
+    if (!isLoading) {
+      setElapsedSeconds(0);
+      return;
+    }
+
+    const startedAt = Date.now();
+    const updateElapsedSeconds = () => setElapsedSeconds(Math.floor((Date.now() - startedAt) / 1000));
+    updateElapsedSeconds();
+    const intervalId = window.setInterval(updateElapsedSeconds, 250);
+
+    return () => window.clearInterval(intervalId);
+  }, [isLoading]);
+
+  return elapsedSeconds;
 }

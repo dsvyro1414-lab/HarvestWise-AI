@@ -23,7 +23,6 @@ import type {
   FarmInterviewResult,
   FarmPlanInput,
   FarmPlanPatch,
-  MarketPulseResponse,
   WeatherLocationId,
   WeatherResponse,
 } from "@/domain/types";
@@ -33,7 +32,6 @@ import {
   requestRealityCheckQuestion,
   requestScenarioParsing,
 } from "@/services/copilotApi";
-import { requestMarketPulse } from "@/services/marketPulseApi";
 import { requestWeatherContext } from "@/services/weatherApi";
 import { ScenarioModePanel } from "@/features/scenario/ScenarioModePanel";
 
@@ -51,7 +49,6 @@ export function App() {
   const [scenarioQuestion, setScenarioQuestion] = useState("");
   const [lastScenario, setLastScenario] = useState<PostPlanScenario | null>(null);
   const [isScenarioOpen, setIsScenarioOpen] = useState(false);
-  const [marketPulse, setMarketPulse] = useState<MarketPulseResponse | null>(null);
   const [weatherLocationId, setWeatherLocationId] = useState<WeatherLocationId | "">("");
   const [weatherResponse, setWeatherResponse] = useState<WeatherResponse | null>(null);
   const [isLoadingAdvice, setIsLoadingAdvice] = useState(false);
@@ -61,8 +58,6 @@ export function App() {
   const [isRequestingRealityCheck, setIsRequestingRealityCheck] = useState(false);
   const [isRunningScenario, setIsRunningScenario] = useState(false);
   const [scenarioError, setScenarioError] = useState<string | null>(null);
-  const [isLoadingMarketPulse, setIsLoadingMarketPulse] = useState(false);
-  const [marketPulseError, setMarketPulseError] = useState<string | null>(null);
   const [isLoadingWeather, setIsLoadingWeather] = useState(false);
   const [weatherError, setWeatherError] = useState<string | null>(null);
   const adviceRequestId = useRef(0);
@@ -227,23 +222,6 @@ export function App() {
     }
   }
 
-  async function handleLoadMarketPulse() {
-    setMarketPulseError(null);
-    setIsLoadingMarketPulse(true);
-
-    try {
-      setMarketPulse(await requestMarketPulse(input.cropId));
-    } catch {
-      setMarketPulseError("We could not load a USDA observation. Your plan price has not changed.");
-    } finally {
-      setIsLoadingMarketPulse(false);
-    }
-  }
-
-  function handleApplyMarketPulse(price: number) {
-    applyPatch({ marketPricePerUnit: price });
-  }
-
   async function handleLoadWeather() {
     if (!weatherLocationId) return;
     setWeatherError(null);
@@ -274,17 +252,14 @@ export function App() {
     setInput(nextInput);
     setRemoteAdvice(null);
     setLastScenario(null);
-    if (patch.cropId && patch.cropId !== baseInput.cropId) setMarketPulse(null);
     setRealityCheckPrompt(null);
     setRealityCheckError(null);
     return nextInput;
   }
 
   function handleInputChange(nextInput: FarmPlanInput) {
-    if (nextInput.cropId !== input.cropId) setMarketPulse(null);
     setInput(nextInput);
     setLastScenario(null);
-    setMarketPulseError(null);
     setScenarioError(null);
     setRealityCheckPrompt(null);
     setRealityCheckError(null);
@@ -308,8 +283,6 @@ export function App() {
     setRealityCheckPrompt(null);
     setRealityCheckError(null);
     setLastScenario(null);
-    setMarketPulse(null);
-    setMarketPulseError(null);
     setWeatherLocationId("");
     setWeatherResponse(null);
     setWeatherError(null);
@@ -371,15 +344,7 @@ export function App() {
               scenario={lastScenario}
               onOpenScenario={() => setIsScenarioOpen(true)}
             />
-            <MarketPulsePanel
-              crop={plan.crop}
-              currentPrice={input.marketPricePerUnit}
-              error={marketPulseError}
-              isLoading={isLoadingMarketPulse}
-              pulse={marketPulse}
-              onApply={handleApplyMarketPulse}
-              onRefresh={() => void handleLoadMarketPulse()}
-            />
+            <MarketPulsePanel crop={plan.crop} input={input} />
             <WeatherContextPanel
               error={weatherError}
               isLoading={isLoadingWeather}
@@ -397,7 +362,6 @@ export function App() {
             />
             <DecisionPackPanel
               input={input}
-              marketPulse={marketPulse}
               pack={actionPack}
               plan={plan}
               scenario={lastScenario}

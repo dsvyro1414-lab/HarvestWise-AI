@@ -15,6 +15,8 @@ export type FarmerActionId =
 
 export type FarmerActionStage = "before-planting" | "after-harvest";
 
+export type MarketPriceSourceType = "buyer" | "co-op" | "elevator" | "other";
+
 export type FarmPlanField =
   | "cropId"
   | "landSizeAcres"
@@ -84,6 +86,18 @@ export interface FarmPlanInput {
   storageMonths: number;
   storageCostPerMonth: number;
   expectedMonthlyPriceGrowth: number;
+  priceEvidence?: MarketPriceEvidence;
+}
+
+/**
+ * Farmer-recorded context for the market price used in the deterministic plan.
+ * It is evidence only: none of these fields alters the finance calculation.
+ */
+export interface MarketPriceEvidence {
+  sourceType: MarketPriceSourceType | "";
+  sourceName: string;
+  location: string;
+  checkedAt: string;
 }
 
 export interface PriceSensitivityPoint {

@@ -3,14 +3,14 @@ import { CheckCircle2, CloudSun, Copy, Landmark, Printer, ShieldCheck, TriangleA
 import { Button } from "@/components/ui/Button";
 import type { DeterministicActionPack } from "@/domain/actionPack";
 import { buildDecisionPackShareText, type DecisionPackScenario } from "@/domain/decisionPack";
-import type { FarmPlanInput, FarmPlanResult, MarketPulseResponse, WeatherResponse } from "@/domain/types";
+import { formatPriceEvidenceSource, getPriceEvidenceStatus } from "@/domain/priceEvidence";
+import type { FarmPlanInput, FarmPlanResult, WeatherResponse } from "@/domain/types";
 import { formatCurrency, formatNumber, formatPercent } from "@/utils/formatters";
 
 interface DecisionPackPanelProps {
   input: FarmPlanInput;
   pack: DeterministicActionPack;
   plan: FarmPlanResult;
-  marketPulse: MarketPulseResponse | null;
   weatherResponse: WeatherResponse | null;
   scenario: DecisionPackScenario | null;
 }
@@ -19,14 +19,13 @@ export function DecisionPackPanel({
   input,
   pack,
   plan,
-  marketPulse,
   weatherResponse,
   scenario,
 }: DecisionPackPanelProps) {
   const [copyStatus, setCopyStatus] = useState("");
   const shareText = useMemo(
-    () => buildDecisionPackShareText({ input, plan, pack, marketPulse, weatherResponse, scenario }),
-    [input, marketPulse, pack, plan, scenario, weatherResponse],
+    () => buildDecisionPackShareText({ input, plan, pack, weatherResponse, scenario }),
+    [input, pack, plan, scenario, weatherResponse],
   );
   const riskLabel = plan.riskLevel === "low" ? "within range" : plan.riskLevel === "medium" ? "watch closely" : "needs review";
 
@@ -125,7 +124,7 @@ export function DecisionPackPanel({
             </div>
           </div>
           <div className="decision-pack__reference-grid">
-            <MarketReference marketPulse={marketPulse} plan={plan} input={input} />
+            <MarketReference plan={plan} input={input} />
             <WeatherReference weatherResponse={weatherResponse} />
             <ScenarioReference scenario={scenario} />
           </div>
@@ -152,33 +151,22 @@ function Metric({ label, value, detail }: { label: string; value: string; detail
 }
 
 function MarketReference({
-  marketPulse,
   plan,
   input,
 }: {
-  marketPulse: MarketPulseResponse | null;
   plan: FarmPlanResult;
   input: FarmPlanInput;
 }) {
-  const observation = marketPulse?.status === "available" ? marketPulse.observation : null;
-  const unavailable = marketPulse?.status === "unavailable" ? marketPulse : null;
+  const evidence = input.priceEvidence;
+  const status = getPriceEvidenceStatus(evidence);
 
   return (
     <article className="decision-pack__reference">
       <Landmark aria-hidden="true" size={17} />
       <div>
-        <span>USDA market reference</span>
-        {observation ? (
-          <>
-            <strong>{formatCurrency(observation.price)} / {plan.crop.unit} · {observation.freshness}</strong>
-            <p>{observation.location} · {observation.reportName} · {formatDateTime(observation.observedAt)}</p>
-          </>
-        ) : (
-          <>
-            <strong>{unavailable?.reason === "not-configured" ? "Not connected" : unavailable ? "Unavailable" : "Not checked"}</strong>
-            <p>{unavailable?.message ?? `The plan retains the farmer-entered ${formatCurrency(input.marketPricePerUnit)} / ${plan.crop.unit} price.`}</p>
-          </>
-        )}
+        <span>Market price record</span>
+        <strong>{formatPriceEvidenceSource(evidence)}</strong>
+        <p>{formatCurrency(input.marketPricePerUnit)} / {plan.crop.unit} · {evidence?.location || "market not recorded"} · {formatDateTime(evidence?.checkedAt ?? "")} · {status.label}</p>
       </div>
     </article>
   );

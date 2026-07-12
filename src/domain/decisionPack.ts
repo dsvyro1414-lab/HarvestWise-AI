@@ -1,10 +1,10 @@
 import type {
   FarmPlanInput,
   FarmPlanResult,
-  MarketPulseResponse,
   WeatherResponse,
 } from "./types.js";
 import type { DeterministicActionPack } from "./actionPack.js";
+import { formatPriceEvidenceSource, getPriceEvidenceStatus } from "./priceEvidence.js";
 import { formatCurrency, formatNumber, formatPercent } from "../utils/formatters.js";
 
 export interface DecisionPackScenario {
@@ -17,7 +17,6 @@ interface BuildDecisionPackShareTextArgs {
   input: FarmPlanInput;
   plan: FarmPlanResult;
   pack: DeterministicActionPack;
-  marketPulse: MarketPulseResponse | null;
   weatherResponse: WeatherResponse | null;
   scenario: DecisionPackScenario | null;
 }
@@ -31,7 +30,6 @@ export function buildDecisionPackShareText({
   input,
   plan,
   pack,
-  marketPulse,
   weatherResponse,
   scenario,
 }: BuildDecisionPackShareTextArgs): string {
@@ -48,7 +46,7 @@ export function buildDecisionPackShareText({
     "Verify before committing:",
     ...pack.checks.slice(0, 3).map((check) => `• ${check.title}: ${check.detail}`),
     "",
-    marketLine(marketPulse, plan, input),
+    priceEvidenceLine(input, plan),
     weatherLine(weatherResponse),
     scenarioLine(scenario),
     "",
@@ -58,17 +56,13 @@ export function buildDecisionPackShareText({
   return lines.join("\n");
 }
 
-function marketLine(
-  marketPulse: MarketPulseResponse | null,
-  plan: FarmPlanResult,
-  input: FarmPlanInput,
-): string {
-  if (marketPulse?.status === "available") {
-    const { observation } = marketPulse;
-    return `USDA reference: ${formatCurrency(observation.price)} / ${plan.crop.unit} (${observation.freshness}, ${observation.location}; ${observation.reportName}).`;
-  }
+function priceEvidenceLine(input: FarmPlanInput, plan: FarmPlanResult): string {
+  const evidence = input.priceEvidence;
+  const status = getPriceEvidenceStatus(evidence);
+  const location = evidence?.location ? `, ${evidence.location}` : "";
+  const date = evidence?.checkedAt ? `, confirmed ${evidence.checkedAt}` : "";
 
-  return `USDA reference: unavailable; the plan retains the entered ${formatCurrency(input.marketPricePerUnit)} / ${plan.crop.unit} price.`;
+  return `Market price record: ${formatPriceEvidenceSource(evidence)}${location}${date}; ${status.label}. Plan retains the entered ${formatCurrency(input.marketPricePerUnit)} / ${plan.crop.unit} price.`;
 }
 
 function weatherLine(weatherResponse: WeatherResponse | null): string {

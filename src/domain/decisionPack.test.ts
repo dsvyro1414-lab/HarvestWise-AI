@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { buildActionPack } from "./actionPack.js";
 import { buildDecisionPackShareText } from "./decisionPack.js";
 import { calculateFarmPlan } from "./finance.js";
-import type { FarmPlanInput, MarketPulseResponse, WeatherResponse } from "./types.js";
+import type { FarmPlanInput, WeatherResponse } from "./types.js";
 
 const input: FarmPlanInput = {
   cropId: "corn",
@@ -18,30 +18,17 @@ const input: FarmPlanInput = {
   storageMonths: 0,
   storageCostPerMonth: 0,
   expectedMonthlyPriceGrowth: 0,
+  priceEvidence: {
+    sourceType: "co-op",
+    sourceName: "Prairie Co-op",
+    location: "Central Illinois",
+    checkedAt: "2026-07-10",
+  },
 };
 
 describe("decision pack share text", () => {
   it("keeps the deterministic action, verification checks, and source limitations together", () => {
     const plan = calculateFarmPlan(input);
-    const marketPulse: MarketPulseResponse = {
-      status: "available",
-      observation: {
-        name: "USDA AMS Market News",
-        reportName: "Illinois Grain Bids",
-        reportUrl: "https://example.test/report",
-        location: "Central Illinois",
-        cropId: "corn",
-        commodity: "Corn",
-        grade: "No. 2 Yellow",
-        contract: "Current",
-        unit: "USD/bu",
-        price: 4.24,
-        observedAt: "2026-07-12T12:00:00.000Z",
-        fetchedAt: "2026-07-12T13:00:00.000Z",
-        freshness: "fresh",
-        limitation: "Confirm locally.",
-      },
-    };
     const weatherResponse: WeatherResponse = {
       status: "available",
       context: {
@@ -72,7 +59,6 @@ describe("decision pack share text", () => {
       input,
       plan,
       pack: buildActionPack(input, plan),
-      marketPulse,
       weatherResponse,
       scenario: {
         changedFields: ["Fertilizer cost +20%"],
@@ -82,24 +68,24 @@ describe("decision pack share text", () => {
     });
 
     expect(text).toContain("Calculated next action: Plant this plan");
-    expect(text).toContain("USDA reference: $4.24 / bu (fresh, Central Illinois; Illinois Grain Bids).");
+    expect(text).toContain("Market price record: Co-op quote · Prairie Co-op, Central Illinois, confirmed 2026-07-10; confirmed recently.");
     expect(text).toContain("Weather timing: Central Illinois — Champaign, IL");
     expect(text).toContain("Latest what-if: Fertilizer cost +20%");
     expect(text).toContain("Gemma may interpret or explain the plan but does not choose the action.");
   });
 
-  it("keeps an absent observation visibly absent instead of inventing a source", () => {
-    const plan = calculateFarmPlan(input);
+  it("keeps an absent price record visibly absent instead of inventing a source", () => {
+    const inputWithoutEvidence = { ...input, priceEvidence: undefined };
+    const plan = calculateFarmPlan(inputWithoutEvidence);
     const text = buildDecisionPackShareText({
-      input,
+      input: inputWithoutEvidence,
       plan,
-      pack: buildActionPack(input, plan),
-      marketPulse: { status: "unavailable", reason: "not-configured", message: "Missing key", source: { name: "USDA AMS Market News", reportName: "Illinois Grain Bids", reportUrl: "https://example.test/report", location: "Illinois cash-bid market" } },
+      pack: buildActionPack(inputWithoutEvidence, plan),
       weatherResponse: null,
       scenario: null,
     });
 
-    expect(text).toContain("USDA reference: unavailable");
+    expect(text).toContain("Market price record: Not recorded; source not recorded.");
     expect(text).toContain("Weather timing: not checked");
     expect(text).toContain("Latest what-if: none run yet.");
   });
@@ -110,7 +96,6 @@ describe("decision pack share text", () => {
       input,
       plan,
       pack: buildActionPack(input, plan),
-      marketPulse: null,
       weatherResponse: {
         status: "unavailable",
         reason: "upstream-error",

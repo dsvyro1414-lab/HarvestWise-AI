@@ -82,6 +82,12 @@ export function createDefaultFarmInput(cropId: CropId = "corn"): FarmPlanInput {
     storageMonths: 0,
     storageCostPerMonth: 150,
     expectedMonthlyPriceGrowth: 0.01,
+    priceEvidence: {
+      sourceType: "",
+      sourceName: "",
+      location: "",
+      checkedAt: "",
+    },
   };
 }
 

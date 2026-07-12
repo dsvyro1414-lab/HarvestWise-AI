@@ -1,7 +1,14 @@
 import { ArrowRight, CheckCircle2, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { applyCropDefaults, cropOptions } from "@/domain/crops";
-import type { CropId, FarmInterviewResult, FarmPlanInput } from "@/domain/types";
+import type {
+  CropId,
+  FarmInterviewResult,
+  FarmPlanInput,
+  MarketPriceEvidence,
+  MarketPriceSourceType,
+  NumericFarmPlanField,
+} from "@/domain/types";
 import { NumberField } from "@/components/ui/NumberField";
 import { FarmInterviewCopilot } from "./FarmInterviewCopilot";
 
@@ -41,10 +48,24 @@ export function FarmInputPanel({
   ].filter((value) => value > 0).length;
   const isReady = completedCoreInputs === 4;
 
-  function updateNumber(key: keyof FarmPlanInput, value: number) {
+  function updateNumber(key: NumericFarmPlanField, value: number) {
     onChange({
       ...input,
       [key]: value,
+    });
+  }
+
+  function updatePriceEvidence(patch: Partial<MarketPriceEvidence>) {
+    onChange({
+      ...input,
+      priceEvidence: {
+        sourceType: "",
+        sourceName: "",
+        location: "",
+        checkedAt: "",
+        ...input.priceEvidence,
+        ...patch,
+      },
     });
   }
 
@@ -53,6 +74,7 @@ export function FarmInputPanel({
       ...applyCropDefaults(input, cropId),
       expectedHarvestPerAcre: 0,
       marketPricePerUnit: 0,
+      priceEvidence: undefined,
     });
   }
 
@@ -124,6 +146,65 @@ export function FarmInputPanel({
           onChange={(value) => updateNumber("marketPricePerUnit", value)}
         />
       </div>
+
+      <section className="price-evidence-input" id="price-evidence" aria-labelledby="price-evidence-title">
+        <div className="price-evidence-input__heading">
+          <div>
+            <span>Recommended proof</span>
+            <h3 id="price-evidence-title">Where did this price come from?</h3>
+          </div>
+          <p>This context never changes the calculation. It makes the plan easier to verify.</p>
+        </div>
+        <div className="input-panel__fields input-panel__fields--evidence">
+          <label className="field">
+            <span className="field__label">Price source</span>
+            <span className="field__control">
+              <select
+                value={input.priceEvidence?.sourceType ?? ""}
+                onChange={(event) => updatePriceEvidence({ sourceType: event.target.value as MarketPriceSourceType | "" })}
+              >
+                <option value="">Choose a source</option>
+                <option value="buyer">Buyer offer</option>
+                <option value="co-op">Co-op quote</option>
+                <option value="elevator">Grain elevator quote</option>
+                <option value="other">Other local source</option>
+              </select>
+            </span>
+          </label>
+          <label className="field">
+            <span className="field__label">Source or contact</span>
+            <span className="field__control">
+              <input
+                maxLength={120}
+                placeholder="e.g. Prairie Co-op"
+                value={input.priceEvidence?.sourceName ?? ""}
+                onChange={(event) => updatePriceEvidence({ sourceName: event.target.value })}
+              />
+            </span>
+          </label>
+          <label className="field">
+            <span className="field__label">Market or location</span>
+            <span className="field__control">
+              <input
+                maxLength={120}
+                placeholder="e.g. Champaign, IL"
+                value={input.priceEvidence?.location ?? ""}
+                onChange={(event) => updatePriceEvidence({ location: event.target.value })}
+              />
+            </span>
+          </label>
+          <label className="field">
+            <span className="field__label">Confirmed on</span>
+            <span className="field__control">
+              <input
+                type="date"
+                value={input.priceEvidence?.checkedAt ?? ""}
+                onChange={(event) => updatePriceEvidence({ checkedAt: event.target.value })}
+              />
+            </span>
+          </label>
+        </div>
+      </section>
 
       <details className="assumption-disclosure">
         <summary>Costs and market assumptions</summary>

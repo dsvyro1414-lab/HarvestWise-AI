@@ -34,6 +34,7 @@ export async function buildAdvisorNotes({ input, mode, question, history }: Buil
       model: modelName,
       contents: buildPrompt({ input, mode, question, history }),
       config: {
+        maxOutputTokens: 320,
         temperature: 0.35,
         systemInstruction:
           "You are the explanation layer of HarvestWise AI for smallholder farmers. Explain only the supplied deterministic plan and decision in practical, cautious language. Never calculate, replace, or add a recommendation. Do not invent numbers or recommend borrowing. Return exactly one JSON object and no other text.",
