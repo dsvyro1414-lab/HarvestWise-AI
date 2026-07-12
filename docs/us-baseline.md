@@ -16,6 +16,8 @@ The figures are deliberately conservative reference assumptions for a 40-acre pl
 
 The values in `src/domain/crops.ts` simplify these sources into the small deterministic model used by HarvestWise. They are not a copy of a full enterprise budget and do not model insurance, debt service, property tax, or every machinery/overhead category.
 
-## Next data step
+## USDA Market Pulse
 
-The future Market Pulse should show a USDA Market News cash bid with its report, grade, location, and timestamp, then let the farmer explicitly apply it to the plan. It must never silently replace a farmer-entered local price.
+Market Pulse is an optional, explicit lookup against the USDA AMS MyMarketNews **Illinois Grain Bids** report. It only accepts a selected crop's USD/bu observation and shows the report, grade, location, contract, timestamp, and freshness before it can be applied. It never overwrites a farmer-entered price: the farmer must choose **Apply to plan**, and stale observations cannot be applied.
+
+Set `USDA_MARKET_NEWS_API_KEY` on the server to enable this lookup. The MyMarketNews API key is personal and must not be exposed to the browser or committed to the repository. If the report is missing, stale, or not comparable to the selected crop/unit, HarvestWise reports that limitation rather than showing a substitute price.

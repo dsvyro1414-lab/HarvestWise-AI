@@ -44,3 +44,11 @@ export const scenarioRequestSchema = z.object({
   question: z.string().trim().min(3).max(1000),
   currentInput: farmPlanInputSchema,
 });
+
+export const marketPulseRequestSchema = z.object({
+  cropId: z.enum(["corn", "soybeans", "wheat"]),
+});
+
+export const weatherContextRequestSchema = z.object({
+  locationId: z.enum(["central-illinois", "central-iowa", "central-indiana"]),
+});

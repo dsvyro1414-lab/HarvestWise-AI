@@ -2,11 +2,15 @@ import express from "express";
 import { buildAdvisorNotes } from "./gemmaAdvisor.js";
 import { buildRealityCheckQuestion } from "./gemmaRealityCheck.js";
 import { extractFarmInterview, parseScenarioQuestion } from "./gemmaStructured.js";
+import { getNwsWeatherContext } from "./nwsWeather.js";
+import { getUsdaMarketPulse } from "./usdaMarketPulse.js";
 import {
   adviceRequestSchema,
   farmInterviewRequestSchema,
+  marketPulseRequestSchema,
   realityCheckRequestSchema,
   scenarioRequestSchema,
+  weatherContextRequestSchema,
 } from "./validation.js";
 
 const app = express();
@@ -79,6 +83,34 @@ app.post("/api/scenario", async (request, response) => {
 
   const result = await parseScenarioQuestion(parsed.data);
   response.json(result);
+});
+
+app.get("/api/market-pulse", async (request, response) => {
+  const parsed = marketPulseRequestSchema.safeParse(request.query);
+
+  if (!parsed.success) {
+    response.status(400).json({
+      error: "Invalid market-pulse request",
+      issues: parsed.error.flatten(),
+    });
+    return;
+  }
+
+  response.json(await getUsdaMarketPulse(parsed.data.cropId));
+});
+
+app.get("/api/weather", async (request, response) => {
+  const parsed = weatherContextRequestSchema.safeParse(request.query);
+
+  if (!parsed.success) {
+    response.status(400).json({
+      error: "Invalid weather request",
+      issues: parsed.error.flatten(),
+    });
+    return;
+  }
+
+  response.json(await getNwsWeatherContext(parsed.data.locationId));
 });
 
 app.listen(port, () => {

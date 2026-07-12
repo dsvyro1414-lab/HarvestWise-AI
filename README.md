@@ -33,6 +33,8 @@ Production demo: [harvestwise-ai.vercel.app](https://harvestwise-ai.vercel.app)
 - Supports follow-up Gemma questions with recent conversation context, while keeping every financial decision deterministic.
 - Extracts a farm plan from natural language through the farm interview copilot.
 - Converts what-if questions into scenario parameter changes, then recalculates with deterministic code.
+- Can load one explicitly requested USDA Market News cash-bid observation, with report, location, grade, unit, timestamp, freshness, and a manual **Apply to plan** action.
+- Can load an explicitly requested NWS forecast and active alerts for a farmer-selected Midwest location; it creates a timing prompt only and never changes finance or the recommended action.
 - Falls back to local advice if no API key is configured, so the demo remains usable.
 - Keeps the farmer journey focused: core assumptions, one recommended action, and a compact plan snapshot. Scenario testing, crop comparison, price sensitivity, and market options are available on demand.
 
@@ -86,9 +88,11 @@ Create `.env` from `.env.example` and set:
 ```bash
 GEMINI_API_KEY=your_key_here
 GEMMA_MODEL=gemma-4-26b-a4b-it
+USDA_MARKET_NEWS_API_KEY=your_mymarketnews_key_here
 ```
 
 Without a key, HarvestWise AI uses a local deterministic explanation fallback.
+The USDA key is optional: without it, Market Pulse explicitly says that no live cash-bid observation is available and never changes the entered plan price.
 
 ## Quality Checks
 

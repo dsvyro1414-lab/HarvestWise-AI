@@ -174,3 +174,107 @@ export interface ScenarioParseResult {
   explanation: string;
   provider: "gemma" | "local-fallback";
 }
+
+export type MarketPulseFreshness = "fresh" | "aging" | "stale";
+
+export interface MarketPulseSource {
+  name: string;
+  reportName: string;
+  reportUrl: string;
+  location: string;
+}
+
+export interface MarketPulseObservation extends MarketPulseSource {
+  cropId: CropId;
+  commodity: string;
+  grade: string;
+  contract: string;
+  unit: string;
+  price: number;
+  observedAt: string;
+  fetchedAt: string;
+  freshness: MarketPulseFreshness;
+  limitation: string;
+}
+
+export type MarketPulseResponse =
+  | {
+      status: "available";
+      observation: MarketPulseObservation;
+    }
+  | {
+      status: "unavailable";
+      reason: "not-configured" | "no-comparable-observation" | "upstream-error";
+      message: string;
+      source: MarketPulseSource;
+    };
+
+export type WeatherLocationId = "central-illinois" | "central-iowa" | "central-indiana";
+
+export interface WeatherLocation {
+  id: WeatherLocationId;
+  label: string;
+  latitude: number;
+  longitude: number;
+}
+
+export type WeatherFreshness = "fresh" | "aging" | "stale";
+
+export interface WeatherForecast {
+  periodName: string;
+  startTime: string;
+  endTime: string;
+  updatedAt: string;
+  temperature: number;
+  temperatureUnit: "F" | "C";
+  windSpeed: string;
+  windDirection: string;
+  shortForecast: string;
+  probabilityOfPrecipitation: number | null;
+  freshness: WeatherFreshness;
+}
+
+export interface WeatherAlert {
+  id: string;
+  event: string;
+  severity: string;
+  urgency: string;
+  headline: string;
+  effectiveAt: string;
+  expiresAt: string;
+  sourceUrl: string;
+}
+
+export type WeatherAlerts =
+  | {
+      status: "available";
+      checkedAt: string;
+      items: WeatherAlert[];
+    }
+  | {
+      status: "unavailable";
+      message: string;
+    };
+
+export interface WeatherContext {
+  sourceName: string;
+  forecastUrl: string;
+  alertsUrl: string;
+  location: WeatherLocation;
+  forecast: WeatherForecast;
+  alerts: WeatherAlerts;
+  timingPrompt: string;
+  fetchedAt: string;
+}
+
+export type WeatherResponse =
+  | {
+      status: "available";
+      context: WeatherContext;
+    }
+  | {
+      status: "unavailable";
+      reason: "no-forecast" | "upstream-error";
+      message: string;
+      location: WeatherLocation;
+    };

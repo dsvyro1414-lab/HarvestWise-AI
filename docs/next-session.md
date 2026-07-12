@@ -1,50 +1,36 @@
 # Next Session Roadmap
 
-The U.S. Midwest baseline is now live. The next session should extend the post-plan experience without weakening the deterministic finance boundary.
+The U.S. Midwest baseline, post-plan dashboard, guided reality check/action pack, USDA Market Pulse, and NWS weather context are implemented. The agreed product roadmap is complete; choose a new priority before expanding scope.
 
-## 1. Post-plan dashboard
+## NWS weather and alerts
 
-Build a compact dashboard after the first calculation with:
+The weather panel is an optional, explicit lookup for a farmer-selected Midwest location.
 
-- **Price safety:** current price, break-even price, downside room, and a clear safe/watch/risk state.
-- **Cost drivers:** ranked contribution of seed, fertilizer, fieldwork/equipment, land lease, hauling, and storage.
-- **Scenario comparison:** side-by-side baseline vs. one or more what-if scenarios, with the changed assumptions called out.
+- It starts with a farmer-selected location rather than inferred coordinates.
+- It shows the NWS forecast/active alert, source, location, temperature unit, timestamp, and freshness state.
+- It turns the observation into a plain timing prompt for fieldwork, hauling, or verification.
+- It never changes cost, revenue, risk, scenario calculations, or the deterministic recommended action.
+- A missing/stale/non-matching observation is shown as a limitation, never as a forecast.
 
-Keep the first-run form focused. These views belong after the farmer has created a plan.
+## Existing foundations
 
-## 2. Gemma guided interview + reality check + action pack
+### Post-plan dashboard
 
-Extend Gemma from extraction into a guided workflow:
+- **Price safety:** current price, break-even price, downside room, and safe/watch/risk state.
+- **Cost drivers:** ranked seed, fertilizer, fieldwork/equipment, land lease, hauling, and storage contribution.
+- **Scenario comparison:** baseline vs. the latest what-if, including changed assumptions.
 
-1. Ask only for the next missing or uncertain assumption.
-2. Summarize the captured plan in plain language.
-3. Run a **reality check** that flags assumptions to verify locally: lease, input quotes, yield history, buyer price, and timing.
-4. Produce an **action pack** containing the deterministic recommendation, the top assumptions to verify, and the next three practical steps.
+### Gemma guided workflow + action pack
 
-Gemma may ask, structure, explain, and prioritize verification. TypeScript remains the authority for cost, revenue, risk, scenario math, and the recommended action.
+- Gemma extracts a note or scenario operation; local TypeScript remains authoritative for calculations and actions.
+- The action pack identifies lease, input quotes, yield history, buyer price, and timing checks, then offers a Gemma wording for the top verification question.
 
-## 3. USDA Market Pulse with provenance and manual apply
+### USDA Market Pulse
 
-Add an optional market panel that shows a USDA Market News observation with:
-
-- commodity and contract/report;
-- location, grade, and unit;
-- observed price;
-- source/report name;
-- timestamp and freshness state.
-
-The farmer must explicitly click **Apply to plan**. Never silently replace a user-entered market price. If the observation is stale, missing, or not comparable to the selected crop/location, show that limitation instead of presenting false precision.
-
-## 4. Optional NWS weather and alerts
-
-Only add this after the dashboard and Market Pulse are solid. Start with a small, location-aware card for relevant NWS forecast or alerts, including source and timestamp. Weather should inform timing and verification prompts, not alter financial calculations automatically.
-
-## Suggested order of work
-
-1. Post-plan dashboard and scenario comparison.
-2. Gemma guided interview, reality check, and action pack.
-3. USDA Market Pulse with provenance and explicit apply.
-4. Optional NWS weather/alerts.
+- Uses the USDA AMS MyMarketNews Illinois Grain Bids report only after an explicit farmer request.
+- Shows commodity, grade, unit, contract, location, report/source, timestamp, freshness, and limitation.
+- Applies an observed cash-bid price only after **Apply to plan**; stale observations cannot be applied.
+- Requires server-side `USDA_MARKET_NEWS_API_KEY`; without it, the UI reports the unavailable state and does not change the plan price.
 
 ## Definition of done
 
