@@ -12,9 +12,9 @@ The product's central promise is: **Gemma explains; HarvestWise calculates.** Ge
 
 - Branch: `codex/guided-interview-action-pack`
 - GitHub default branch: `main`; the submission-hardening release is published to both this branch and `main` so the repository root matches the deployed product.
-- Deployed product commit: `8738be9 Fix locale inputs and scenario testing`
+- Deployed product-code baseline: `8738be9 Fix locale inputs and scenario testing`; the later submission release changes documentation and evidence only.
 - Production URL: <https://harvestwise-ai.vercel.app>
-- Immutable deployment URL: <https://harvestwise-87it4qxhk-dsvyro1414-labs-projects.vercel.app>
+- Vercel builds production from default `main`; use `vercel inspect harvestwise-ai.vercel.app` when the current immutable deployment URL is needed.
 
 The agreed locale and scenario fixes plus release-review hardening are committed, pushed, and deployed:
 
