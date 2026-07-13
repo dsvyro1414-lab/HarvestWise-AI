@@ -1,6 +1,6 @@
 # HarvestWise AI
 
-HarvestWise AI is a Gemma-powered farm profit planner for smallholder farmers and cooperative advisors.
+HarvestWise AI is a Gemma-powered farm profit planner for independent U.S. Midwest grain farmers and cooperative or extension advisors.
 
 The app helps answer a practical question before a farmer spends money:
 
@@ -53,15 +53,15 @@ Open the Vite URL printed in the terminal, usually `http://localhost:5173`.
 
 ## Demo Path
 
-Recommended 60-90 second judge flow:
+Recommended 60-75 second judge flow:
 
-1. Open the app and show that no result is prefilled for the visitor.
-2. Enter crop, land, available budget, expected harvest, and market price, then create the plan.
-3. Point to **Recommended next action** and its two calculated reasons.
-4. Ask Gemma why that action was selected, then ask one follow-up question in the same conversation.
-5. Open **Test a change to this plan** and ask `what if fertilizer cost rises by 20%?`.
-6. Show the **Field-ready decision pack**, then copy it or print/save it as a PDF for a buyer, cooperative, or field visit.
-7. Open price, crop, or market details only if the judge wants to investigate the calculation.
+1. Enter the prepared Corn example: `40 acres`, `$35,000` budget, `220 bu/acre`, and `$4.05/bu`.
+2. Create the plan and show **Plant this plan**, expected profit of `$2,440`, and the entered-cost break-even of `$3.77/bu`.
+3. Open **Test a change** and ask `fertilizer cost rises by 20%`.
+4. Show `Gemma interpreted the change` and the deterministic comparison `$2,440 -> $760`.
+5. Show that the original plan remains unchanged and open the **Field-ready decision pack**.
+6. Explain the boundary in one sentence: Gemma converts farmer language into structured inputs; HarvestWise calculates every financial number and action.
+7. Use the Advisor only as an optional extension after a live-provider preflight. A clearly labelled local fallback is never presented as Gemma output.
 
 ## U.S. Baseline and price evidence
 
@@ -73,11 +73,34 @@ HarvestWise does not fetch or apply a remote price quote by default. Record a bu
 
 The production flow visibly separates model work from deterministic finance:
 
-![Gemma interprets a fertilizer scenario and HarvestWise recalculates profit](docs/screenshots/gemma-scenario-proof.jpg)
+![U.S. Midwest plan with a live Gemma fertilizer scenario and deterministic profit comparison](docs/screenshots/gemma-us-scenario-proof.png)
 
 Judge narration:
 
 > Gemma turns farmer language into structured inputs and scenario operations. HarvestWise then recalculates every financial number and selects the recommended action in deterministic TypeScript.
+
+## External benchmark
+
+The demo is directionally compared with the University of Illinois Extension's 2026 Central Illinois corn budget in [U.S. baseline notes](docs/us-baseline.md#external-benchmark--directional-not-like-for-like). The comparison is intentionally not presented as validation: HarvestWise models only the cost categories entered in the app, while the Illinois budget includes broader economic costs and an estimated government payment.
+
+## Limitations
+
+- HarvestWise is a planning prototype, not agronomic, legal, investment, or financial advice.
+- Market price is entered and evidenced by the farmer; it is not a live quote fetched by the app.
+- The simplified model excludes crop insurance, debt service, taxes, complete machinery and overhead costs, and government payments.
+- The displayed break-even is an **entered-cost break-even**, not a complete economic break-even.
+- Risk bands are planning heuristics and have not been externally calibrated on farm outcomes.
+- The current demo covers three Midwest grain crops and a small set of optional NWS locations.
+- Model-provider failures return an honestly labelled local fallback so the deterministic plan remains usable.
+- When live Gemma is used, the submitted note or question and relevant plan context are sent to the configured Google GenAI service; sensitive personal or financial identifiers should not be entered.
+- Farmer or advisor interviews are still needed before claiming real-world validation.
+
+## Submission references
+
+- [Production demo](https://harvestwise-ai.vercel.app)
+- [Final submission write-up](docs/submission-brief.md)
+- [U.S. baseline, sources, and external benchmark](docs/us-baseline.md)
+- [MIT license](LICENSE)
 
 ## Optional Gemma Setup
 

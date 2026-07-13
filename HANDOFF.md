@@ -8,9 +8,10 @@ HarvestWise AI is a trustworthy, hackathon-ready farm-profit planner for a U.S. 
 
 The product's central promise is: **Gemma explains; HarvestWise calculates.** Gemma must never become the source of finance, risk, or the recommended action.
 
-## Current state — 2026-07-13
+## Current state — 2026-07-14
 
 - Branch: `codex/guided-interview-action-pack`
+- GitHub default branch: `main`; the submission-hardening release is published to both this branch and `main` so the repository root matches the deployed product.
 - Deployed product commit: `8738be9 Fix locale inputs and scenario testing`
 - Production URL: <https://harvestwise-ai.vercel.app>
 - Immutable deployment URL: <https://harvestwise-87it4qxhk-dsvyro1414-labs-projects.vercel.app>
@@ -24,7 +25,17 @@ The agreed locale and scenario fixes plus release-review hardening are committed
 - The Decision Pack kept the canonical `$2,440` plan and the separate `$760` scenario record; `Copy summary` completed successfully.
 - Production `/api/scenario` and `/api/advice` requests returned HTTP 200. The advisor used a clearly labelled `Local fallback answer` during an intermittent provider failure.
 
-The final production evidence in this file is a documentation-only follow-up after the deployed product commit. Check `git status --short --branch` before starting new work.
+The final production evidence in this file is followed by a submission-hardening release. Check `git status --short --branch` and verify `origin/main` before starting new work.
+
+## Submission hardening completed — 2026-07-14
+
+- The full current product history is published through GitHub's default `main` branch, not only the feature branch.
+- A fresh U.S./USD production capture replaces the Nigeria/Naira image in the README. It visibly shows `Gemma interpreted the change` and `$2,440 -> $760`.
+- `README.md`, `docs/submission-brief.md`, `explain.md`, `docs/demo-polish-journal.md`, and `docs/us-baseline.md` now describe the same vertical U.S. Midwest product flow.
+- `docs/submission-brief.md` is the canonical final write-up.
+- The repository includes an MIT `LICENSE` file and an explicit limitations section.
+- `docs/us-baseline.md` includes a directional, not-like-for-like comparison with the University of Illinois Extension 2026 Central Illinois corn budget.
+- No farmer or advisor testimonials were invented. External interviews remain optional follow-up evidence.
 
 ## Completed recently
 
@@ -91,11 +102,17 @@ Implementation files:
 
 ## Next delivery step
 
-There is no remaining code or deployment work from this handoff. Before the judge demo, open a clean production tab and retry the 60–90 second story once because the upstream model can be intermittent.
+Record and attach the final 60-75 second judge video:
 
-Live-provider note from 2026-07-13: `gemma-4-26b-a4b-it` is configured correctly and both local and production browser scenarios returned provider `gemma`. The same production question was run twice and both comparisons stayed at baseline `$2,440` → scenario `$760`. Advisor calls were intermittent: local attempts produced malformed JSON or exhausted provider retries with a `500`, and the production advisor also returned the labelled fallback. Keep the labels honest and retry live Gemma before the judge demo; never present fallback text as model output.
+1. Enter Corn, `40 acres`, `$35,000`, `220 bu/acre`, and `$4.05/bu`.
+2. Show **Plant this plan**, expected profit `$2,440`, and entered-cost break-even `$3.77/bu`.
+3. Run `fertilizer cost rises by 20%`.
+4. Show `Gemma interpreted the change` and `$2,440 -> $760`.
+5. Show the unchanged baseline and the Decision Pack.
 
-GitHub delivery note: branch `codex/guided-interview-action-pack` is pushed through `8738be9`. Draft PR creation was attempted, but the installed GitHub integration returned `403 Resource not accessible by integration`, while the local `gh` token is invalid. No PR was opened.
+Before recording, open a clean production tab and preflight this exact scenario because the upstream model can be intermittent. `gemma-4-26b-a4b-it` is configured correctly and the production scenario returned provider `gemma` again on 2026-07-14. Advisor calls remain intermittent and may return a clearly labelled local fallback, so Advisor is optional in the core recording. Never present fallback text as model output.
+
+After recording, complete the private Kaggle submission fields and attach the real video URL. Do not add a placeholder URL to the repository. If time permits, collect 3-5 short farmer or advisor reviews and document what changed after their feedback.
 
 ## Verified submission checklist
 
@@ -103,7 +120,9 @@ GitHub delivery note: branch `codex/guided-interview-action-pack` is pushed thro
 2. The clean production path passed: plan → deterministic action → scenario → advisor explanation/fallback → Decision Pack.
 3. Live Gemma scenario output and the labelled local fallback were both verified.
 4. Production at 320 px had no horizontal overflow and no browser console errors.
-5. Judge story: enter a realistic plan, show the deterministic action and break-even, run `fertilizer cost rises by 20%`, ask Gemma to explain, then copy or print the Decision Pack.
+5. Judge story: enter a realistic plan, show the deterministic action and break-even, run `fertilizer cost rises by 20%`, show the live Gemma provider label, then open the Decision Pack.
+6. The ordinary GitHub repository URL opens the same current product history as the production deployment.
+7. Every judge-facing screenshot and worked example uses the U.S. Midwest/USD baseline.
 
 ## Important architecture and boundaries
 
