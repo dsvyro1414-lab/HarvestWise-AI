@@ -11,18 +11,20 @@ The product's central promise is: **Gemma explains; HarvestWise calculates.** Ge
 ## Current state — 2026-07-13
 
 - Branch: `codex/guided-interview-action-pack`
-- Last pushed product commit: `03618c0 Improve Gemma guidance and price evidence`
-- Production currently serves commit `6428ef9`; it is behind the pushed branch and the validated working tree below.
+- Deployed product commit: `8738be9 Fix locale inputs and scenario testing`
 - Production URL: <https://harvestwise-ai.vercel.app>
+- Immutable deployment URL: <https://harvestwise-87it4qxhk-dsvyro1414-labs-projects.vercel.app>
 
-The current working tree contains the agreed locale and scenario fixes plus release-review hardening. It is validated locally but is not committed or deployed yet:
+The agreed locale and scenario fixes plus release-review hardening are committed, pushed, and deployed:
 
 - `npm test` — 87 tests in 15 files passed.
 - `npm run typecheck`, `npm run build`, and `git diff --check` passed.
-- Desktop and 320 px browser checks passed with no horizontal overflow, Vite overlay, or console errors. At 320 px the document, scenario composer, input, and result all remained within the viewport.
-- The final browser path confirmed `4,05` → `$4.05`, expected profit `$2,440`, a live Gemma scenario at `$760`, an identical rerun with no compounding, an inline unchanged-scenario error that preserved the previous result, a labelled local advisor fallback, and a separate scenario record in the Decision Pack.
+- Fresh production desktop and 320 px browser checks passed with no horizontal overflow, Vite overlay, or console errors. At 320 px the document, scenario composer, input, and result all remained within the viewport.
+- Production confirmed `4,05` → `$4.05`, expected profit `$2,440`, and a live Gemma scenario at `$760`. An identical production rerun stayed at `$2,440` → `$760`, proving no compounding.
+- The Decision Pack kept the canonical `$2,440` plan and the separate `$760` scenario record; `Copy summary` completed successfully.
+- Production `/api/scenario` and `/api/advice` requests returned HTTP 200. The advisor used a clearly labelled `Local fallback answer` during an intermittent provider failure.
 
-The current working tree may contain documentation changes made after that commit. Check `git status --short --branch` before starting new work.
+The final production evidence in this file is a documentation-only follow-up after the deployed product commit. Check `git status --short --branch` before starting new work.
 
 ## Completed recently
 
@@ -89,17 +91,19 @@ Implementation files:
 
 ## Next delivery step
 
-Intentionally commit and deploy the validated diff. After deployment, repeat the production submission path below and confirm the deployed code matches the local proof.
+There is no remaining code or deployment work from this handoff. Before the judge demo, open a clean production tab and retry the 60–90 second story once because the upstream model can be intermittent.
 
-Live-provider note from 2026-07-13: `gemma-4-26b-a4b-it` is configured correctly and a final browser scenario returned provider `gemma`. The same question was run twice and both comparisons stayed at baseline `$2,440` → scenario `$760`. Advisor calls were intermittent: one returned malformed JSON and another exhausted provider retries with a `500`, so HarvestWise correctly displayed `Local fallback answer`. Keep the labels honest and retry live Gemma before the judge demo; never present fallback text as model output.
+Live-provider note from 2026-07-13: `gemma-4-26b-a4b-it` is configured correctly and both local and production browser scenarios returned provider `gemma`. The same production question was run twice and both comparisons stayed at baseline `$2,440` → scenario `$760`. Advisor calls were intermittent: local attempts produced malformed JSON or exhausted provider retries with a `500`, and the production advisor also returned the labelled fallback. Keep the labels honest and retry live Gemma before the judge demo; never present fallback text as model output.
 
-## Submission checklist after deployment
+GitHub delivery note: branch `codex/guided-interview-action-pack` is pushed through `8738be9`. Draft PR creation was attempted, but the installed GitHub integration returned `403 Resource not accessible by integration`, while the local `gh` token is invalid. No PR was opened.
 
-1. Run `npm test`, `npm run typecheck`, `npm run build`, and `git diff --check`.
-2. Test the full path on a clean production page: plan → action → scenario → Gemma explanation → Decision Pack.
-3. Test both a live Gemma response and the labelled local fallback.
-4. Confirm no horizontal overflow at 320 px and no browser console errors.
-5. Use this 60–90 second judge story: enter a realistic plan, show the deterministic action and break-even, run `fertilizer cost rises by 20%`, ask Gemma to explain, then copy or print the Decision Pack.
+## Verified submission checklist
+
+1. `npm test`, `npm run typecheck`, `npm run build`, and `git diff --check` passed.
+2. The clean production path passed: plan → deterministic action → scenario → advisor explanation/fallback → Decision Pack.
+3. Live Gemma scenario output and the labelled local fallback were both verified.
+4. Production at 320 px had no horizontal overflow and no browser console errors.
+5. Judge story: enter a realistic plan, show the deterministic action and break-even, run `fertilizer cost rises by 20%`, ask Gemma to explain, then copy or print the Decision Pack.
 
 ## Important architecture and boundaries
 
