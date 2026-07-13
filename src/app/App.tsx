@@ -15,7 +15,8 @@ import { buildFallbackAdvice } from "@/domain/advice";
 import { buildActionPack, type RealityCheckPrompt } from "@/domain/actionPack";
 import { applyCropDefaults, createEmptyFarmInput } from "@/domain/crops";
 import { buildCropComparison, buildMarketDecisions, calculateFarmPlan, getBestMarketDecision } from "@/domain/finance";
-import { applyFarmPlanPatch, describeOperations, formatFieldLabel } from "@/domain/patches";
+import { applyFarmPlanPatch } from "@/domain/patches";
+import { buildScenarioComparison } from "@/domain/scenario";
 import type {
   AdvisorPayload,
   AdvisorChatMessage,
@@ -33,7 +34,6 @@ import {
   requestScenarioParsing,
 } from "@/services/copilotApi";
 import { requestWeatherContext } from "@/services/weatherApi";
-import { ScenarioModePanel } from "@/features/scenario/ScenarioModePanel";
 
 export function App() {
   const [input, setInput] = useState<FarmPlanInput>(() => createEmptyFarmInput("corn"));
@@ -61,6 +61,7 @@ export function App() {
   const [isLoadingWeather, setIsLoadingWeather] = useState(false);
   const [weatherError, setWeatherError] = useState<string | null>(null);
   const adviceRequestId = useRef(0);
+  const scenarioRequestId = useRef(0);
 
   const isPlanReady =
     input.landSizeAcres > 0 &&
@@ -73,10 +74,18 @@ export function App() {
   const comparisons = useMemo(() => buildCropComparison(input), [input]);
   const marketDecisions = useMemo(() => buildMarketDecisions(input), [input]);
   const bestMarketDecision = useMemo(() => getBestMarketDecision(marketDecisions), [marketDecisions]);
-  const fallbackAdvice = useMemo(
-    () => buildFallbackAdvice({ input, plan, comparisons, marketDecisions }),
-    [comparisons, input, marketDecisions, plan],
-  );
+  const fallbackAdvice = useMemo(() => {
+    if (!lastScenario) {
+      return buildFallbackAdvice({ input, plan, comparisons, marketDecisions });
+    }
+
+    return buildFallbackAdvice({
+      input: lastScenario.afterInput,
+      plan: lastScenario.afterPlan,
+      comparisons: buildCropComparison(lastScenario.afterInput),
+      marketDecisions: buildMarketDecisions(lastScenario.afterInput),
+    });
+  }, [comparisons, input, lastScenario, marketDecisions, plan]);
   const advice = remoteAdvice ?? fallbackAdvice;
   const actionPack = useMemo(() => buildActionPack(input, plan), [input, plan]);
 
@@ -92,7 +101,10 @@ export function App() {
   async function handleAskGemma(mode: "explain" | "whatsapp" = "explain") {
     if (!showPlan) return;
 
-    const userQuestion = question.trim() || "Please explain this plan and why this is the recommended next action.";
+    const explanationInput = lastScenario?.afterInput ?? input;
+    const userQuestion = question.trim() || (lastScenario
+      ? "Please explain the latest what-if result and its recalculated next action."
+      : "Please explain this plan and why this is the recommended next action.");
     const history = advisorMessages.map((message) => ({
       role: message.role,
       content: message.text,
@@ -112,7 +124,7 @@ export function App() {
 
     try {
       const response = await requestAdvisorNotes({
-        input,
+        input: explanationInput,
         mode,
         question: userQuestion,
         history,
@@ -192,33 +204,34 @@ export function App() {
   async function handleRunScenario() {
     setScenarioError(null);
     setIsRunningScenario(true);
-    const beforeInput = input;
-    const beforePlan = calculateFarmPlan(beforeInput);
+    const baselineInput = input;
+    const requestId = scenarioRequestId.current + 1;
+    scenarioRequestId.current = requestId;
 
     try {
       const response = await requestScenarioParsing({
         question: scenarioQuestion,
-        currentInput: beforeInput,
+        currentInput: baselineInput,
       });
-      const nextInput = applyPatch(response.patch, beforeInput);
-      const afterPlan = calculateFarmPlan(nextInput);
+      if (requestId !== scenarioRequestId.current) return;
 
-      setLastScenario({
-        explanation: response.explanation,
-        changedFields:
-          response.operations.length > 0
-            ? describeOperations(response.operations)
-            : response.changedFields.map(formatFieldLabel),
-        beforeInput,
-        afterInput: nextInput,
-        beforePlan,
-        afterPlan,
-        provider: response.provider,
-      });
+      const comparison = buildScenarioComparison(baselineInput, response);
+      if (comparison.status === "invalid") {
+        setScenarioError(comparison.message);
+        return;
+      }
+
+      adviceRequestId.current += 1;
+      setRemoteAdvice(null);
+      setAdvisorMessages([]);
+      setAdvisorError(null);
+      setIsLoadingAdvice(false);
+      setLastScenario(comparison.scenario);
     } catch {
+      if (requestId !== scenarioRequestId.current) return;
       setScenarioError("We could not interpret that change. Try a specific value, such as “fertilizer cost rises by 20%.”");
     } finally {
-      setIsRunningScenario(false);
+      if (requestId === scenarioRequestId.current) setIsRunningScenario(false);
     }
   }
 
@@ -249,20 +262,31 @@ export function App() {
         : baseInput;
     const nextInput = applyFarmPlanPatch(base, patch);
 
+    scenarioRequestId.current += 1;
     setInput(nextInput);
     setRemoteAdvice(null);
     setLastScenario(null);
+    setIsRunningScenario(false);
+    setScenarioError(null);
     setRealityCheckPrompt(null);
     setRealityCheckError(null);
     return nextInput;
   }
 
   function handleInputChange(nextInput: FarmPlanInput) {
+    scenarioRequestId.current += 1;
     setInput(nextInput);
     setLastScenario(null);
+    setIsScenarioOpen(false);
+    setIsRunningScenario(false);
     setScenarioError(null);
     setRealityCheckPrompt(null);
     setRealityCheckError(null);
+  }
+
+  function handleScenarioQuestionChange(nextQuestion: string) {
+    setScenarioQuestion(nextQuestion);
+    setScenarioError(null);
   }
 
   function handleCreatePlan() {
@@ -275,6 +299,7 @@ export function App() {
 
   function handleReset() {
     const nextInput = createEmptyFarmInput(input.cropId);
+    scenarioRequestId.current += 1;
     setInput(nextInput);
     setIsPlanCreated(false);
     setInterviewText("");
@@ -287,7 +312,9 @@ export function App() {
     setWeatherResponse(null);
     setWeatherError(null);
     setIsScenarioOpen(false);
+    setIsRunningScenario(false);
     setScenarioQuestion("");
+    setScenarioError(null);
   }
 
   return (
@@ -340,9 +367,15 @@ export function App() {
             <ProfitSnapshot input={input} plan={plan} />
             <PostPlanDashboard
               input={input}
+              isRunningScenario={isRunningScenario}
+              isScenarioOpen={isScenarioOpen}
               plan={plan}
               scenario={lastScenario}
+              scenarioError={scenarioError}
+              scenarioQuestion={scenarioQuestion}
               onOpenScenario={() => setIsScenarioOpen(true)}
+              onQuestionChange={handleScenarioQuestionChange}
+              onRunScenario={() => void handleRunScenario()}
             />
             <MarketPulsePanel crop={plan.crop} input={input} />
             <WeatherContextPanel
@@ -369,22 +402,6 @@ export function App() {
             />
 
             <div className="analysis-disclosure-grid">
-              <details
-                className="analysis-disclosure"
-                open={isScenarioOpen}
-                onToggle={(event) => setIsScenarioOpen(event.currentTarget.open)}
-              >
-                <summary>Test a change to this plan</summary>
-                <ScenarioModePanel
-                  error={scenarioError}
-                  isLoading={isRunningScenario}
-                  lastScenario={lastScenario}
-                  question={scenarioQuestion}
-                  onQuestionChange={setScenarioQuestion}
-                  onRunScenario={() => void handleRunScenario()}
-                />
-              </details>
-
               <details className="analysis-disclosure">
                 <summary>Compare other crops</summary>
                 <CropComparisonTable activeCropId={input.cropId} comparisons={comparisons.slice(0, 4)} />

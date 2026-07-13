@@ -10,7 +10,7 @@ It keeps financial calculations deterministic in TypeScript, then uses Gemma to 
 
 ## Current Status
 
-The production demo is built around a guided farmer flow, deterministic finance, and a server-side Gemma explanation layer.
+The production demo is built around a guided farmer flow, deterministic finance, and a server-side Gemma explanation layer. It is designed for a hackathon demo and a future farmer pilot, not yet as a production farm-management system.
 
 Production demo: [harvestwise-ai.vercel.app](https://harvestwise-ai.vercel.app)
 
@@ -27,9 +27,9 @@ Production demo: [harvestwise-ai.vercel.app](https://harvestwise-ai.vercel.app)
 - Supports follow-up Gemma questions with recent conversation context, while keeping every financial decision deterministic.
 - Extracts a farm plan from natural language through the farm interview copilot.
 - Converts what-if questions into scenario parameter changes, then recalculates with deterministic code.
-- Can load one explicitly requested USDA Market News cash-bid observation, with report, location, grade, unit, timestamp, freshness, and a manual **Apply to plan** action.
+- Lets the farmer record where an entered market price came from: buyer, co-op, elevator, or another local source, plus location and confirmation date. The record has a freshness label and never changes the calculation.
 - Can load an explicitly requested NWS forecast and active alerts for a farmer-selected Midwest location; it creates a timing prompt only and never changes finance or the recommended action.
-- Creates a field-ready **Decision Pack** from the current plan: the calculated action, key financial limits, local checks, latest scenario, and clearly labelled USDA/NWS context. It can be copied into a co-op note or printed/saved as a PDF.
+- Creates a field-ready **Decision Pack** from the current plan: the calculated action, key financial limits, local checks, latest scenario, and clearly labelled price-evidence/NWS context. It can be copied into a co-op note or printed/saved as a PDF.
 - Falls back to local advice if no API key is configured, so the demo remains usable.
 - Keeps the farmer journey focused: core assumptions, one recommended action, and a compact plan snapshot. Scenario testing, crop comparison, price sensitivity, and market options are available on demand.
 
@@ -63,9 +63,11 @@ Recommended 60-90 second judge flow:
 6. Show the **Field-ready decision pack**, then copy it or print/save it as a PDF for a buyer, cooperative, or field visit.
 7. Open price, crop, or market details only if the judge wants to investigate the calculation.
 
-## U.S. Baseline
+## U.S. Baseline and price evidence
 
-The current product defaults are Midwest grain benchmarks, not live cash bids. They are deliberately editable and include seed, fertilizer, fieldwork/equipment, land lease, hauling, expected yield, and market price. See [U.S. baseline notes](docs/us-baseline.md) for sources, limits, and the path to an attributed USDA Market Pulse.
+The current product defaults are Midwest grain benchmarks, not live cash bids. They are deliberately editable and include seed, fertilizer, fieldwork/equipment, land lease, hauling, expected yield, and market price. See [U.S. baseline notes](docs/us-baseline.md) for sources and limits.
+
+HarvestWise does not fetch or apply a remote price quote by default. Record a buyer, co-op, elevator, or other local source next to the entered price so the plan can be checked later without implying that the number is live market data.
 
 ### Live Gemma Evidence
 
@@ -84,16 +86,15 @@ Create `.env` from `.env.example` and set:
 ```bash
 GEMINI_API_KEY=your_key_here
 GEMMA_MODEL=gemma-4-26b-a4b-it
-USDA_MARKET_NEWS_API_KEY=your_mymarketnews_key_here
 ```
 
 Without a key, HarvestWise AI uses a local deterministic explanation fallback.
-The USDA key is optional: without it, Market Pulse explicitly says that no live cash-bid observation is available and never changes the entered plan price.
 
 ## Quality Checks
 
 ```bash
 npm test
+npm run typecheck
 npm run build
 ```
 
@@ -112,7 +113,7 @@ npm run build
 
 ## Session Context
 
-Read `CONTEXT.md` first when continuing this project in a new Codex session.
+Read [HANDOFF.md](HANDOFF.md) first when continuing this project in a new Codex session.
 
 ## AI Boundary
 

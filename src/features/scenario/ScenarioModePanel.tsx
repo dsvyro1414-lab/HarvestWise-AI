@@ -1,19 +1,11 @@
+import { useEffect, useRef } from "react";
 import { FlaskConical, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { formatCurrency } from "@/utils/formatters";
-
-interface ScenarioSummary {
-  explanation: string;
-  changedFields: string[];
-  beforePlan: { expectedProfit: number };
-  afterPlan: { expectedProfit: number };
-  provider: "gemma" | "local-fallback";
-}
 
 interface ScenarioModePanelProps {
   question: string;
-  lastScenario: ScenarioSummary | null;
   error: string | null;
+  focusOnMount?: boolean;
   isLoading: boolean;
   onQuestionChange: (question: string) => void;
   onRunScenario: () => void;
@@ -21,14 +13,27 @@ interface ScenarioModePanelProps {
 
 export function ScenarioModePanel({
   question,
-  lastScenario,
   error,
+  focusOnMount = false,
   isLoading,
   onQuestionChange,
   onRunScenario,
 }: ScenarioModePanelProps) {
+  const questionInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!focusOnMount) return;
+
+    const input = questionInputRef.current;
+    input?.focus({ preventScroll: true });
+    input?.scrollIntoView({
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+      block: "nearest",
+    });
+  }, [focusOnMount]);
+
   return (
-    <section className="scenario-panel" aria-label="Scenario mode">
+    <section aria-busy={isLoading} className="scenario-panel" aria-label="Scenario mode">
       <div className="section-title">
         <FlaskConical size={20} />
         <div>
@@ -37,37 +42,30 @@ export function ScenarioModePanel({
         </div>
       </div>
 
-      <div className="scenario-panel__input">
+      <form
+        className="scenario-panel__input"
+        onSubmit={(event) => {
+          event.preventDefault();
+          if (isLoading || question.trim().length < 3) return;
+          onRunScenario();
+        }}
+      >
         <input
+          aria-label="Your what-if question"
+          disabled={isLoading}
           placeholder="What if fertilizer cost rises by 20%?"
+          ref={questionInputRef}
           value={question}
           onChange={(event) => onQuestionChange(event.target.value)}
         />
         <Button
           disabled={isLoading || question.trim().length < 3}
           icon={<RotateCcw size={16} />}
-          onClick={onRunScenario}
+          type="submit"
         >
           {isLoading ? "Running..." : "Run scenario"}
         </Button>
-      </div>
-
-      {lastScenario ? (
-        <div className="scenario-panel__result">
-          <span>{lastScenario.provider === "gemma" ? "Gemma interpreted the change" : "Local interpreter"}</span>
-          <strong>
-            {formatCurrency(lastScenario.beforePlan.expectedProfit)} → {formatCurrency(lastScenario.afterPlan.expectedProfit)}
-          </strong>
-          <p>{lastScenario.explanation}</p>
-          {lastScenario.changedFields.length > 0 ? (
-            <ul>
-              {lastScenario.changedFields.map((field) => (
-                <li key={field}>{field}</li>
-              ))}
-            </ul>
-          ) : null}
-        </div>
-      ) : null}
+      </form>
 
       {error ? <p className="inline-error" role="alert">{error}</p> : null}
     </section>

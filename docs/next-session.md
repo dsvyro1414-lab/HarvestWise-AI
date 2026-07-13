@@ -1,52 +1,5 @@
-# Next Session Roadmap
+# Next Session
 
-The U.S. Midwest baseline, post-plan dashboard, guided reality check/action pack, USDA Market Pulse, NWS weather context, and Field-ready Decision Pack are implemented. The agreed product roadmap is complete; choose a new priority before expanding scope.
+The active state, product boundaries, release evidence, and next delivery step are in [HANDOFF.md](../HANDOFF.md).
 
-## Field-ready Decision Pack
-
-The Decision Pack turns the current deterministic plan into one shareable handoff for a buyer, landowner, supplier, or cooperative.
-
-- It includes the calculated next action, profit, break-even, margin, cash position, and the three most important local checks.
-- It preserves the latest what-if result when one has been run.
-- It includes the current USDA/NWS state with an honest unavailable or not-checked label rather than inventing a source.
-- **Copy summary** produces a WhatsApp/co-op-note-ready text version; **Print / Save PDF** produces a focused one-page print view.
-- It repeats the boundary that HarvestWise calculates the financial result and action; Gemma may only interpret or explain.
-
-## NWS weather and alerts
-
-The weather panel is an optional, explicit lookup for a farmer-selected Midwest location.
-
-- It starts with a farmer-selected location rather than inferred coordinates.
-- It shows the NWS forecast/active alert, source, location, temperature unit, timestamp, and freshness state.
-- It turns the observation into a plain timing prompt for fieldwork, hauling, or verification.
-- It never changes cost, revenue, risk, scenario calculations, or the deterministic recommended action.
-- A missing/stale/non-matching observation is shown as a limitation, never as a forecast.
-
-## Existing foundations
-
-### Post-plan dashboard
-
-- **Price safety:** current price, break-even price, downside room, and safe/watch/risk state.
-- **Cost drivers:** ranked seed, fertilizer, fieldwork/equipment, land lease, hauling, and storage contribution.
-- **Scenario comparison:** baseline vs. the latest what-if, including changed assumptions.
-
-### Gemma guided workflow + action pack
-
-- Gemma extracts a note or scenario operation; local TypeScript remains authoritative for calculations and actions.
-- The action pack identifies lease, input quotes, yield history, buyer price, and timing checks, then offers a Gemma wording for the top verification question.
-
-### USDA Market Pulse
-
-- Uses the USDA AMS MyMarketNews Illinois Grain Bids report only after an explicit farmer request.
-- Shows commodity, grade, unit, contract, location, report/source, timestamp, freshness, and limitation.
-- Applies an observed cash-bid price only after **Apply to plan**; stale observations cannot be applied.
-- Requires server-side `USDA_MARKET_NEWS_API_KEY`; without it, the UI reports the unavailable state and does not change the plan price.
-
-## Definition of done
-
-- Every live external observation has source, location, unit, and timestamp.
-- External data never overwrites user inputs without an explicit action.
-- Gemma output is labelled separately from local fallback output.
-- All financial values and actions still come from deterministic domain code.
-- A copied or printed plan preserves the same source states and deterministic action shown on screen.
-- The full `Plan → Dashboard → Ask Gemma → Verify/Apply` path works on desktop and mobile.
+This file previously described a USDA Market Pulse flow that is no longer part of the current UI. Do not use it as the source of truth.

@@ -1,27 +1,38 @@
 import { ArrowRight, FlaskConical, ShieldCheck, TriangleAlert } from "lucide-react";
 import { buildCostDrivers, buildPriceSafety } from "@/domain/dashboard";
 import type { FarmPlanInput, FarmPlanResult } from "@/domain/types";
+import type { PlanScenario } from "@/domain/scenario";
 import { formatCurrency, formatPercent } from "@/utils/formatters";
 import { Button } from "@/components/ui/Button";
+import { ScenarioModePanel } from "@/features/scenario/ScenarioModePanel";
 
-export interface PostPlanScenario {
-  explanation: string;
-  changedFields: string[];
-  beforeInput: FarmPlanInput;
-  afterInput: FarmPlanInput;
-  beforePlan: FarmPlanResult;
-  afterPlan: FarmPlanResult;
-  provider: "gemma" | "local-fallback";
-}
+export type PostPlanScenario = PlanScenario;
 
 interface PostPlanDashboardProps {
   input: FarmPlanInput;
   plan: FarmPlanResult;
   scenario: PostPlanScenario | null;
+  scenarioError: string | null;
+  scenarioQuestion: string;
+  isRunningScenario: boolean;
+  isScenarioOpen: boolean;
   onOpenScenario: () => void;
+  onQuestionChange: (question: string) => void;
+  onRunScenario: () => void;
 }
 
-export function PostPlanDashboard({ input, plan, scenario, onOpenScenario }: PostPlanDashboardProps) {
+export function PostPlanDashboard({
+  input,
+  plan,
+  scenario,
+  scenarioError,
+  scenarioQuestion,
+  isRunningScenario,
+  isScenarioOpen,
+  onOpenScenario,
+  onQuestionChange,
+  onRunScenario,
+}: PostPlanDashboardProps) {
   const priceSafety = buildPriceSafety(input, plan);
   const costDrivers = buildCostDrivers(input, plan);
   const SafetyIcon = priceSafety.state === "safe" ? ShieldCheck : TriangleAlert;
@@ -103,12 +114,33 @@ export function PostPlanDashboard({ input, plan, scenario, onOpenScenario }: Pos
           {scenario ? <span className="scenario-comparison__source">{scenario.provider === "gemma" ? "Gemma interpreted the change" : "Local interpreter"}</span> : null}
         </div>
 
-        {scenario ? <ScenarioResult scenario={scenario} /> : (
+        {isScenarioOpen ? (
+          <div className="scenario-comparison__composer" id="scenario-composer">
+            <ScenarioModePanel
+              error={scenarioError}
+              focusOnMount
+              isLoading={isRunningScenario}
+              question={scenarioQuestion}
+              onQuestionChange={onQuestionChange}
+              onRunScenario={onRunScenario}
+            />
+          </div>
+        ) : null}
+
+        {scenario ? <ScenarioResult scenario={scenario} /> : !isScenarioOpen ? (
           <div className="scenario-comparison__empty">
             <p>No what-if has been run yet. Test a change to see the plan before and after the new assumption.</p>
-            <Button icon={<FlaskConical size={16} />} variant="secondary" onClick={onOpenScenario}>Test a change</Button>
+            <Button
+              aria-controls="scenario-composer"
+              aria-expanded={isScenarioOpen}
+              icon={<FlaskConical size={16} />}
+              variant="secondary"
+              onClick={onOpenScenario}
+            >
+              Test a change
+            </Button>
           </div>
-        )}
+        ) : null}
       </section>
     </section>
   );
@@ -118,7 +150,7 @@ function ScenarioResult({ scenario }: { scenario: PostPlanScenario }) {
   const profitChange = scenario.afterPlan.expectedProfit - scenario.beforePlan.expectedProfit;
 
   return (
-    <div className="scenario-comparison__result">
+    <div className="scenario-comparison__result" aria-live="polite" role="status">
       <div className="scenario-plan scenario-plan--baseline">
         <span>Baseline</span>
         <strong>{formatCurrency(scenario.beforePlan.expectedProfit)}</strong>

@@ -1,4 +1,6 @@
-# HarvestWise AI — Current Handoff
+# HarvestWise AI — Archived Handoff
+
+> **This file is archived.** It reflects the project state from 2026-07-11 and contains outdated deployment and USDA Market Pulse instructions. Read [HANDOFF.md](HANDOFF.md) for the active task list and current product boundaries.
 
 Read this file before continuing work on HarvestWise AI.
 

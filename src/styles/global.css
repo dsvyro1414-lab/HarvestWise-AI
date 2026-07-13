@@ -789,6 +789,11 @@ button:active {
   font-size: 13px;
 }
 
+.scenario-panel__input input:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
 .scenario-panel__result {
   display: grid;
   grid-column: 1 / -1;
@@ -3326,9 +3331,36 @@ button:active {
   line-height: 1.45;
 }
 
+.scenario-comparison__composer {
+  scroll-margin-top: 96px;
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+  animation: scenario-composer-reveal 180ms ease-out both;
+  transition: background 160ms ease;
+}
+
+.scenario-comparison__composer:focus-within {
+  background: rgba(var(--sage-rgb), 0.11);
+}
+
+.scenario-comparison__composer .scenario-panel {
+  grid-template-columns: minmax(190px, 0.65fr) minmax(280px, 1fr);
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.scenario-comparison__composer .scenario-panel__input input:focus-visible {
+  border-color: var(--green);
+  outline: 3px solid rgba(var(--green-rgb), 0.14);
+}
+
 .analysis-disclosure-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
 }
 
@@ -3517,6 +3549,18 @@ button:active {
   }
 }
 
+@keyframes scenario-composer-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @keyframes gemma-pulse {
   50% {
     transform: scale(0.92);
@@ -3534,6 +3578,7 @@ button:active {
   }
 
   .journey-section--revealed,
+  .scenario-comparison__composer,
   .advisor-message--loading > svg {
     animation: none;
   }
@@ -3567,6 +3612,10 @@ button:active {
   .post-plan-dashboard__grid {
     grid-template-columns: 1fr;
     gap: 18px;
+  }
+
+  .scenario-comparison__composer .scenario-panel {
+    grid-template-columns: 1fr;
   }
 
   .action-pack__body {
