@@ -7,6 +7,8 @@ export default {
       return Response.json({ error: "Method not allowed" }, { status: 405 });
     }
 
+    const startedAt = Date.now();
+    const requestId = request.headers.get("x-vercel-id") ?? "local";
     const body = await readJson(request);
     const parsed = adviceRequestSchema.safeParse(body);
 
@@ -20,8 +22,37 @@ export default {
       );
     }
 
-    const advice = await buildAdvisorNotes(parsed.data);
-    return Response.json(advice);
+    console.log(JSON.stringify({
+      level: "info",
+      message: "advice_request_started",
+      route: "/api/advice",
+      requestId,
+      mode: parsed.data.mode,
+      questionLength: parsed.data.question?.length ?? 0,
+    }));
+
+    try {
+      const advice = await buildAdvisorNotes(parsed.data);
+      console.log(JSON.stringify({
+        level: "info",
+        message: "advice_request_completed",
+        route: "/api/advice",
+        requestId,
+        provider: advice.provider,
+        durationMs: Date.now() - startedAt,
+      }));
+      return Response.json(advice);
+    } catch (error) {
+      console.error(JSON.stringify({
+        level: "error",
+        message: "advice_request_failed",
+        route: "/api/advice",
+        requestId,
+        error: error instanceof Error ? error.message : String(error),
+        durationMs: Date.now() - startedAt,
+      }));
+      return Response.json({ error: "Advice request failed" }, { status: 500 });
+    }
   },
 };
 

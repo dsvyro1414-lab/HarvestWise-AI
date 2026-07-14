@@ -19,6 +19,7 @@ const questionSuggestions = [
   "Why is this my next action?",
   "What makes this plan risky?",
   "Which assumption should I verify first?",
+  "How could rainy weather affect this plan?",
 ];
 
 export function AdvisorPanel({
@@ -67,8 +68,8 @@ export function AdvisorPanel({
                 </ul>
               ) : null}
               {message.provider ? (
-                <span className="advisor-message__provider">
-                  {message.provider === "gemma" ? "Answered by Gemma" : "Local explanation, Gemma unavailable"}
+                <span className={`advisor-message__provider advisor-message__provider--${message.provider}`}>
+                  {message.provider === "gemma" ? "Answered by Gemma" : "Answered locally because Gemma was unavailable"}
                 </span>
               ) : null}
             </div>
@@ -104,12 +105,12 @@ export function AdvisorPanel({
             onAskGemma();
           }}
         >
-          <label htmlFor="gemma-question">Ask about this calculation</label>
+          <label htmlFor="gemma-question">Ask about this plan</label>
           <div>
             <input
               disabled={isLoading}
               id="gemma-question"
-              placeholder="Ask about this plan…"
+              placeholder="Ask about the action, risk, weather, or assumptions…"
               value={question}
               onChange={(event) => onQuestionChange(event.target.value)}
             />

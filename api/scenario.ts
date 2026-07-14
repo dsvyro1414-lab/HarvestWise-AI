@@ -7,6 +7,8 @@ export default {
       return Response.json({ error: "Method not allowed" }, { status: 405 });
     }
 
+    const startedAt = Date.now();
+    const requestId = request.headers.get("x-vercel-id") ?? "local";
     const body = await readJson(request);
     const parsed = scenarioRequestSchema.safeParse(body);
 
@@ -20,8 +22,38 @@ export default {
       );
     }
 
-    const result = await parseScenarioQuestion(parsed.data);
-    return Response.json(result);
+    console.log(JSON.stringify({
+      level: "info",
+      message: "scenario_request_started",
+      route: "/api/scenario",
+      requestId,
+      questionLength: parsed.data.question.length,
+    }));
+
+    try {
+      const result = await parseScenarioQuestion(parsed.data);
+      console.log(JSON.stringify({
+        level: "info",
+        message: "scenario_request_completed",
+        route: "/api/scenario",
+        requestId,
+        provider: result.provider,
+        operationCount: result.operations.length,
+        guidanceKind: result.guidance?.kind,
+        durationMs: Date.now() - startedAt,
+      }));
+      return Response.json(result);
+    } catch (error) {
+      console.error(JSON.stringify({
+        level: "error",
+        message: "scenario_request_failed",
+        route: "/api/scenario",
+        requestId,
+        error: error instanceof Error ? error.message : String(error),
+        durationMs: Date.now() - startedAt,
+      }));
+      return Response.json({ error: "Scenario request failed" }, { status: 500 });
+    }
   },
 };
 

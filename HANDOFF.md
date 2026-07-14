@@ -16,14 +16,14 @@ The product's central promise is: **Gemma explains; HarvestWise calculates.** Ge
 - Production URL: <https://harvestwise-ai.vercel.app>
 - Vercel builds production from default `main`; use `vercel inspect harvestwise-ai.vercel.app` when the current immutable deployment URL is needed.
 
-The agreed locale and scenario fixes plus release-review hardening are committed, pushed, and deployed:
+The agreed locale and scenario fixes plus release-review hardening are committed, pushed, and deployed. A follow-up AI-answer quality repair is complete in the current working tree and is awaiting the release commit/deploy recorded at the end of this session:
 
-- `npm test` — 87 tests in 15 files passed.
+- `npm test` — 96 tests in 18 files passed.
 - `npm run typecheck`, `npm run build`, and `git diff --check` passed.
 - Fresh production desktop and 320 px browser checks passed with no horizontal overflow, Vite overlay, or console errors. At 320 px the document, scenario composer, input, and result all remained within the viewport.
 - Production confirmed `4,05` → `$4.05`, expected profit `$2,440`, and a live Gemma scenario at `$760`. An identical production rerun stayed at `$2,440` → `$760`, proving no compounding.
 - The Decision Pack kept the canonical `$2,440` plan and the separate `$760` scenario record; `Copy summary` completed successfully.
-- Production `/api/scenario` and `/api/advice` requests returned HTTP 200. The advisor used a clearly labelled `Local fallback answer` during an intermittent provider failure.
+- Production `/api/scenario` and `/api/advice` requests returned HTTP 200. The AI repair adds question-aware local fallbacks so a provider failure still answers the farmer's actual question.
 
 The final production evidence in this file is followed by a submission-hardening release. Check `git status --short --branch` and verify `origin/main` before starting new work.
 
@@ -55,6 +55,16 @@ The final production evidence in this file is followed by a submission-hardening
    - No live price API is called by the current UI. Do not reintroduce USDA or Twelve Data as a default price source without an explicit product decision.
 
 ## Completed in the current working tree
+
+### 0. AI answer-quality repair
+
+- A qualitative what-if such as `What if the weather will be rainy the whole winter?` now returns advisory guidance instead of the red `no clear parameter change` dead end.
+- The guidance explains likely field-access, compaction, and nutrient-loss implications, states that no financial assumption changed, and offers a numeric stress test the farmer can run next.
+- The Advisor now answers the latest message directly. Greetings, weather, risk, break-even, profit, budget, assumptions, and action questions have useful local recovery answers when Gemma is unavailable.
+- Gemma requests use JSON response mode with larger, mode-specific output budgets; parsing failures no longer collapse into a generic plan summary.
+- Scenario and Advisor serverless endpoints emit structured start/completion/failure events with request id, duration, provider, and safe result metadata without logging the farmer's question.
+- Browser evidence is stored in `docs/screenshots/ai-weather-answer-2026-07-14.png` and `docs/screenshots/ai-advisor-hello-answer-2026-07-14.png`.
+- Added focused tests for scenario guidance, Advisor JSON parsing, and question-aware fallbacks.
 
 ### 1. P0 — decimal separators and locale-safe numbers
 
@@ -102,15 +112,16 @@ Implementation files:
 
 ## Next delivery step
 
-Record and attach the final 60-75 second judge video:
+After confirming the release commit and production deployment below, record and attach the final 60-75 second judge video:
 
 1. Enter Corn, `40 acres`, `$35,000`, `220 bu/acre`, and `$4.05/bu`.
 2. Show **Plant this plan**, expected profit `$2,440`, and entered-cost break-even `$3.77/bu`.
 3. Run `fertilizer cost rises by 20%`.
 4. Show `Gemma interpreted the change` and `$2,440 -> $760`.
-5. Show the unchanged baseline and the Decision Pack.
+5. Ask the rainy-winter what-if and show the advisory answer plus the explicit `no plan numbers changed` boundary.
+6. Show the unchanged baseline and the Decision Pack.
 
-Before recording, open a clean production tab and preflight this exact scenario because the upstream model can be intermittent. `gemma-4-26b-a4b-it` is configured correctly and the production scenario returned provider `gemma` again on 2026-07-14. Advisor calls remain intermittent and may return a clearly labelled local fallback, so Advisor is optional in the core recording. Never present fallback text as model output.
+Before recording, open a clean production tab and preflight the numeric and rainy-winter scenarios because the upstream model can be intermittent. `gemma-4-26b-a4b-it` is configured correctly. If Gemma is unavailable, HarvestWise returns a direct, question-aware answer labelled as local; never present fallback text as model output.
 
 After recording, complete the private Kaggle submission fields and attach the real video URL. Do not add a placeholder URL to the repository. If time permits, collect 3-5 short farmer or advisor reviews and document what changed after their feedback.
 

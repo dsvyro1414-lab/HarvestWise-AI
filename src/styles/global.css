@@ -3604,6 +3604,10 @@ button:active {
   text-transform: uppercase;
 }
 
+.advisor-message__provider--local-fallback {
+  color: var(--amber);
+}
+
 .advisor-message--loading p {
   margin: 7px 0 0;
   color: var(--muted);
@@ -3676,6 +3680,108 @@ button:active {
   color: var(--red);
   font-size: 12px;
   line-height: 1.45;
+}
+
+.scenario-guidance {
+  display: grid;
+  grid-column: 1 / -1;
+  gap: 10px;
+  border: 1px solid var(--amber);
+  border-radius: 10px;
+  padding: 14px;
+  background: var(--amber-soft);
+  color: var(--text);
+}
+
+.scenario-guidance--weather {
+  border-color: var(--border-strong);
+  background: rgba(var(--sage-rgb), 0.18);
+}
+
+.scenario-guidance__heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+}
+
+.scenario-guidance__heading > svg {
+  flex: 0 0 auto;
+  margin-top: 2px;
+  color: var(--green);
+}
+
+.scenario-guidance__heading div {
+  display: grid;
+  gap: 2px;
+}
+
+.scenario-guidance__heading strong {
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.scenario-guidance__heading span,
+.scenario-guidance > small {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 760;
+  letter-spacing: 0.035em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.scenario-guidance > p {
+  max-width: 78ch;
+  margin: 0;
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.scenario-guidance > ul {
+  display: grid;
+  gap: 5px;
+  margin: 0;
+  padding-left: 19px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.scenario-guidance__suggestion {
+  display: grid;
+  width: fit-content;
+  max-width: 100%;
+  min-height: 44px;
+  border: 1px solid var(--border-strong);
+  border-radius: 9px;
+  padding: 7px 11px;
+  background: var(--surface);
+  color: var(--green);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 150ms ease,
+    background 150ms ease;
+}
+
+.scenario-guidance__suggestion:hover,
+.scenario-guidance__suggestion:focus-visible {
+  border-color: var(--green);
+  background: var(--green-soft);
+}
+
+.scenario-guidance__suggestion span {
+  font-size: 10px;
+  font-weight: 760;
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+}
+
+.scenario-guidance__suggestion strong {
+  margin-top: 2px;
+  font-size: 12px;
+  line-height: 1.35;
 }
 
 .journey-section--revealed {

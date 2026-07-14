@@ -23,14 +23,15 @@ Production demo: [harvestwise-ai.vercel.app](https://harvestwise-ai.vercel.app)
 - Uses a U.S. Midwest baseline with corn, soybeans, and wheat; money is USD and field-crop yields are bushels per acre.
 - Includes land lease as a separate cost so a plan does not overstate profitability by omitting access to the field.
 - Compares market decisions: sell at harvest, store short-term, or store longer.
-- Generates a plain-language explanation and WhatsApp draft through a server-side Gemma endpoint.
-- Supports follow-up Gemma questions with recent conversation context, while keeping every financial decision deterministic.
+- Generates a direct, question-aware explanation and WhatsApp draft through a server-side Gemma endpoint.
+- Supports greetings, follow-up questions, and practical weather or risk questions with recent conversation context, while keeping every financial decision deterministic.
 - Extracts a farm plan from natural language through the farm interview copilot.
-- Converts what-if questions into scenario parameter changes, then recalculates with deterministic code.
+- Converts numeric what-if questions into typed scenario operations, then recalculates with deterministic code.
+- Answers qualitative what-if questions, such as a rainy winter, with clearly labelled advisory guidance and a suggested numeric stress test without silently changing the plan.
 - Lets the farmer record where an entered market price came from: buyer, co-op, elevator, or another local source, plus location and confirmation date. The record has a freshness label and never changes the calculation.
 - Can load an explicitly requested NWS forecast and active alerts for a farmer-selected Midwest location; it creates a timing prompt only and never changes finance or the recommended action.
 - Creates a field-ready **Decision Pack** from the current plan: the calculated action, key financial limits, local checks, latest scenario, and clearly labelled price-evidence/NWS context. It can be copied into a co-op note or printed/saved as a PDF.
-- Falls back to local advice if no API key is configured, so the demo remains usable.
+- Falls back to question-aware local advice if the model is unavailable or returns malformed output, so the demo remains useful instead of showing a generic report.
 - Keeps the farmer journey focused: core assumptions, one recommended action, and a compact plan snapshot. Scenario testing, crop comparison, price sensitivity, and market options are available on demand.
 
 ## Tech Stack
@@ -61,7 +62,7 @@ Recommended 60-75 second judge flow:
 4. Show `Gemma interpreted the change` and the deterministic comparison `$2,440 -> $760`.
 5. Show that the original plan remains unchanged and open the **Field-ready decision pack**.
 6. Explain the boundary in one sentence: Gemma converts farmer language into structured inputs; HarvestWise calculates every financial number and action.
-7. Use the Advisor only as an optional extension after a live-provider preflight. A clearly labelled local fallback is never presented as Gemma output.
+7. Optionally ask the Advisor `hello` or a practical weather question to show a direct answer. A clearly labelled local fallback is never presented as Gemma output.
 
 ## U.S. Baseline and price evidence
 
@@ -74,6 +75,12 @@ HarvestWise does not fetch or apply a remote price quote by default. Record a bu
 The production flow visibly separates model work from deterministic finance:
 
 ![U.S. Midwest plan with a live Gemma fertilizer scenario and deterministic profit comparison](docs/screenshots/gemma-us-scenario-proof.png)
+
+Qualitative scenario and direct Advisor evidence:
+
+![Rainy-winter what-if answered as advisory guidance](docs/screenshots/ai-weather-answer-2026-07-14.png)
+
+![Advisor answering a greeting directly](docs/screenshots/ai-advisor-hello-answer-2026-07-14.png)
 
 Judge narration:
 
@@ -144,6 +151,7 @@ Gemma is intentionally not used for financial math.
 
 - Gemma extracts fields from natural language.
 - Gemma maps scenario questions to parameter operations.
-- Gemma explains deterministic results.
+- Gemma explains deterministic results and can return advisory-only guidance for qualitative questions.
 - Gemma cannot calculate, replace, or reword the recommended action.
+- Qualitative guidance never mutates finance; only explicit typed operations are applied to a scenario.
 - `src/domain` applies patches, runs what-if operations, and calculates all finance outputs.

@@ -1,6 +1,6 @@
 import { ArrowRight, FlaskConical, ShieldCheck, TriangleAlert } from "lucide-react";
 import { buildCostDrivers, buildPriceSafety } from "@/domain/dashboard";
-import type { FarmPlanInput, FarmPlanResult } from "@/domain/types";
+import type { FarmPlanInput, FarmPlanResult, ScenarioGuidance } from "@/domain/types";
 import type { PlanScenario } from "@/domain/scenario";
 import { formatCurrency, formatPercent } from "@/utils/formatters";
 import { Button } from "@/components/ui/Button";
@@ -11,6 +11,7 @@ export type PostPlanScenario = PlanScenario;
 interface PostPlanDashboardProps {
   scenario: PostPlanScenario | null;
   scenarioError: string | null;
+  scenarioGuidance: ScenarioGuidance | null;
   scenarioQuestion: string;
   isRunningScenario: boolean;
   isScenarioOpen: boolean;
@@ -27,6 +28,7 @@ interface PostPlanAnalysisProps {
 export function PostPlanDashboard({
   scenario,
   scenarioError,
+  scenarioGuidance,
   scenarioQuestion,
   isRunningScenario,
   isScenarioOpen,
@@ -41,7 +43,7 @@ export function PostPlanDashboard({
           <span>Test a change</span>
           <h3 id="scenario-comparison-title">What changes if…?</h3>
         </div>
-        <p>Try one uncertain price, cost, or harvest assumption before committing money.</p>
+        <p>Ask a real farm what-if. HarvestWise recalculates only when you provide a numeric assumption.</p>
       </header>
 
       <section className="scenario-comparison">
@@ -60,6 +62,7 @@ export function PostPlanDashboard({
             <ScenarioModePanel
               error={scenarioError}
               focusOnMount
+              guidance={scenarioGuidance}
               isLoading={isRunningScenario}
               question={scenarioQuestion}
               onQuestionChange={onQuestionChange}

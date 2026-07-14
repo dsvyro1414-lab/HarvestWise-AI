@@ -187,6 +187,16 @@ export interface ScenarioParseResult {
   changedFields: NumericFarmPlanField[];
   explanation: string;
   provider: "gemma" | "local-fallback";
+  guidance?: ScenarioGuidance;
+}
+
+export interface ScenarioGuidance {
+  kind: "weather" | "needs-number" | "general";
+  title: string;
+  answer: string;
+  nextSteps: string[];
+  suggestedScenario?: string;
+  provider: "gemma" | "local-fallback";
 }
 
 export type MarketPulseFreshness = "fresh" | "aging" | "stale";

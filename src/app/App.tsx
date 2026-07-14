@@ -24,6 +24,7 @@ import type {
   FarmInterviewResult,
   FarmPlanInput,
   FarmPlanPatch,
+  ScenarioGuidance,
   WeatherLocationId,
   WeatherResponse,
 } from "@/domain/types";
@@ -48,6 +49,7 @@ export function App() {
   const [realityCheckError, setRealityCheckError] = useState<string | null>(null);
   const [scenarioQuestion, setScenarioQuestion] = useState("");
   const [lastScenario, setLastScenario] = useState<PostPlanScenario | null>(null);
+  const [scenarioGuidance, setScenarioGuidance] = useState<ScenarioGuidance | null>(null);
   const [isScenarioOpen, setIsScenarioOpen] = useState(false);
   const [weatherLocationId, setWeatherLocationId] = useState<WeatherLocationId | "">("");
   const [weatherResponse, setWeatherResponse] = useState<WeatherResponse | null>(null);
@@ -131,6 +133,7 @@ export function App() {
       });
       if (requestId !== adviceRequestId.current) return;
       setRemoteAdvice(response);
+      setAdvisorError(null);
       if (mode === "explain") {
         setAdvisorMessages((messages) => [
           ...messages,
@@ -145,13 +148,18 @@ export function App() {
       }
     } catch {
       if (requestId !== adviceRequestId.current) return;
+      const localPlan = calculateFarmPlan(explanationInput);
       const localResponse: AdvisorPayload = {
-        ...fallbackAdvice,
-        summary: `${fallbackAdvice.summary} Gemma is not connected yet, so this is the local fallback explanation.`,
-        provider: "local-fallback",
+        ...buildFallbackAdvice({
+          input: explanationInput,
+          plan: localPlan,
+          comparisons: buildCropComparison(explanationInput),
+          marketDecisions: buildMarketDecisions(explanationInput),
+          question: userQuestion,
+        }),
       };
       setRemoteAdvice(localResponse);
-      setAdvisorError("Gemma is unavailable. A local explanation is shown instead.");
+      setAdvisorError("Gemma could not be reached. HarvestWise answered locally, and no plan numbers changed.");
       if (mode === "explain") {
         setAdvisorMessages((messages) => [
           ...messages,
@@ -203,6 +211,7 @@ export function App() {
 
   async function handleRunScenario() {
     setScenarioError(null);
+    setScenarioGuidance(null);
     setIsRunningScenario(true);
     const baselineInput = input;
     const requestId = scenarioRequestId.current + 1;
@@ -215,6 +224,11 @@ export function App() {
       });
       if (requestId !== scenarioRequestId.current) return;
 
+      if (response.guidance) {
+        setScenarioGuidance(response.guidance);
+        return;
+      }
+
       const comparison = buildScenarioComparison(baselineInput, response);
       if (comparison.status === "invalid") {
         setScenarioError(comparison.message);
@@ -226,6 +240,7 @@ export function App() {
       setAdvisorMessages([]);
       setAdvisorError(null);
       setIsLoadingAdvice(false);
+      setScenarioGuidance(null);
       setLastScenario(comparison.scenario);
     } catch {
       if (requestId !== scenarioRequestId.current) return;
@@ -268,6 +283,7 @@ export function App() {
     setLastScenario(null);
     setIsRunningScenario(false);
     setScenarioError(null);
+    setScenarioGuidance(null);
     setRealityCheckPrompt(null);
     setRealityCheckError(null);
     return nextInput;
@@ -280,6 +296,7 @@ export function App() {
     setIsScenarioOpen(false);
     setIsRunningScenario(false);
     setScenarioError(null);
+    setScenarioGuidance(null);
     setRealityCheckPrompt(null);
     setRealityCheckError(null);
   }
@@ -287,6 +304,7 @@ export function App() {
   function handleScenarioQuestionChange(nextQuestion: string) {
     setScenarioQuestion(nextQuestion);
     setScenarioError(null);
+    setScenarioGuidance(null);
   }
 
   function handleCreatePlan() {
@@ -315,6 +333,7 @@ export function App() {
     setIsRunningScenario(false);
     setScenarioQuestion("");
     setScenarioError(null);
+    setScenarioGuidance(null);
   }
 
   return (
@@ -370,6 +389,7 @@ export function App() {
               isScenarioOpen={isScenarioOpen}
               scenario={lastScenario}
               scenarioError={scenarioError}
+              scenarioGuidance={scenarioGuidance}
               scenarioQuestion={scenarioQuestion}
               onOpenScenario={() => setIsScenarioOpen(true)}
               onQuestionChange={handleScenarioQuestionChange}
