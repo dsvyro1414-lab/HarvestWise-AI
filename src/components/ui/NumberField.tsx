@@ -4,6 +4,7 @@ import { parseLocaleNumber } from "@/utils/numericNormalization";
 interface NumberFieldProps {
   label: string;
   value: number;
+  helper?: string;
   unit?: string;
   step?: number;
   min?: number;
@@ -50,6 +51,7 @@ export function getNumberFieldAriaValue(raw: string, min = 0, max?: number): num
 export function NumberField({
   label,
   value,
+  helper,
   unit,
   step = 1,
   min = 0,
@@ -63,6 +65,7 @@ export function NumberField({
   const [isEditing, setIsEditing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const errorId = useId();
+  const helperId = useId();
   const previousDisplayValue = useRef(displayValue);
 
   useEffect(() => {
@@ -120,9 +123,10 @@ export function NumberField({
       <span className="field__label">{label}</span>
       <span className="field__control">
         <input
-          aria-describedby={error ? errorId : undefined}
+          aria-describedby={[helper ? helperId : null, error ? errorId : null].filter(Boolean).join(" ") || undefined}
           aria-errormessage={error ? errorId : undefined}
           aria-invalid={error ? true : undefined}
+          aria-label={`${label}${unit ? ` ${unit}` : ""}`}
           aria-valuemax={max}
           aria-valuemin={min}
           aria-valuenow={getNumberFieldAriaValue(draft, min, max)}
@@ -138,6 +142,7 @@ export function NumberField({
         />
         {unit ? <span className="field__unit">{unit}</span> : null}
       </span>
+      {helper ? <span className="field__helper" id={helperId}>{helper}</span> : null}
       {error ? (
         <span className="inline-error" id={errorId} role="alert">
           {error}

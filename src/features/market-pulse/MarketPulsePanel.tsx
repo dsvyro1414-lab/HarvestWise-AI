@@ -20,8 +20,8 @@ export function MarketPulsePanel({ crop, input }: MarketPulsePanelProps) {
     <section className="market-pulse" aria-labelledby="market-pulse-title">
       <header className="market-pulse__heading">
         <div>
-          <span>Farmer-recorded evidence</span>
-          <h3 id="market-pulse-title">Market price record</h3>
+          <span>Where did this price come from?</span>
+          <h3 id="market-pulse-title">Price used in this plan</h3>
         </div>
         <p>Keep a checkable source for the price used in this plan. HarvestWise never replaces it automatically.</p>
       </header>
@@ -29,7 +29,7 @@ export function MarketPulsePanel({ crop, input }: MarketPulsePanelProps) {
       <div className="market-pulse__observation">
         <div className="market-pulse__price-row">
           <div>
-            <span>Plan price</span>
+            <span>Your entered price</span>
             <strong>{formatCurrency(input.marketPricePerUnit)} <small>/ {crop.unit}</small></strong>
           </div>
           <span className={`market-pulse__freshness market-pulse__freshness--${status.freshness}`}>

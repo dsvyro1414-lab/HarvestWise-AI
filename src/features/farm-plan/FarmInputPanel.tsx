@@ -82,7 +82,7 @@ export function FarmInputPanel({
     <section className="input-panel" id="farm-inputs" aria-label="Farm inputs">
       <div className="panel-heading">
         <div>
-          <h2>Farm details</h2>
+          <h2>Tell us about your farm</h2>
           <p>Use your own season assumptions. Results stay hidden until you create the plan.</p>
         </div>
         <button className="reset-button" type="button" onClick={onReset}>
@@ -109,7 +109,7 @@ export function FarmInputPanel({
           emptyWhenZero
           label="Land"
           min={0.1}
-          placeholder="e.g. 40"
+          placeholder="Example: 40"
           step={0.1}
           unit="acres"
           value={input.landSizeAcres}
@@ -117,6 +117,7 @@ export function FarmInputPanel({
         />
         <NumberField
           emptyWhenZero
+          helper="Money you can use this season"
           label="Available budget"
           min={1}
           placeholder="e.g. 35000"
@@ -127,7 +128,8 @@ export function FarmInputPanel({
         />
         <NumberField
           emptyWhenZero
-          label="Expected harvest"
+          helper="Bushels per acre"
+          label="Expected harvest per acre"
           min={0.1}
           placeholder="e.g. 220"
           step={1}
@@ -137,7 +139,8 @@ export function FarmInputPanel({
         />
         <NumberField
           emptyWhenZero
-          label="Market price"
+          helper="Your local buyer or elevator price"
+          label="Price you expect to receive"
           min={0.01}
           placeholder="e.g. 4.05"
           step={0.05}

@@ -24,12 +24,12 @@ export function FarmerActionCard({ action }: FarmerActionCardProps) {
       </div>
       <div className="farmer-action__content">
         <div className="farmer-action__meta">
-          <span>Recommended next action</span>
+          <span>What should I do now?</span>
           <em>{stage}</em>
         </div>
         <h2>{action.title}</h2>
         <ul>
-          {action.reasons.slice(0, 3).map((reason) => (
+          {action.reasons.slice(0, 2).map((reason) => (
             <li key={reason}>{reason}</li>
           ))}
         </ul>

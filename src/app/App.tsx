@@ -5,11 +5,11 @@ import { CropComparisonTable } from "@/features/crop-comparison/CropComparisonTa
 import { DecisionPackPanel } from "@/features/decision-pack/DecisionPackPanel";
 import { FarmInputPanel } from "@/features/farm-plan/FarmInputPanel";
 import { FarmerActionCard } from "@/features/farm-plan/FarmerActionCard";
-import { ProfitSnapshot } from "@/features/farm-plan/ProfitSnapshot";
+import { PlanNumbersDetails, ProfitSnapshot } from "@/features/farm-plan/ProfitSnapshot";
 import { ActionPackPanel } from "@/features/farm-plan/ActionPackPanel";
 import { MarketDecisionCards } from "@/features/market-decision/MarketDecisionCards";
 import { MarketPulsePanel } from "@/features/market-pulse/MarketPulsePanel";
-import { PostPlanDashboard, type PostPlanScenario } from "@/features/post-plan/PostPlanDashboard";
+import { PostPlanAnalysis, PostPlanDashboard, type PostPlanScenario } from "@/features/post-plan/PostPlanDashboard";
 import { WeatherContextPanel } from "@/features/weather/WeatherContextPanel";
 import { buildFallbackAdvice } from "@/domain/advice";
 import { buildActionPack, type RealityCheckPrompt } from "@/domain/actionPack";
@@ -151,7 +151,7 @@ export function App() {
         provider: "local-fallback",
       };
       setRemoteAdvice(localResponse);
-      setAdvisorError("Gemma could not be reached. A local explanation is shown instead.");
+      setAdvisorError("Gemma is unavailable. A local explanation is shown instead.");
       if (mode === "explain") {
         setAdvisorMessages((messages) => [
           ...messages,
@@ -360,16 +360,14 @@ export function App() {
                 <span>Results</span>
                 <h2 id="plan-results-title">Your plan at a glance</h2>
               </div>
-              <p>Every number and recommendation is calculated locally.</p>
+              <p>Every number and next action is calculated by HarvestWise.</p>
             </div>
 
             <FarmerActionCard key={`${plan.action.id}-${Math.round(plan.expectedProfit)}`} action={plan.action} />
             <ProfitSnapshot input={input} plan={plan} />
             <PostPlanDashboard
-              input={input}
               isRunningScenario={isRunningScenario}
               isScenarioOpen={isScenarioOpen}
-              plan={plan}
               scenario={lastScenario}
               scenarioError={scenarioError}
               scenarioQuestion={scenarioQuestion}
@@ -377,45 +375,81 @@ export function App() {
               onQuestionChange={handleScenarioQuestionChange}
               onRunScenario={() => void handleRunScenario()}
             />
-            <MarketPulsePanel crop={plan.crop} input={input} />
-            <WeatherContextPanel
-              error={weatherError}
-              isLoading={isLoadingWeather}
-              locationId={weatherLocationId}
-              response={weatherResponse}
-              onLocationChange={handleWeatherLocationChange}
-              onRefresh={() => void handleLoadWeather()}
-            />
-            <ActionPackPanel
-              gemmaError={realityCheckError}
-              gemmaPrompt={realityCheckPrompt}
-              isLoadingGemmaPrompt={isRequestingRealityCheck}
-              pack={actionPack}
-              onAskGemma={() => void handleAskRealityCheck()}
-            />
-            <DecisionPackPanel
-              input={input}
-              pack={actionPack}
-              plan={plan}
-              scenario={lastScenario}
-              weatherResponse={weatherResponse}
-            />
 
-            <div className="analysis-disclosure-grid">
-              <details className="analysis-disclosure">
-                <summary>Compare other crops</summary>
-                <CropComparisonTable activeCropId={input.cropId} comparisons={comparisons.slice(0, 4)} />
+            <section className="secondary-analysis" aria-labelledby="secondary-analysis-title">
+              <div className="secondary-analysis__heading">
+                <span>Optional detail</span>
+                <h3 id="secondary-analysis-title">Review more before you commit</h3>
+                <p>The decision above stays visible. Open only the detail you need.</p>
+              </div>
+
+              <details className="analysis-disclosure analysis-disclosure--group">
+                <summary>
+                  <span>Explore the numbers</span>
+                  <small>Price sensitivity, plan totals, and where the money goes</small>
+                </summary>
+                <div className="secondary-analysis__content">
+                  <PlanNumbersDetails input={input} plan={plan} />
+                  <PostPlanAnalysis input={input} plan={plan} />
+                </div>
               </details>
 
-              <details className="analysis-disclosure">
-                <summary>Explore harvest market options</summary>
-                <MarketDecisionCards
-                  decisions={marketDecisions}
-                  selectedId={selectedDecisionId}
-                  onSelect={setSelectedDecisionId}
-                />
+              <details className="analysis-disclosure analysis-disclosure--group">
+                <summary>
+                  <span>Check before you commit</span>
+                  <small>Price source, weather timing, and your next steps</small>
+                </summary>
+                <div className="secondary-analysis__content">
+                  <MarketPulsePanel crop={plan.crop} input={input} />
+                  <WeatherContextPanel
+                    error={weatherError}
+                    isLoading={isLoadingWeather}
+                    locationId={weatherLocationId}
+                    response={weatherResponse}
+                    onLocationChange={handleWeatherLocationChange}
+                    onRefresh={() => void handleLoadWeather()}
+                  />
+                  <ActionPackPanel
+                    gemmaError={realityCheckError}
+                    gemmaPrompt={realityCheckPrompt}
+                    isLoadingGemmaPrompt={isRequestingRealityCheck}
+                    pack={actionPack}
+                    onAskGemma={() => void handleAskRealityCheck()}
+                  />
+                </div>
               </details>
-            </div>
+
+              <details className="analysis-disclosure analysis-disclosure--group">
+                <summary>
+                  <span>Compare and share</span>
+                  <small>Other crops, harvest options, and an advisor-ready summary</small>
+                </summary>
+                <div className="secondary-analysis__content">
+                  <div className="analysis-disclosure-grid">
+                    <details className="analysis-disclosure">
+                      <summary>Compare other crops</summary>
+                      <CropComparisonTable activeCropId={input.cropId} comparisons={comparisons.slice(0, 4)} />
+                    </details>
+
+                    <details className="analysis-disclosure">
+                      <summary>Explore harvest market options</summary>
+                      <MarketDecisionCards
+                        decisions={marketDecisions}
+                        selectedId={selectedDecisionId}
+                        onSelect={setSelectedDecisionId}
+                      />
+                    </details>
+                  </div>
+                  <DecisionPackPanel
+                    input={input}
+                    pack={actionPack}
+                    plan={plan}
+                    scenario={lastScenario}
+                    weatherResponse={weatherResponse}
+                  />
+                </div>
+              </details>
+            </section>
           </div>
         </section> : null}
 

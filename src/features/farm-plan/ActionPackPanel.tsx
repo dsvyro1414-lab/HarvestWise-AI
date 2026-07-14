@@ -21,8 +21,8 @@ export function ActionPackPanel({
     <section className="action-pack" aria-labelledby="action-pack-title">
       <header className="action-pack__heading">
         <div>
-          <span>Reality check + action pack</span>
-          <h3 id="action-pack-title">Verify these local assumptions before you commit</h3>
+          <span>Check before you commit</span>
+          <h3 id="action-pack-title">Your next steps</h3>
         </div>
         <p>Financial action is calculated by HarvestWise. These are verification prompts, not forecasts.</p>
       </header>

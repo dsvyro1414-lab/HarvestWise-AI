@@ -68,7 +68,7 @@ export function AdvisorPanel({
               ) : null}
               {message.provider ? (
                 <span className="advisor-message__provider">
-                  {message.provider === "gemma" ? "Answered by Gemma" : "Local fallback answer"}
+                  {message.provider === "gemma" ? "Answered by Gemma" : "Local explanation, Gemma unavailable"}
                 </span>
               ) : null}
             </div>
@@ -120,7 +120,7 @@ export function AdvisorPanel({
         </form>
 
         <Button disabled={isLoading} fullWidth icon={<MessageSquareText size={17} />} variant="secondary" onClick={onAskGemma}>
-          {isLoading ? "Getting explanation..." : "Explain with Gemma"}
+          {isLoading ? "Preparing an explanation…" : "Explain this plan"}
         </Button>
       </div>
 

@@ -27,8 +27,8 @@ export function WeatherContextPanel({
     <section className="weather-context" aria-labelledby="weather-context-title">
       <header className="weather-context__heading">
         <div>
-          <span>Optional timing context</span>
-          <h3 id="weather-context-title">NWS weather & alerts</h3>
+          <span>Check the timing</span>
+          <h3 id="weather-context-title">Weather timing check</h3>
         </div>
         <p>Weather helps you verify timing. It never changes your financial plan or next action.</p>
       </header>
@@ -51,7 +51,7 @@ export function WeatherContextPanel({
           variant="secondary"
           onClick={onRefresh}
         >
-          {isLoading ? "Checking NWS..." : context ? "Refresh weather" : "Check NWS weather"}
+          {isLoading ? "Checking the forecast…" : context ? "Refresh weather" : "Check weather timing"}
         </Button>
       </div>
 

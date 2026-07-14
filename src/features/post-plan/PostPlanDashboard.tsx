@@ -9,8 +9,6 @@ import { ScenarioModePanel } from "@/features/scenario/ScenarioModePanel";
 export type PostPlanScenario = PlanScenario;
 
 interface PostPlanDashboardProps {
-  input: FarmPlanInput;
-  plan: FarmPlanResult;
   scenario: PostPlanScenario | null;
   scenarioError: string | null;
   scenarioQuestion: string;
@@ -21,9 +19,12 @@ interface PostPlanDashboardProps {
   onRunScenario: () => void;
 }
 
+interface PostPlanAnalysisProps {
+  input: FarmPlanInput;
+  plan: FarmPlanResult;
+}
+
 export function PostPlanDashboard({
-  input,
-  plan,
   scenario,
   scenarioError,
   scenarioQuestion,
@@ -33,86 +34,26 @@ export function PostPlanDashboard({
   onQuestionChange,
   onRunScenario,
 }: PostPlanDashboardProps) {
-  const priceSafety = buildPriceSafety(input, plan);
-  const costDrivers = buildCostDrivers(input, plan);
-  const SafetyIcon = priceSafety.state === "safe" ? ShieldCheck : TriangleAlert;
-
   return (
-    <section className="post-plan-dashboard" aria-labelledby="decision-dashboard-title">
+    <section className="post-plan-dashboard post-plan-dashboard--primary" aria-labelledby="scenario-comparison-title">
       <header className="post-plan-dashboard__heading">
         <div>
-          <span>Decision dashboard</span>
-          <h3 id="decision-dashboard-title">Protect the plan before you commit</h3>
+          <span>Test a change</span>
+          <h3 id="scenario-comparison-title">What changes if…?</h3>
         </div>
-        <p>Live from your inputs and HarvestWise calculations.</p>
+        <p>Try one uncertain price, cost, or harvest assumption before committing money.</p>
       </header>
 
-      <div className="post-plan-dashboard__grid">
-        <section className="decision-panel decision-panel--safety" aria-labelledby="price-safety-title">
+      <section className="scenario-comparison">
+        {scenario ? (
           <div className="decision-panel__heading">
             <div>
-              <span className="decision-panel__eyebrow">Price safety</span>
-              <h4 id="price-safety-title">How much price decline can this plan absorb?</h4>
+              <span className="decision-panel__eyebrow">HarvestWise recalculated this scenario</span>
+              <h4>Baseline vs. your latest what-if</h4>
             </div>
-            <span className={`price-safety-state price-safety-state--${priceSafety.state}`}>
-              <SafetyIcon aria-hidden="true" size={15} />
-              {priceSafety.state}
-            </span>
+            <span className="scenario-comparison__source">{scenario.provider === "gemma" ? "Gemma interpreted the change" : "Local interpreter"}</span>
           </div>
-
-          <dl className="price-safety-metrics">
-            <div>
-              <dt>Current price</dt>
-              <dd>{formatCurrency(priceSafety.currentPrice)} <small>/ {plan.crop.unit}</small></dd>
-            </div>
-            <div>
-              <dt>Break-even</dt>
-              <dd>{formatCurrency(priceSafety.breakEvenPrice)} <small>/ {plan.crop.unit}</small></dd>
-            </div>
-            <div>
-              <dt>Downside room</dt>
-              <dd className={priceSafety.downsideRoom <= 0 ? "is-negative" : undefined}>
-                {formatCurrency(priceSafety.downsideRoom)} <small>({formatPercent(priceSafety.downsideRoomPercent)})</small>
-              </dd>
-            </div>
-          </dl>
-          <p className="price-safety-copy">{priceSafetyCopy(priceSafety.state, priceSafety.downsideRoom, plan.crop.unit)}</p>
-        </section>
-
-        <section className="decision-panel decision-panel--costs" aria-labelledby="cost-drivers-title">
-          <div className="decision-panel__heading">
-            <div>
-              <span className="decision-panel__eyebrow">Cost drivers</span>
-              <h4 id="cost-drivers-title">Where the season budget goes</h4>
-            </div>
-            <strong>{formatCurrency(plan.totalSeasonCost)}</strong>
-          </div>
-
-          <ol className="cost-driver-list">
-            {costDrivers.map((driver) => (
-              <li key={driver.id}>
-                <div className="cost-driver-list__copy">
-                  <span>{driver.label}</span>
-                  <strong>{formatCurrency(driver.amount)}</strong>
-                </div>
-                <div aria-hidden="true" className="cost-driver-list__track">
-                  <span style={{ width: `${Math.min(driver.share * 100, 100)}%` }} />
-                </div>
-                <em>{formatPercent(driver.share)}</em>
-              </li>
-            ))}
-          </ol>
-        </section>
-      </div>
-
-      <section className="scenario-comparison" aria-labelledby="scenario-comparison-title">
-        <div className="decision-panel__heading">
-          <div>
-            <span className="decision-panel__eyebrow">Scenario comparison</span>
-            <h4 id="scenario-comparison-title">Baseline vs. the latest what-if</h4>
-          </div>
-          {scenario ? <span className="scenario-comparison__source">{scenario.provider === "gemma" ? "Gemma interpreted the change" : "Local interpreter"}</span> : null}
-        </div>
+        ) : null}
 
         {isScenarioOpen ? (
           <div className="scenario-comparison__composer" id="scenario-composer">
@@ -143,6 +84,72 @@ export function PostPlanDashboard({
         ) : null}
       </section>
     </section>
+  );
+}
+
+export function PostPlanAnalysis({ input, plan }: PostPlanAnalysisProps) {
+  const priceSafety = buildPriceSafety(input, plan);
+  const costDrivers = buildCostDrivers(input, plan);
+  const SafetyIcon = priceSafety.state === "safe" ? ShieldCheck : TriangleAlert;
+
+  return (
+    <div className="post-plan-dashboard__grid post-plan-dashboard__grid--analysis">
+      <section className="decision-panel decision-panel--safety" aria-labelledby="price-safety-title">
+        <div className="decision-panel__heading">
+          <div>
+            <span className="decision-panel__eyebrow">How far can the price fall?</span>
+            <h4 id="price-safety-title">Your price cushion before the plan loses money</h4>
+          </div>
+          <span className={`price-safety-state price-safety-state--${priceSafety.state}`}>
+            <SafetyIcon aria-hidden="true" size={15} />
+            {priceSafety.state}
+          </span>
+        </div>
+
+        <dl className="price-safety-metrics">
+          <div>
+            <dt>Price used</dt>
+            <dd>{formatCurrency(priceSafety.currentPrice)} <small>/ {plan.crop.unit}</small></dd>
+          </div>
+          <div>
+            <dt>Price where you stop losing</dt>
+            <dd>{formatCurrency(priceSafety.breakEvenPrice)} <small>/ {plan.crop.unit}</small></dd>
+          </div>
+          <div>
+            <dt>Room before a loss</dt>
+            <dd className={priceSafety.downsideRoom <= 0 ? "is-negative" : undefined}>
+              {formatCurrency(priceSafety.downsideRoom)} <small>({formatPercent(priceSafety.downsideRoomPercent)})</small>
+            </dd>
+          </div>
+        </dl>
+        <p className="price-safety-copy">{priceSafetyCopy(priceSafety.state, priceSafety.downsideRoom, plan.crop.unit)}</p>
+      </section>
+
+      <section className="decision-panel decision-panel--costs" aria-labelledby="cost-drivers-title">
+        <div className="decision-panel__heading">
+          <div>
+            <span className="decision-panel__eyebrow">Where the money goes</span>
+            <h4 id="cost-drivers-title">Largest season costs</h4>
+          </div>
+          <strong>{formatCurrency(plan.totalSeasonCost)}</strong>
+        </div>
+
+        <ol className="cost-driver-list">
+          {costDrivers.map((driver) => (
+            <li key={driver.id}>
+              <div className="cost-driver-list__copy">
+                <span>{driver.label}</span>
+                <strong>{formatCurrency(driver.amount)}</strong>
+              </div>
+              <div aria-hidden="true" className="cost-driver-list__track">
+                <span style={{ width: `${Math.min(driver.share * 100, 100)}%` }} />
+              </div>
+              <em>{formatPercent(driver.share)}</em>
+            </li>
+          ))}
+        </ol>
+      </section>
+    </div>
   );
 }
 
@@ -186,7 +193,7 @@ function ScenarioResult({ scenario }: { scenario: PostPlanScenario }) {
 }
 
 function priceSafetyCopy(state: "safe" | "watch" | "risk", downsideRoom: number, unit: string): string {
-  if (state === "safe") return `Safe buffer: the entered price can fall ${formatCurrency(downsideRoom)} per ${unit} before this plan breaks even.`;
-  if (state === "watch") return `Watch closely: only ${formatCurrency(downsideRoom)} per ${unit} separates this plan from break-even.`;
-  return `Risk: the entered price is ${formatCurrency(Math.abs(downsideRoom))} per ${unit} below break-even.`;
+  if (state === "safe") return `The entered price can fall ${formatCurrency(downsideRoom)} per ${unit} before this plan stops making money.`;
+  if (state === "watch") return `Check this closely: only ${formatCurrency(downsideRoom)} per ${unit} separates this plan from a loss.`;
+  return `The entered price is ${formatCurrency(Math.abs(downsideRoom))} per ${unit} below the price needed to cover costs.`;
 }

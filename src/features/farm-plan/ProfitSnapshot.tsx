@@ -13,8 +13,8 @@ interface ProfitSnapshotProps {
 export function ProfitSnapshot({ input, plan }: ProfitSnapshotProps) {
   const cashStatus =
     plan.budgetGap > 0
-      ? `${formatCurrency(plan.budgetGap)} gap`
-      : `${formatCurrency(input.availableBudget - plan.totalSeasonCost)} buffer`;
+      ? formatCurrency(plan.budgetGap)
+      : formatCurrency(input.availableBudget - plan.totalSeasonCost);
   const priceRoom = input.marketPricePerUnit - plan.breakEvenPrice;
   const priceRoomPercent = priceRoom / Math.max(input.marketPricePerUnit, 1);
   const riskDriver =
@@ -32,7 +32,7 @@ export function ProfitSnapshot({ input, plan }: ProfitSnapshotProps) {
         <div className="section-title">
           <BarChart3 size={20} />
           <div>
-          <h2>Plan snapshot</h2>
+          <h2>Three key numbers</h2>
             <p>
               {formatNumber(input.landSizeAcres, 1)} acres · {formatNumber(plan.expectedHarvest)}{" "}
               {plan.crop.unitPlural} · {plan.crop.name}
@@ -45,37 +45,63 @@ export function ProfitSnapshot({ input, plan }: ProfitSnapshotProps) {
       <div className="metric-grid">
         <MetricCard
           helper="Expected season result"
-          label="Expected Profit"
+          label="Expected profit"
           tone={plan.expectedProfit >= 0 ? "green" : "amber"}
           value={formatCurrency(plan.expectedProfit)}
         />
         <MetricCard
-          helper={`Per ${plan.crop.unit}`}
-          label="Break-even Price"
+          helper={`Break-even: ${formatCurrency(plan.breakEvenPrice)} per ${plan.crop.unit}`}
+          label="Price where you stop losing"
           tone="neutral"
           value={formatCurrency(plan.breakEvenPrice)}
         />
-        <MetricCard helper="Budget after costs" label="Cash status" tone={plan.budgetGap > 0 ? "amber" : "green"} value={cashStatus} />
+        <MetricCard
+          helper="Compared with your available budget"
+          label={plan.budgetGap > 0 ? "Amount over budget" : "Money left after costs"}
+          tone={plan.budgetGap > 0 ? "amber" : "green"}
+          value={cashStatus}
+        />
       </div>
 
       <div className="insight-strip">
         <div>
-          <span>Risk driver</span>
+          <span>What could change this result?</span>
           <strong>{riskDriver}</strong>
         </div>
       </div>
 
-      <div className="chart-panel">
-        <PriceSensitivityChart
-          breakEvenPrice={plan.breakEvenPrice}
-          currentPrice={input.marketPricePerUnit}
-          currentProfit={plan.expectedProfit}
-          points={plan.sensitivity}
-        />
-      </div>
+    </section>
+  );
+}
 
-      <details className="snapshot-disclosure">
-        <summary>Show cost and risk details</summary>
+export function PlanNumbersDetails({ input, plan }: ProfitSnapshotProps) {
+  return (
+    <div className="plan-numbers-details">
+      <section aria-labelledby="price-sensitivity-title">
+        <div className="secondary-panel-heading">
+          <div>
+            <span>Price sensitivity</span>
+            <h4 id="price-sensitivity-title">How profit changes with price</h4>
+          </div>
+          <p>The dashed line marks the break-even price.</p>
+        </div>
+        <div className="chart-panel">
+          <PriceSensitivityChart
+            breakEvenPrice={plan.breakEvenPrice}
+            currentPrice={input.marketPricePerUnit}
+            currentProfit={plan.expectedProfit}
+            points={plan.sensitivity}
+          />
+        </div>
+      </section>
+
+      <section aria-labelledby="plan-totals-title">
+        <div className="secondary-panel-heading">
+          <div>
+            <span>Plan totals</span>
+            <h4 id="plan-totals-title">The calculation behind the result</h4>
+          </div>
+        </div>
         <div className="snapshot-details">
           <div>
             <span>Total cost</span>
@@ -94,7 +120,7 @@ export function ProfitSnapshot({ input, plan }: ProfitSnapshotProps) {
             <strong><RiskBadge level={plan.riskLevel} /></strong>
           </div>
         </div>
-      </details>
-    </section>
+      </section>
+    </div>
   );
 }

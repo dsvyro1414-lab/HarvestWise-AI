@@ -323,6 +323,12 @@ button:active {
   line-height: 1.1;
 }
 
+.field__helper {
+  color: var(--muted);
+  font-size: 10.5px;
+  line-height: 1.35;
+}
+
 .field__control {
   display: flex;
   overflow: hidden;
@@ -1284,17 +1290,23 @@ button:active {
   grid-template-columns: auto minmax(0, 1fr);
   gap: 14px;
   border: 1px solid rgba(var(--green-rgb), 0.34);
-  border-radius: 12px;
-  padding: 18px;
-  background: linear-gradient(135deg, rgba(var(--sage-rgb), 0.3), rgba(255, 255, 255, 0.96) 58%);
-  box-shadow: 0 14px 34px rgba(var(--green-rgb), 0.1);
+  border-radius: 14px;
+  padding: 24px;
+  background: rgba(var(--sage-rgb), 0.23);
+  box-shadow: 0 18px 42px rgba(var(--green-rgb), 0.11);
   animation: farmer-action-enter 240ms ease-out;
 }
 
-.farmer-action--do-not-plant,
 .farmer-action--reduce-acreage,
-.farmer-action--secure-buyer {
-  background: linear-gradient(135deg, rgba(var(--deep-rgb), 0.09), rgba(255, 255, 255, 0.96) 58%);
+.farmer-action--secure-buyer,
+.farmer-action--store-if-price {
+  border-color: rgba(154, 107, 22, 0.42);
+  background: var(--amber-soft);
+}
+
+.farmer-action--do-not-plant {
+  border-color: rgba(138, 61, 51, 0.42);
+  background: rgba(138, 61, 51, 0.09);
 }
 
 .farmer-action__icon {
@@ -1307,10 +1319,14 @@ button:active {
   color: var(--surface);
 }
 
-.farmer-action--do-not-plant .farmer-action__icon,
 .farmer-action--reduce-acreage .farmer-action__icon,
-.farmer-action--secure-buyer .farmer-action__icon {
-  background: var(--green-strong);
+.farmer-action--secure-buyer .farmer-action__icon,
+.farmer-action--store-if-price .farmer-action__icon {
+  background: var(--amber);
+}
+
+.farmer-action--do-not-plant .farmer-action__icon {
+  background: var(--red);
 }
 
 .farmer-action__content {
@@ -1344,7 +1360,7 @@ button:active {
 .farmer-action h2 {
   margin: 8px 0 9px;
   color: var(--green-strong);
-  font-size: clamp(22px, 2.4vw, 30px);
+  font-size: clamp(28px, 3.2vw, 40px);
   line-height: 1.04;
   letter-spacing: -0.035em;
 }
@@ -1857,8 +1873,17 @@ button:active {
 }
 
 .guided-layout .metric-card {
-  min-height: 92px;
+  min-height: 108px;
   padding: 15px 18px;
+}
+
+.guided-layout .metric-card__label {
+  overflow: visible;
+  color: var(--green-strong);
+  font-weight: 740;
+  line-height: 1.25;
+  text-overflow: clip;
+  white-space: normal;
 }
 
 .guided-layout .metric-card__value {
@@ -1876,6 +1901,151 @@ button:active {
   gap: 16px;
   border-top: 1px solid var(--border);
   padding-top: 18px;
+}
+
+.post-plan-dashboard--primary {
+  gap: 14px;
+  border: 1px solid rgba(var(--green-rgb), 0.25);
+  border-radius: 12px;
+  padding: 18px;
+  background: rgba(var(--sage-rgb), 0.11);
+}
+
+.post-plan-dashboard--primary .scenario-comparison {
+  border-top-color: rgba(var(--green-rgb), 0.2);
+}
+
+.secondary-analysis {
+  display: grid;
+  gap: 10px;
+  margin-top: 8px;
+  border-top: 1px solid var(--border);
+  padding-top: 22px;
+}
+
+.secondary-analysis__heading {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 5px;
+}
+
+.secondary-analysis__heading > span,
+.secondary-panel-heading > div > span {
+  color: var(--green);
+  font-size: 10px;
+  font-weight: 840;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.secondary-analysis__heading h3,
+.secondary-panel-heading h4 {
+  margin: 0;
+  color: var(--green-strong);
+  letter-spacing: -0.02em;
+}
+
+.secondary-analysis__heading h3 {
+  font-size: 18px;
+}
+
+.secondary-analysis__heading p,
+.secondary-panel-heading p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.analysis-disclosure--group {
+  border-color: rgba(var(--green-rgb), 0.16);
+  border-radius: 10px;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.48);
+}
+
+.analysis-disclosure--group > summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 4px 18px;
+  padding: 15px 16px;
+  list-style-position: inside;
+}
+
+.analysis-disclosure--group > summary > span {
+  color: var(--green-strong);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.analysis-disclosure--group > summary > small {
+  align-self: center;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 550;
+}
+
+.analysis-disclosure--group[open] > summary {
+  margin-bottom: 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.secondary-analysis__content {
+  display: grid;
+  gap: 22px;
+  padding: 18px 16px 20px;
+}
+
+.secondary-analysis__content > .market-pulse,
+.secondary-analysis__content > .weather-context,
+.secondary-analysis__content > .action-pack,
+.secondary-analysis__content > .decision-pack {
+  border-top: 1px solid var(--border);
+  padding-top: 18px;
+}
+
+.secondary-analysis__content > :first-child,
+.plan-numbers-details > :first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.plan-numbers-details {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(260px, 0.65fr);
+  gap: 22px;
+}
+
+.plan-numbers-details > section {
+  min-width: 0;
+}
+
+.secondary-panel-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 11px;
+}
+
+.secondary-panel-heading h4 {
+  margin-top: 4px;
+  font-size: 14px;
+}
+
+.secondary-panel-heading p {
+  max-width: 240px;
+  text-align: right;
+}
+
+.plan-numbers-details .chart-panel {
+  margin-top: 0;
+  background: var(--surface);
+}
+
+.post-plan-dashboard__grid--analysis {
+  border-top: 1px solid var(--border);
+  padding-top: 20px;
 }
 
 .market-pulse {
@@ -3725,10 +3895,7 @@ button:active {
   }
 
   .journey-step {
-    position: static;
-    width: 34px;
-    height: 34px;
-    border-width: 4px;
+    display: none;
   }
 
   .journey-section__heading {
@@ -3983,6 +4150,10 @@ button:active {
     flex: 0 0 auto;
     font-size: 10px;
   }
+
+  .farmer-action__icon {
+    display: none;
+  }
 }
 
 @media (max-width: 980px) {
@@ -4065,6 +4236,103 @@ button:active {
 
   .decision-pack__trust {
     padding: 12px 18px;
+  }
+
+  .guided-layout .metric-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    overflow: visible;
+    scroll-snap-type: none;
+  }
+
+  .guided-layout .metric-card,
+  .guided-layout .metric-card:last-child {
+    grid-template-areas:
+      "label value"
+      "helper value";
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 3px 10px;
+    min-width: 0;
+    min-height: 64px;
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+    padding: 12px 14px;
+  }
+
+  .guided-layout .metric-card:last-child {
+    border-bottom: 0;
+  }
+
+  .guided-layout .metric-card__label {
+    grid-area: label;
+    font-size: 10.5px;
+  }
+
+  .guided-layout .metric-card__value {
+    grid-area: value;
+    font-size: 19px;
+    text-align: right;
+  }
+
+  .guided-layout .metric-card__helper {
+    grid-area: helper;
+    font-size: 9.5px;
+  }
+
+  .farmer-action {
+    gap: 9px;
+    padding: 16px;
+  }
+
+  .farmer-action h2 {
+    margin-block: 5px 7px;
+    font-size: 29px;
+  }
+
+  .farmer-action ul {
+    font-size: 12px;
+  }
+
+  .farmer-action__meta {
+    align-items: center;
+    flex-direction: row;
+  }
+
+  .post-plan-dashboard--primary {
+    padding: 14px;
+  }
+
+  #plan-results .journey-section__heading > p {
+    display: none;
+  }
+
+  .scenario-comparison__empty .button {
+    width: 100%;
+  }
+
+  .analysis-disclosure--group > summary {
+    grid-template-columns: 1fr;
+    gap: 5px;
+  }
+
+  .secondary-analysis__content {
+    gap: 18px;
+    padding: 15px 13px 17px;
+  }
+
+  .plan-numbers-details {
+    grid-template-columns: 1fr;
+  }
+
+  .secondary-panel-heading {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .secondary-panel-heading p {
+    max-width: none;
+    text-align: left;
   }
 }
 

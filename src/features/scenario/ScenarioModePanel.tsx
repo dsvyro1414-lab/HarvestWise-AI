@@ -38,7 +38,7 @@ export function ScenarioModePanel({
         <FlaskConical size={20} />
         <div>
           <h2>Test a change</h2>
-          <p>Gemma reads the question; HarvestWise recalculates.</p>
+          <p>Gemma reads the change. HarvestWise recalculates the numbers.</p>
         </div>
       </div>
 
@@ -63,7 +63,7 @@ export function ScenarioModePanel({
           icon={<RotateCcw size={16} />}
           type="submit"
         >
-          {isLoading ? "Running..." : "Run scenario"}
+          {isLoading ? "Turning your what-if into a calculation…" : "Test change"}
         </Button>
       </form>
 

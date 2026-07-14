@@ -47,8 +47,8 @@ export function DecisionPackPanel({
     <section className="decision-pack" aria-labelledby="decision-pack-title">
       <header className="decision-pack__heading">
         <div>
-          <span>Shareable field review</span>
-          <h3 id="decision-pack-title">Field-ready decision pack</h3>
+          <span>Compare and share</span>
+          <h3 id="decision-pack-title">Share this plan with a buyer or advisor</h3>
         </div>
         <p>One concise handoff for a buyer, landowner, supplier, or cooperative.</p>
         <div className="decision-pack__actions">
@@ -164,7 +164,7 @@ function MarketReference({
     <article className="decision-pack__reference">
       <Landmark aria-hidden="true" size={17} />
       <div>
-        <span>Market price record</span>
+        <span>Price used in this plan</span>
         <strong>{formatPriceEvidenceSource(evidence)}</strong>
         <p>{formatCurrency(input.marketPricePerUnit)} / {plan.crop.unit} · {evidence?.location || "market not recorded"} · {formatDateTime(evidence?.checkedAt ?? "")} · {status.label}</p>
       </div>
@@ -180,7 +180,7 @@ function WeatherReference({ weatherResponse }: { weatherResponse: WeatherRespons
     <article className="decision-pack__reference">
       <CloudSun aria-hidden="true" size={17} />
       <div>
-        <span>NWS timing context</span>
+        <span>Weather timing check</span>
         {context ? (
           <>
             <strong>{context.location.label} · {context.forecast.shortForecast}</strong>
