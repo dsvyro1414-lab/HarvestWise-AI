@@ -1,10 +1,8 @@
-import { getBestMarketDecision } from "./finance.js";
 import type {
   AdvisorPayload,
   CropComparison,
   FarmPlanInput,
   FarmPlanResult,
-  MarketDecision,
 } from "./types.js";
 import { formatCurrency, formatNumber, formatPercent } from "../utils/formatters.js";
 
@@ -12,10 +10,8 @@ export function buildFallbackAdvice(args: {
   input: FarmPlanInput;
   plan: FarmPlanResult;
   comparisons: CropComparison[];
-  marketDecisions: MarketDecision[];
 }): AdvisorPayload {
-  const { input, plan, comparisons, marketDecisions } = args;
-  const bestMarketDecision = getBestMarketDecision(marketDecisions);
+  const { input, plan, comparisons } = args;
   const strongestAlternative = comparisons.find((item) => item.crop.id !== plan.crop.id);
   const budgetLine =
     plan.budgetGap > 0

@@ -1,5 +1,3 @@
-export type CurrencyCode = "USD";
-
 export type CropId = "corn" | "soybeans" | "wheat";
 
 export type RiskLevel = "low" | "medium" | "high";

@@ -76,16 +76,15 @@ export function App() {
   const bestMarketDecision = useMemo(() => getBestMarketDecision(marketDecisions), [marketDecisions]);
   const fallbackAdvice = useMemo(() => {
     if (!lastScenario) {
-      return buildFallbackAdvice({ input, plan, comparisons, marketDecisions });
+      return buildFallbackAdvice({ input, plan, comparisons });
     }
 
     return buildFallbackAdvice({
       input: lastScenario.afterInput,
       plan: lastScenario.afterPlan,
       comparisons: buildCropComparison(lastScenario.afterInput),
-      marketDecisions: buildMarketDecisions(lastScenario.afterInput),
     });
-  }, [comparisons, input, lastScenario, marketDecisions, plan]);
+  }, [comparisons, input, lastScenario, plan]);
   const advice = remoteAdvice ?? fallbackAdvice;
   const actionPack = useMemo(() => buildActionPack(input, plan), [input, plan]);
 

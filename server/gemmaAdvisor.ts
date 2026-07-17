@@ -1,6 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
 import { buildFallbackAdvice } from "../src/domain/advice.js";
-import { buildCropComparison, buildMarketDecisions, calculateFarmPlan } from "../src/domain/finance.js";
+import { buildCropComparison, calculateFarmPlan } from "../src/domain/finance.js";
 import type { AdvisorConversationTurn, AdvisorPayload, FarmPlanInput } from "../src/domain/types.js";
 import { formatCurrency, formatNumber, formatPercent } from "../src/utils/formatters.js";
 import { parseGemmaJson } from "./gemmaJson.js";
@@ -17,8 +17,7 @@ const modelName = process.env.GEMMA_MODEL ?? "gemma-4-26b-a4b-it";
 export async function buildAdvisorNotes({ input, mode, question, history }: BuildAdvisorArgs): Promise<AdvisorPayload> {
   const plan = calculateFarmPlan(input);
   const comparisons = buildCropComparison(input);
-  const marketDecisions = buildMarketDecisions(input);
-  const fallback = buildFallbackAdvice({ input, plan, comparisons, marketDecisions });
+  const fallback = buildFallbackAdvice({ input, plan, comparisons });
   const apiKey = process.env.GEMINI_API_KEY ?? process.env.GOOGLE_API_KEY;
 
   if (!apiKey) {

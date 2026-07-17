@@ -3,7 +3,6 @@ import { buildFarmerAction } from "./farmerAction.js";
 import type {
   CropComparison,
   CropDefinition,
-  CropId,
   FarmPlanInput,
   FarmPlanResult,
   MarketDecision,
@@ -159,22 +158,6 @@ export function getBestMarketDecision(decisions: MarketDecision[]): MarketDecisi
     const currentPenalty = riskPenalty(current.riskLevel);
     return current.expectedProfit - currentPenalty > best.expectedProfit - bestPenalty ? current : best;
   }, decisions[0]);
-}
-
-export function createScenarioInput(input: FarmPlanInput, cropId: CropId): FarmPlanInput {
-  const crop = cropCatalog[cropId];
-
-  return {
-    ...input,
-    cropId,
-    seedCostPerAcre: crop.defaults.seedCostPerAcre,
-    fertilizerCostPerAcre: crop.defaults.fertilizerCostPerAcre,
-    laborCostPerAcre: crop.defaults.laborCostPerAcre,
-    landLeaseCostPerAcre: crop.defaults.landLeaseCostPerAcre,
-    expectedHarvestPerAcre: crop.defaults.expectedHarvestPerAcre,
-    marketPricePerUnit: crop.defaults.marketPricePerUnit,
-    transportCost: crop.defaults.transportCost,
-  };
 }
 
 function buildPriceSensitivity(

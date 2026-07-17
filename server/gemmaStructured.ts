@@ -1,8 +1,13 @@
 import { GoogleGenAI } from "@google/genai";
-import { applyScenarioOperations, getMissingCoreFields, getPatchFields } from "../src/domain/patches.js";
+import {
+  applyScenarioOperations,
+  farmPlanFields,
+  getMissingCoreFields,
+  getPatchFields,
+  numericFarmPlanFields,
+} from "../src/domain/patches.js";
 import type {
   FarmInterviewResult,
-  FarmPlanField,
   FarmPlanInput,
   FarmPlanPatch,
   NumericFarmPlanField,
@@ -103,21 +108,7 @@ function buildInterviewPrompt(text: string): string {
     {
       task: "Extract a farm plan patch from the farmer's natural-language plan.",
       allowedCropIds: ["corn", "soybeans", "wheat"],
-      allowedPatchFields: [
-        "cropId",
-        "landSizeAcres",
-        "availableBudget",
-        "seedCostPerAcre",
-        "fertilizerCostPerAcre",
-        "laborCostPerAcre",
-        "landLeaseCostPerAcre",
-        "expectedHarvestPerAcre",
-        "marketPricePerUnit",
-        "transportCost",
-        "storageMonths",
-        "storageCostPerMonth",
-        "expectedMonthlyPriceGrowth",
-      ],
+      allowedPatchFields: farmPlanFields,
       units: {
         money: "USD numbers only",
         landSizeAcres: "acres",
@@ -150,20 +141,7 @@ function buildScenarioPrompt(question: string, currentInput: FarmPlanInput): str
     {
       task: "Convert a what-if question into parameter operations.",
       currentInput,
-      allowedNumericFields: [
-        "landSizeAcres",
-        "availableBudget",
-        "seedCostPerAcre",
-        "fertilizerCostPerAcre",
-        "laborCostPerAcre",
-        "landLeaseCostPerAcre",
-        "expectedHarvestPerAcre",
-        "marketPricePerUnit",
-        "transportCost",
-        "storageMonths",
-        "storageCostPerMonth",
-        "expectedMonthlyPriceGrowth",
-      ],
+      allowedNumericFields: numericFarmPlanFields,
       allowedOperations: ["set", "increasePercent", "decreasePercent", "increaseBy", "decreaseBy"],
       rules: [
         "Return JSON object with operations only.",
@@ -201,7 +179,7 @@ function normalizePatch(raw: unknown): FarmPlanPatch {
       continue;
     }
 
-    if (isFarmPlanField(key) && typeof value === "number" && Number.isFinite(value)) {
+    if (isNumericFarmPlanField(key) && typeof value === "number" && Number.isFinite(value)) {
       patch[key] = value as never;
     }
   }
@@ -240,24 +218,6 @@ function unwrapObject(raw: unknown, key: string): unknown {
   return raw;
 }
 
-
-function isFarmPlanField(value: string): value is FarmPlanField {
-  return [
-    "landSizeAcres",
-    "availableBudget",
-    "seedCostPerAcre",
-    "fertilizerCostPerAcre",
-    "laborCostPerAcre",
-    "landLeaseCostPerAcre",
-    "expectedHarvestPerAcre",
-    "marketPricePerUnit",
-    "transportCost",
-    "storageMonths",
-    "storageCostPerMonth",
-    "expectedMonthlyPriceGrowth",
-  ].includes(value);
-}
-
 function isNumericFarmPlanField(value: unknown): value is NumericFarmPlanField {
-  return typeof value === "string" && isFarmPlanField(value);
+  return typeof value === "string" && numericFarmPlanFields.includes(value as NumericFarmPlanField);
 }
