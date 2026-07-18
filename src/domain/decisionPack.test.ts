@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { buildActionPack } from "./actionPack.js";
 import { buildDecisionPackShareText } from "./decisionPack.js";
 import { calculateFarmPlan } from "./finance.js";
@@ -27,7 +27,14 @@ const input: FarmPlanInput = {
 };
 
 describe("decision pack share text", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it("keeps the deterministic action, verification checks, and source limitations together", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-07-12T12:00:00.000Z"));
+
     const plan = calculateFarmPlan(input);
     const weatherResponse: WeatherResponse = {
       status: "available",
